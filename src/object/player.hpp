@@ -25,6 +25,11 @@
 #include "supertux/script_interface.hpp"
 #include "supertux/sequence.hpp"
 #include "supertux/timer.hpp"
+#include "supertux/game_manager.hpp"
+#include "storage/PowerupStore.hpp"
+#include "storage/storable.hpp"
+#include "util/dictionary.hpp"
+
 
 class BadGuy;
 class Portable;
@@ -122,7 +127,6 @@ public:
    * like add_bonus, but can also downgrade the bonus items carried
    */
   bool set_bonus(BonusType type, bool animate = false);
-
   PlayerStatus* get_status() const
   {
     return player_status;

@@ -25,8 +25,11 @@
 #include "supertux/menu/options_menu.hpp"
 #include "supertux/screen_manager.hpp"
 #include "util/gettext.hpp"
+#include "gui/dialog.hpp"
 
-GameMenu::GameMenu()
+GameMenu::GameMenu():
+  m_powerups(),
+  next_powerup(0)
 {
   Level* level = GameSession::current()->get_current_level();
 
@@ -35,6 +38,15 @@ GameMenu::GameMenu()
   add_entry(MNID_CONTINUE, _("Continue"));
   add_entry(MNID_RESETLEVEL, _("Restart Level"));
   add_submenu(_("Options"), MenuStorage::INGAME_OPTIONS_MENU);
+  m_powerups.clear();
+  m_powerups.push_back("Fireflower");
+  m_powerups.push_back("Iceflower");
+  m_powerups.push_back("Earthflower");
+  m_powerups.push_back("Airflower");
+  next_powerup = 0;
+  MenuItem* magnification = add_string_select(MNID_SELECTPOWERUP, _("Next powerup"), &next_powerup, m_powerups);
+  magnification->set_help(_("Select the powerup you want to load."));
+  add_entry(MNID_USEPOWERUP, _("Use powerup"));
   add_hl();
   add_entry(MNID_ABORTLEVEL, _("Abort Level"));
 }
@@ -58,6 +70,49 @@ GameMenu::menu_action(MenuItem* item)
     case MNID_ABORTLEVEL:
       GameSession::current()->abort_level();
       break;
+    case MNID_USEPOWERUP:
+    {
+      auto dict = GameManager::current()->get_dictionary();
+      PowerupStore* powerupstore = (PowerupStore*) dict->getStorable("powerupstore");
+      Player* player = Sector::current()->player;
+      bool rval;
+      switch(next_powerup)
+      {
+        case 0:
+          if( (rval = powerupstore->useFireflower()) )
+          {
+            player->add_bonus("fireflower");
+          }
+          break;
+        case 1:
+          if( (rval = powerupstore->useIceflower()) )
+          {
+            player->add_bonus("iceflower");
+          }
+          break;
+        case 2:
+          if( (rval = powerupstore->useEarthflower()) )
+          {
+            player->add_bonus("earthflower");
+          }
+          break;
+        case 3:
+          if( (rval = powerupstore->useAirflower()) )
+          {
+            player->add_bonus("airflower");
+          }
+          break;
+      }
+      // Display error dialogue
+      if(!rval)
+      {
+        std::unique_ptr<Dialog> dialog(new Dialog);
+        dialog->set_text(_("Error:\n") + _("You don't have such a powerup stored!"));
+        dialog->add_button(_("Ok"));
+        MenuManager::instance().set_dialog(std::move(dialog));
+      }
+    }
+
   }
 }
 

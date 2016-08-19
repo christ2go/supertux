@@ -24,14 +24,27 @@ using std::auto_ptr;
 dictionary::dictionary(const std::string& filename):
     m_table(),
     m_filename(filename),
-    m_writer() {
-    this->load();
+    m_writer(),
+    m_collectItems()
+{
+  log_debug << "Creating pointer" << std::endl;
+
+  std::unique_ptr<StorageContainer> temp(new StorageContainer());
+  log_debug << "Pointer created" << std::endl;
+  m_collectItems = std::move(temp);
+  log_debug << "Move done" << std::endl;
+
+  this->load();
 }
 
 dictionary::dictionary(void):
     m_table(),
     m_filename(),
-    m_writer() {
+    m_writer(),
+    m_collectItems()
+{
+  std::unique_ptr<StorageContainer> temp(new StorageContainer());
+  m_collectItems = std::move(temp);
 }
 
 dictionaryTypes dictionary::str2type(const std::string& type) {
@@ -133,6 +146,14 @@ void dictionary::load() {
                     }
                     }
                 }
+
+                // Check for stored objects
+                ReaderCollection storedItems;
+                if(mapping.get("storedItems",storedItems))
+                {
+                  m_collectItems->load(storedItems);
+                }
+
             }
         }
     } catch(const std::exception& e) {
@@ -237,6 +258,9 @@ dictionary::save() {
     m_writer->write_comment("Supertux Simple Storage File");
     this->saveItems();
     m_writer->end_list("items");
+    m_writer->start_list("storedItems");
+    m_collectItems->store(this->m_writer.get());
+    m_writer->end_list("storedItems");
     m_writer->end_list("save-data");
     // close writer
     return true;
@@ -298,4 +322,10 @@ std::string dictionary::getTypename(dictionaryItem* i) {
         return "table";
     }
     return "";
+}
+
+Storable*
+dictionary::getStorable(const std::string& name)
+{
+  return m_collectItems->get(name);
 }

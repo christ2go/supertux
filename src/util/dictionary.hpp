@@ -31,6 +31,7 @@
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/reader_collection.hpp"
+#include "storage/StorageContainer.hpp"
 
 class sqdict;
 class sqarr;
@@ -76,6 +77,7 @@ class dictionary {
     void add(const std::string& key,std::unique_ptr<sqdict> value);
     // Methods for squirrel specific types (like lists, etc)
     void setFilename(const std::string& filename);
+    Storable* getStorable(const std::string& name);
     std::string getFilename(){
       return m_filename;
     };
@@ -88,6 +90,7 @@ class dictionary {
     static std::string getTypename(dictionaryItem* i);
     std::string m_filename;
     std::unique_ptr<Writer> m_writer;
+    std::unique_ptr<StorageContainer> m_collectItems;
     void saveItems();
     void saveItem(const dictionaryItem* item);
     void load();

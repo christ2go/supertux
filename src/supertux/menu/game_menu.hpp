@@ -18,11 +18,17 @@
 #define HEADER_SUPERTUX_SUPERTUX_MENU_GAME_MENU_HPP
 
 #include "gui/menu.hpp"
+#include "util/dictionary.hpp"
+#include "supertux/game_manager.hpp"
+#include "supertux/sector.hpp"
+#include "object/player.hpp"
 
 enum GameMenuIDs {
   MNID_CONTINUE,
   MNID_RESETLEVEL,
-  MNID_ABORTLEVEL
+  MNID_ABORTLEVEL,
+  MNID_SELECTPOWERUP,
+  MNID_USEPOWERUP
 };
 
 class GameMenu : public Menu
@@ -36,6 +42,8 @@ public:
 private:
   GameMenu(const GameMenu&);
   GameMenu& operator=(const GameMenu&);
+  std::vector<std::string> m_powerups;
+  int next_powerup;
 };
 
 #endif

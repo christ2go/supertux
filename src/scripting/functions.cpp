@@ -16,7 +16,6 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "scripting/functions.hpp"
-#include "supertux/game_manager.hpp"
 #include "audio/sound_manager.hpp"
 #include "math/random_generator.hpp"
 #include "object/camera.hpp"

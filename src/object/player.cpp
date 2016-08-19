@@ -1055,6 +1055,8 @@ Player::set_bonus(const std::string& bonustype)
   return set_bonus( string_to_bonus(bonustype) );
 }
 
+
+
 bool
 Player::add_bonus(BonusType type, bool animate)
 {
@@ -1062,7 +1064,38 @@ Player::add_bonus(BonusType type, bool animate)
   if (type == NO_BONUS) {
     return true;
   }
+  if(type == FIRE_BONUS || type == AIR_BONUS || type == ICE_BONUS || type == EARTH_BONUS)
+  {
+    // Switch on current bonus
+    dictionary* dict = GameManager::current()->get_dictionary();
+    PowerupStore* powerupstore = (PowerupStore*) dict->getStorable("powerupstore");
+    switch(player_status->bonus)
+    {
+      case FIRE_BONUS:
+      {
+        powerupstore->addFireflower();
+        break;
+      }
+      case AIR_BONUS:
+      {
+        powerupstore->addAirflower();
+        break;
+      }
+      case ICE_BONUS:
+      {
+        powerupstore->addIceflower();
+        break;
+      }
+      case EARTH_BONUS:
+      {
+        powerupstore->addEarthflower();
+        break;
+      }
+      default:
+      ;
 
+    }
+  }
   // ignore GROWUP_BONUS if we're already big
   if (type == GROWUP_BONUS) {
     if (player_status->bonus != NO_BONUS)
