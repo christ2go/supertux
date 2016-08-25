@@ -42,6 +42,7 @@ KeyboardConfig::KeyboardConfig() :
   keymap[SDLK_HOME]     = Controller::PEEK_UP;
   keymap[SDLK_END]      = Controller::PEEK_DOWN;
   keymap[SDLK_F1]       = Controller::CHEAT_MENU;
+  keymap[SDLK_MINUS]    = Controller::SWITCH_POWERUP;
 }
 
 void

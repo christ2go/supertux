@@ -39,6 +39,7 @@ PlayerStatus::PlayerStatus() :
   /* Do we really want -Weffc++ to bully us into duplicating code from "reset" here? */
   coins(START_COINS),
   bonus(NO_BONUS),
+  stored(NO_BONUS),
   max_fire_bullets(0),
   max_ice_bullets(0),
   max_air_time(0),
@@ -47,13 +48,15 @@ PlayerStatus::PlayerStatus() :
   last_worldmap(),
   displayed_coins(DISPLAYED_COINS_UNSET),
   displayed_coins_frame(0),
-  coin_surface()
+  coin_surface(),
+  powerup_surface()
 {
   reset();
 
   coin_surface = Surface::create("images/engine/hud/coins-0.png");
   SoundManager::current()->preload("sounds/coin.wav");
   SoundManager::current()->preload("sounds/lifeup.wav");
+  //powerup_surface = Surface::create("images/powerups/fireflower/fire_flower-small.png");
 }
 
 PlayerStatus::~PlayerStatus()
@@ -64,8 +67,11 @@ void PlayerStatus::reset()
 {
   coins = START_COINS;
   bonus = NO_BONUS;
+
   displayed_coins = DISPLAYED_COINS_UNSET;
 }
+
+
 
 void
 PlayerStatus::add_coins(int count, bool play_sound)
@@ -179,7 +185,24 @@ PlayerStatus::draw(DrawingContext& context)
 
   context.push_transform();
   context.set_translation(Vector(0, 0));
-
+  // Only draw when no level is activated
+  if(stored && Sector::current())
+  {
+    if(stored == GROWUP_BONUS)
+    {
+      powerup_surface = Surface::create("images/powerups/egg/egg-small.png");
+    }else{
+      std::string name = PlayerStatus::get_bonus_prefix(stored);
+      powerup_surface = Surface::create("images/powerups/"+name+"flower/"+name+"_flower-small.png");
+    }
+    if(powerup_surface )
+    {
+      context.draw_surface(powerup_surface,
+                           Vector( powerup_surface->get_width(),
+                                  BORDER_Y + 1 + (Resources::fixed_font->get_text_height(coins_text) + 5) * player_id),
+                           LAYER_HUD);
+    }
+  }
   if (coin_surface)
   {
     context.draw_surface(coin_surface,
@@ -198,9 +221,9 @@ PlayerStatus::draw(DrawingContext& context)
   context.pop_transform();
 }
 
-std::string PlayerStatus::get_bonus_prefix() const
+std::string PlayerStatus::get_bonus_prefix(BonusType bonus)
 {
-  switch (this->bonus) {
+  switch (bonus) {
   default:
   case NO_BONUS:
     return "small";
@@ -215,6 +238,12 @@ std::string PlayerStatus::get_bonus_prefix() const
   case EARTH_BONUS:
     return "earth";
   }
+
+}
+
+std::string PlayerStatus::get_bonus_prefix() const
+{
+  return PlayerStatus::get_bonus_prefix(bonus);
 }
 
 /* EOF */

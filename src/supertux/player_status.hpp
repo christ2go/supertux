@@ -22,6 +22,7 @@
 
 #include "video/color.hpp"
 #include "video/surface_ptr.hpp"
+#include "supertux/sector.hpp"
 
 class ReaderMapping;
 class Writer;
@@ -53,10 +54,11 @@ public:
   void draw(DrawingContext& context);
 
   std::string get_bonus_prefix() const;/**Returns the prefix of the animations that should be displayed*/
-
+  static std::string get_bonus_prefix(BonusType bonus);
 public:
   int  coins;
   BonusType bonus;
+  BonusType stored;
   int max_fire_bullets; /**< maximum number of fire bullets in play */
   int max_ice_bullets; /**< maximum number of ice bullets in play */
   int max_air_time; /**<determines maximum number of seconds player can float in air */
@@ -69,6 +71,7 @@ private:
   int displayed_coins;
   int displayed_coins_frame;
   SurfacePtr coin_surface;
+  SurfacePtr powerup_surface;
 
 private:
   PlayerStatus(const PlayerStatus&);

@@ -246,6 +246,8 @@ public:
   void walk(float speed);
   void set_dir(bool right);
 
+  static BonusType string_to_bonus(const std::string& bonus);
+  static std::string bonus_to_string(const BonusType& bonus);
 private:
   void handle_input();
   void handle_input_ghost(); /**< input handling while in ghost mode */
@@ -259,7 +261,7 @@ private:
 
   bool slightly_above_ground() const;
 
-  BonusType string_to_bonus(const std::string& bonus) const;
+
 
   /**
    * slows Tux down a little, based on where he's standing

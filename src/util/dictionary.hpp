@@ -35,6 +35,7 @@
 
 class sqdict;
 class sqarr;
+class StorageContainer;
 
 using std::auto_ptr;
 

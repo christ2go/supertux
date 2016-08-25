@@ -19,10 +19,11 @@
 
 #include <memory>
 #include <string>
-#include "util/currenton.hpp"
 #include "util/dictionary.hpp"
+#include "util/currenton.hpp"
 class Savegame;
 class World;
+class dictionary;
 
 class GameManager : public Currenton<GameManager>
 {

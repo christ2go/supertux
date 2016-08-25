@@ -72,45 +72,19 @@ GameMenu::menu_action(MenuItem* item)
       break;
     case MNID_USEPOWERUP:
     {
-      auto dict = GameManager::current()->get_dictionary();
-      PowerupStore* powerupstore = (PowerupStore*) dict->getStorable("powerupstore");
+      /*auto dict = GameManager::current()->get_dictionary();
       Player* player = Sector::current()->player;
       bool rval;
-      switch(next_powerup)
-      {
-        case 0:
-          if( (rval = powerupstore->useFireflower()) )
-          {
-            player->add_bonus("fireflower");
-          }
-          break;
-        case 1:
-          if( (rval = powerupstore->useIceflower()) )
-          {
-            player->add_bonus("iceflower");
-          }
-          break;
-        case 2:
-          if( (rval = powerupstore->useEarthflower()) )
-          {
-            player->add_bonus("earthflower");
-          }
-          break;
-        case 3:
-          if( (rval = powerupstore->useAirflower()) )
-          {
-            player->add_bonus("airflower");
-          }
-          break;
-      }
+
       // Display error dialogue
-      if(!rval)
+      if(false == true)
       {
         std::unique_ptr<Dialog> dialog(new Dialog);
         dialog->set_text(_("Error:\n") + _("You don't have such a powerup stored!"));
         dialog->add_button(_("Ok"));
         MenuManager::instance().set_dialog(std::move(dialog));
       }
+      */
     }
 
   }

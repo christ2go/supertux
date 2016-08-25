@@ -109,6 +109,8 @@ GameSession::restart_level(bool after_death)
     bonus_at_start = currentStatus->bonus;
     max_fire_bullets_at_start = currentStatus->max_fire_bullets;
     max_ice_bullets_at_start = currentStatus->max_ice_bullets;
+    if(after_death)
+      currentStatus->stored = NO_BONUS;
 
   if (edit_mode) {
     force_ghost_mode();
@@ -456,6 +458,8 @@ GameSession::setup()
 void
 GameSession::leave()
 {
+
+
 }
 
 void
@@ -561,6 +565,14 @@ GameSession::update(float elapsed_time)
 void
 GameSession::finish(bool win)
 {
+  Player* tux = currentsector->player;
+  // Award to powerup store
+  dictionary* dict = GameManager::current()->get_dictionary();
+  PowerupStore* p = (PowerupStore*) dict->getStorable("powerupstore");
+  // Save if it isn't NO_BONUS
+  if(tux->get_status()->stored != NO_BONUS)
+    p->add(tux->get_status()->stored);
+  tux->get_status()->stored = NO_BONUS;
   if(end_seq_started)
     return;
   end_seq_started = true;

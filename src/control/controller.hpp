@@ -30,6 +30,7 @@ public:
 
     JUMP,
     ACTION,
+    SWITCH_POWERUP,
 
     START,
     ESCAPE,

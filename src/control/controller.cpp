@@ -23,6 +23,7 @@ const char* Controller::controlNames[] = {
   "down",
   "jump",
   "action",
+  "switch-powerup",
   "start",
   "escape",
   "menu-select",

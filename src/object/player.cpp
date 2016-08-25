@@ -851,6 +851,13 @@ Player::handle_input()
     }
   }
 
+  if(controller->pressed(Controller::SWITCH_POWERUP))
+  {
+    BonusType tmp = player_status->bonus;
+    set_bonus(player_status->stored);
+    player_status->stored = tmp;
+  }
+
   if (stone)
     apply_friction();
 
@@ -1018,8 +1025,32 @@ Player::get_coins() const
   return player_status->coins;
 }
 
+std::string
+Player::bonus_to_string(const BonusType& bonus)
+{
+  std::string type = "none";
+  if(bonus == GROWUP_BONUS) {
+    type = "grow";
+  } else if(bonus == FIRE_BONUS) {
+    type = "fireflower";
+  } else if(bonus == ICE_BONUS) {
+    type = "iceflower";
+  } else if(bonus == AIR_BONUS) {
+    type = "airflower";
+  } else if(bonus == EARTH_BONUS) {
+    type = "earthflower";
+  } else if(bonus == NO_BONUS) {
+    type = "none";
+  } else {
+    std::ostringstream msg;
+    msg << "Unknown bonus type "  << bonus;
+    throw std::runtime_error(msg.str());
+  }
+  return type;
+}
+
 BonusType
-Player::string_to_bonus(const std::string& bonus) const {
+Player::string_to_bonus(const std::string& bonus) {
   BonusType type = NO_BONUS;
 
   if(bonus == "grow") {
@@ -1064,37 +1095,11 @@ Player::add_bonus(BonusType type, bool animate)
   if (type == NO_BONUS) {
     return true;
   }
-  if(type == FIRE_BONUS || type == AIR_BONUS || type == ICE_BONUS || type == EARTH_BONUS)
+  if(player_status->bonus == FIRE_BONUS || player_status->bonus == AIR_BONUS || player_status->bonus == ICE_BONUS || player_status->bonus == EARTH_BONUS)
   {
     // Switch on current bonus
-    dictionary* dict = GameManager::current()->get_dictionary();
-    PowerupStore* powerupstore = (PowerupStore*) dict->getStorable("powerupstore");
-    switch(player_status->bonus)
-    {
-      case FIRE_BONUS:
-      {
-        powerupstore->addFireflower();
-        break;
-      }
-      case AIR_BONUS:
-      {
-        powerupstore->addAirflower();
-        break;
-      }
-      case ICE_BONUS:
-      {
-        powerupstore->addIceflower();
-        break;
-      }
-      case EARTH_BONUS:
-      {
-        powerupstore->addEarthflower();
-        break;
-      }
-      default:
-      ;
-
-    }
+    player_status->stored = type;
+    return true;
   }
   // ignore GROWUP_BONUS if we're already big
   if (type == GROWUP_BONUS) {

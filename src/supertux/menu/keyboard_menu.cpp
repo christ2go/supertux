@@ -38,6 +38,7 @@ KeyboardMenu::KeyboardMenu(InputManager& input_manager) :
   add_controlfield(Controller::PEEK_RIGHT, _("Peek Right"));
   add_controlfield(Controller::PEEK_UP,    _("Peek Up"));
   add_controlfield(Controller::PEEK_DOWN,  _("Peek Down"));
+  add_controlfield(Controller::SWITCH_POWERUP,  _("Switch Powerup"));
   if (g_config->developer_mode) {
     add_controlfield(Controller::CONSOLE, _("Console"));
   }
@@ -131,7 +132,8 @@ KeyboardMenu::refresh()
   if (micf) micf->change_input(get_key_name(kbd_cfg.reversemap_key(Controller::PEEK_UP)));
   micf = dynamic_cast<ItemControlField*>(&get_item_by_id((int) Controller::PEEK_DOWN));
   if (micf) micf->change_input(get_key_name(kbd_cfg.reversemap_key(Controller::PEEK_DOWN)));
-
+  micf = dynamic_cast<ItemControlField*>(&get_item_by_id((int) Controller::SWITCH_POWERUP));
+  if (micf) micf->change_input(get_key_name(kbd_cfg.reversemap_key(Controller::SWITCH_POWERUP)));
   if (g_config->developer_mode) {
     micf = dynamic_cast<ItemControlField*>(&get_item_by_id((int) Controller::CHEAT_MENU));
     if (micf) micf->change_input(get_key_name(kbd_cfg.reversemap_key(Controller::CHEAT_MENU)));

@@ -25,8 +25,10 @@
 #include "object/endsequence.hpp"
 #include "supertux/screen.hpp"
 #include "supertux/sequence.hpp"
+#include "supertux/game_manager.hpp"
 #include "supertux/player_status.hpp"
 #include "util/currenton.hpp"
+#include "util/dictionary.hpp"
 
 class CodeController;
 class DrawingContext;

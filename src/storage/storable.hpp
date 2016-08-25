@@ -19,17 +19,4 @@ class Storable
 
 };
 
-/**
- *  Autostorables are classes which are automatically storable
- *  A class is only autostorable if it's members are all storable
- *  items (or pointers to storable items).
- */
-
-class AutoStorable
-{
-  public:
-    virtual std::string getIdentifier() = 0;
-    virtual ~AutoStorable() {}
-};
-
 #endif
