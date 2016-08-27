@@ -374,7 +374,7 @@ WorldMap::on_escape_press()
   // Show or hide the menu
   if(!MenuManager::instance().is_active()) {
     MenuManager::instance().set_menu(MenuStorage::WORLDMAP_MENU);
-    tux->set_direction(D_NONE);  // stop tux movement when menu is called
+    //tux->set_direction(D_NONE);  // stop tux movement when menu is called
   } else {
     MenuManager::instance().clear_menu_stack();
   }
@@ -621,7 +621,16 @@ WorldMap::update(float delta)
     {
       MenuManager::instance().set_menu(MenuStorage::WORLDMAP_CHEAT_MENU);
     }
-
+    if(controller->pressed(Controller::SWITCH_POWERUP))
+    {
+      log_debug << "Loading inventory" << std::endl;
+      if(!MenuManager::instance().has_inventory_dialog())
+      {
+        std::unique_ptr<InventoryDialog> dialog(new InventoryDialog());
+        MenuManager::instance().set_inventory_dialog(std::move(dialog));
+        tux->set_direction(D_NONE);  // stop tux movement when menu is called
+      }
+    }
     // check for teleporters
     Teleporter* teleporter = at_teleporter(tux->get_tile_pos());
     if (teleporter && (teleporter->automatic || (enter_level && (!tux->is_moving())))) {

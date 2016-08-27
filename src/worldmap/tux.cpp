@@ -295,6 +295,10 @@ Tux::tryContinueWalking(float elapsed_time)
 void
 Tux::updateInputDirection()
 {
+  if(MenuManager::instance().has_inventory_dialog())
+  {
+    return;
+  }
   Controller* controller_ = InputManager::current()->get_controller();
   if(controller_->hold(Controller::UP))
     input_direction = D_NORTH;

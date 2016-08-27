@@ -19,7 +19,7 @@
 #define HEADER_SUPERTUX_WORLDMAP_TUX_HPP
 
 #include "worldmap/worldmap.hpp"
-
+#include "gui/menu_manager.hpp"
 class Sprite;
 
 namespace worldmap {

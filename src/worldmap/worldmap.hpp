@@ -37,6 +37,7 @@
 #include "worldmap/special_tile.hpp"
 #include "worldmap/sprite_change.hpp"
 #include "worldmap/teleporter.hpp"
+#include "gui/inventory_dialog.hpp"
 
 class GameObject;
 class PlayerStatus;

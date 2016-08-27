@@ -14,7 +14,7 @@ PowerupStore::load(const ReaderObject& read )
   for(const auto& item:items.get_objects())
   {
       if(!(item.get_name() == "powerup")) {
-          log_fatal << "Ill formed save-data file (Exspected Item in Items)).";
+          log_fatal << "Ill formed powerup storage (Exspected \"(powerup ...)\" in Items)).";
           throw std::runtime_error("Ill formed save-data file (Exspected Item in Items)).");
       }
 

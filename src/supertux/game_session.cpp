@@ -487,6 +487,9 @@ GameSession::update(float elapsed_time)
     }
   }
 
+  
+
+
   process_events();
 
   // Unpause the game if the menu has been closed

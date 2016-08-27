@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "SDL.h"
+#include "gui/inventory_dialog.hpp"
 
 class Dialog;
 class DrawingContext;
@@ -43,6 +44,9 @@ private:
   std::vector<std::unique_ptr<Menu> > m_menu_stack;
   std::unique_ptr<MenuTransition> m_transition;
 
+  std::unique_ptr<InventoryDialog> m_inventory_dialog;
+  bool m_has_next_inv;
+  std::unique_ptr<InventoryDialog> m_next_inv;
 public:
   MenuManager();
   ~MenuManager();
@@ -55,6 +59,8 @@ public:
 
   void set_dialog(std::unique_ptr<Dialog> dialog);
 
+  void set_inventory_dialog(std::unique_ptr<InventoryDialog> dialog);
+  bool has_inventory_dialog();
   void set_menu(int id);
   void set_menu(std::unique_ptr<Menu> menu);
   void push_menu(int id);
@@ -65,7 +71,7 @@ public:
   void on_window_resize();
   bool is_active() const
   {
-    return !m_menu_stack.empty();
+    return (!(m_menu_stack.empty())) && !m_inventory_dialog ;
   }
 
   Menu* current_menu() const;
