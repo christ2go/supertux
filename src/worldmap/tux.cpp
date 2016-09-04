@@ -173,6 +173,10 @@ Tux::tryStartWalking()
 bool
 Tux::canWalk(int tile_data, Direction dir) const
 {
+  if(MenuManager::instance().has_inventory_dialog())
+  {
+    return false;
+  }
   return ghost_mode ||
     ((tile_data & Tile::WORLDMAP_NORTH && dir == D_NORTH) ||
      (tile_data & Tile::WORLDMAP_SOUTH && dir == D_SOUTH) ||
@@ -295,10 +299,7 @@ Tux::tryContinueWalking(float elapsed_time)
 void
 Tux::updateInputDirection()
 {
-  if(MenuManager::instance().has_inventory_dialog())
-  {
-    return;
-  }
+
   Controller* controller_ = InputManager::current()->get_controller();
   if(controller_->hold(Controller::UP))
     input_direction = D_NORTH;

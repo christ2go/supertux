@@ -290,6 +290,7 @@ GameSession::toggle_pause()
   // unpause is done in update() after the menu is processed
 }
 
+
 void
 GameSession::abort_level()
 {
@@ -458,7 +459,7 @@ GameSession::setup()
 void
 GameSession::leave()
 {
-
+  
 
 }
 
@@ -487,7 +488,7 @@ GameSession::update(float elapsed_time)
     }
   }
 
-  
+
 
 
   process_events();

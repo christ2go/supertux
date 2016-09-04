@@ -33,6 +33,7 @@
 #include "util/reader_collection.hpp"
 #include "storage/StorageContainer.hpp"
 
+class InventoryItem;
 class sqdict;
 class sqarr;
 class StorageContainer;
@@ -45,6 +46,9 @@ enum dictionaryTypes {
 
 
 class dictionaryItem {
+  /**
+   * This class represents an item in the dictionary.
+   */
   public:
     std::string key;
     dictionaryTypes type;
@@ -69,25 +73,98 @@ class dictionary {
     dictionaryItem* add(const std::string& key,std::unique_ptr<boost::any> value);
     dictionaryItem* createTableEntry(const std::string& key);
   public:
+    /**
+     * This method is used for saving the dictionary to the disk.
+     * @return True if the save was successfull.
+     */
     bool save();
+    /**
+     * Adds an integer value into the dictionary.
+     * @param key   The string under which the key is to be stored.
+     * @param value The integer value to be stored.
+     */
     void add(const std::string& key,int value);
+    /**
+     * Adds a string value into the dictionary.
+     * If a value with that key already exists, it is overwritten.
+     * @param key   The string under which the key is to be stored.
+     * @param value The string value to be stored.
+     */
     void add(const std::string& key,std::string value);
+    /**
+     * Adds an float value into the dictionary.
+     * If a value with that key already exists, it is overwritten.
+     * @param key   The string under which the key is to be stored.
+     * @param value The float value to be stored.
+     */
     void add(const std::string& key,float value);
+    /**
+     * Adds a boolean value into the dictionary.
+     * If a value with that key already exists, it is overwritten.
+     * @param key   The string under which the key is to be stored.
+     * @param value The boolean value to be stored.
+     */
     void add(const std::string& key,bool value);
+    /**
+     * Adds an array value into the dictionary.
+     * If a value with that key already exists, it is overwritten.
+     * @param key   The string under which the key is to be stored.
+     * @param value The sqdict reference value to be stored.
+     */
     void add(const std::string& key,std::unique_ptr<sqarr> value);
     void add(const std::string& key,std::unique_ptr<sqdict> value);
-    // Methods for squirrel specific types (like lists, etc)
+    /**
+     * Sets the file name, under which the dictionary will be stored
+     * by the save method. Overwrittes previous filenames.
+     * @param filename [description]
+     */
     void setFilename(const std::string& filename);
+    /**
+     * Returns a Storable with the given name,
+     * which is stored in the StorageContainer.
+     * @param  name The storables name
+     * @return      A Pointer to the Storable, if a Storable with that name exists.
+     */
     Storable* getStorable(const std::string& name);
+    /**
+     * Returns the filename, under which the dictionary is currently
+     * going to be saved
+     * @return filename
+     */
     std::string getFilename(){
       return m_filename;
     };
+    /**
+     * Gets a dictionarys item.
+     * @param  The items key
+     * @return A pointer to the dictionaryItem, if it exists, else null.
+     */
     dictionaryItem* get(const std::string& key);
+    /**
+     * Constructs a dictionary.
+     * @param The filename
+     */
     dictionary(const std::string& filename);
+
     dictionary(void); // Initialize empty
+    /**
+     * Convert strings to a dictionary type.
+     * Used for loading dictionaries.
+     * @param  type The types name.
+     * @return      The type names type represenation.
+     */
     static dictionaryTypes str2type(const std::string& type);
+    /**
+     * Returns a vector of the current InventoryItems.
+     */
+    std::vector<std::shared_ptr<InventoryItem>> getInventoryItems();
 
   private:
+    /**
+     * Returns a dictionaryItem's type
+     * @param  i the item
+     * @return   the typename
+     */
     static std::string getTypename(dictionaryItem* i);
     std::string m_filename;
     std::unique_ptr<Writer> m_writer;
@@ -95,8 +172,6 @@ class dictionary {
     void saveItems();
     void saveItem(const dictionaryItem* item);
     void load();
-
-
 };
 
 #endif

@@ -52,3 +52,18 @@ PowerupStore::add(BonusType bonus)
     powerups[bonus] = 1;
   }
 }
+
+std::vector<std::shared_ptr<InventoryItem>>
+PowerupStore::getInventory()
+{
+  std::vector<std::shared_ptr<InventoryItem>> vect;
+  for(std::pair<BonusType,int> pair:powerups)
+  {
+    if(pair.second > 0)
+    {
+      std::shared_ptr<PowerUpInventoryWrapper> i(new PowerUpInventoryWrapper(*this,pair.first));
+      vect.push_back(i);
+    }
+  }
+  return vect;
+}

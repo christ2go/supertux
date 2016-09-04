@@ -195,6 +195,10 @@ MenuManager::event(const SDL_Event& ev)
     {
       m_dialog->event(ev);
     }
+    else if(m_inventory_dialog)
+    {
+      m_inventory_dialog->event(ev);
+    }
     else if (current_menu())
     {
       // only pass events when the menu is fully visible and not in a

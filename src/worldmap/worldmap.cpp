@@ -374,7 +374,7 @@ WorldMap::on_escape_press()
   // Show or hide the menu
   if(!MenuManager::instance().is_active()) {
     MenuManager::instance().set_menu(MenuStorage::WORLDMAP_MENU);
-    //tux->set_direction(D_NONE);  // stop tux movement when menu is called
+    tux->set_direction(D_NONE);  // stop tux movement when menu is called
   } else {
     MenuManager::instance().clear_menu_stack();
   }
@@ -539,7 +539,7 @@ WorldMap::clamp_camera_position(Vector& c) const
 void
 WorldMap::update(float delta)
 {
-  if (!in_level && !MenuManager::instance().is_active())
+  if (!in_level && !MenuManager::instance().is_active() && !MenuManager::instance().has_inventory_dialog())
   {
     // update GameObjects
     for(size_t i = 0; i < game_objects.size(); ++i) {
@@ -819,6 +819,8 @@ WorldMap::draw_status(DrawingContext& context)
       LevelTile* level = *i;
 
       if (level->pos == tux->get_tile_pos()) {
+        if(MenuManager::instance().has_inventory_dialog())
+          continue;
         context.draw_text(Resources::normal_font, level->title,
                           Vector(SCREEN_WIDTH/2,
                                  SCREEN_HEIGHT - Resources::normal_font->get_height() - 10),

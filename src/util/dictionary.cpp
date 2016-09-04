@@ -21,6 +21,7 @@ using std::cout;
 using namespace boost;
 using std::auto_ptr;
 
+
 dictionary::dictionary(const std::string& filename):
     m_table(),
     m_filename(filename),
@@ -61,6 +62,11 @@ dictionaryTypes dictionary::str2type(const std::string& type) {
     if(type == "str")
         return DICT_STRING;
     throw new std::runtime_error("No valid type string provided! (Invalid supertux storage file)");
+}
+
+std::vector<std::shared_ptr<InventoryItem>> dictionary::getInventoryItems()
+{
+  return m_collectItems->getInventoryItems();
 }
 
 void dictionary::load() {

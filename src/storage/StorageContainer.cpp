@@ -26,6 +26,27 @@ StorageContainer::get(const std::string& name)
   }
 }
 
+std::vector<std::shared_ptr<InventoryItem>>
+StorageContainer::getInventoryItems()
+{
+  std::vector<std::shared_ptr<InventoryItem>> item;
+  for(auto& pair:m_items)
+  {
+    if(pair.second->isInventoryItem())
+    {
+      item.push_back(std::static_pointer_cast<InventoryItem,Storable>(pair.second));
+    }
+    if(pair.second->isInventoryFactory())
+    {
+      for(auto const& ob:std::static_pointer_cast<InventoryFactory,Storable>(pair.second)->getInventory())
+      {
+        item.push_back(std::static_pointer_cast<InventoryItem,Storable>(ob));
+      }
+    }
+  }
+  return item;
+}
+
 void
 StorageContainer::load(ReaderCollection& reader)
 {

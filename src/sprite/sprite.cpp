@@ -18,7 +18,7 @@
 
 #include <assert.h>
 #include <math.h>
-
+#include <png.h>
 #include "supertux/timer.hpp"
 
 Sprite::Sprite(SpriteData& newdata) :

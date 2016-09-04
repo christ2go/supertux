@@ -274,8 +274,7 @@ SoundManager::stop_music(float fadetime)
 void
 SoundManager::play_music(const std::string& filename, bool fade)
 {
-  if(filename == current_music && music_source != NULL)
-    return;
+  
   current_music = filename;
   if(!music_enabled)
     return;

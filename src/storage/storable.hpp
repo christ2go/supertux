@@ -9,6 +9,7 @@
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 
+
 class Storable
 {
   public:
@@ -16,7 +17,16 @@ class Storable
      virtual void store(Writer* serializer) = 0;
      virtual std::string getIdentifier() = 0;
      virtual ~Storable() {}
+     virtual bool isInventoryItem()
+     {
+       return false;
+     }
+     virtual bool isInventoryFactory()
+     {
+       return false;
+     }
 
 };
+
 
 #endif

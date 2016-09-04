@@ -15,6 +15,7 @@ class StorageContainer
     Storable* get(const std::string& name);
     void load(ReaderCollection& reader);
     void store(Writer* serializer);
+    std::vector<std::shared_ptr<InventoryItem>> getInventoryItems();
     StorageContainer():
       m_items()
     {
