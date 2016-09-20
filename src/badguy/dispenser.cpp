@@ -167,7 +167,11 @@ Dispenser::collision(GameObject& other, const CollisionHit& hit)
       return FORCE_MOVE;
     }
     if(frozen){
-      unfreeze();
+      // Don't unfreze canons
+      if(type != DT_CANNON)
+      {
+        unfreeze();
+      }
     }
     return FORCE_MOVE;
   }
