@@ -18,7 +18,9 @@
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
 #include "supertux/globals.hpp"
-
+/**
+ * @scripting
+ */
 FloatingImage::FloatingImage(const std::string& spritefile) :
   sprite(SpriteManager::current()->create(spritefile)),
   layer(LAYER_FOREGROUND1 + 1),
@@ -33,7 +35,6 @@ FloatingImage::FloatingImage(const std::string& spritefile) :
 FloatingImage::~FloatingImage()
 {
 }
-
 void
 FloatingImage::update(float elapsed_time)
 {

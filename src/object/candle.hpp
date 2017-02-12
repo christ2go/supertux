@@ -39,9 +39,21 @@ public:
    * @name Scriptable Methods
    * @{
    */
-  void puff_smoke(); /**< spawn a puff of smoke */
-  bool get_burning() const; /**< returns true if candle is lighted */
-  void set_burning(bool burning); /**< true: light candle, false: extinguish candle */
+   /**
+    * spawn a puff of smoke
+    * @scripting
+    */
+  void puff_smoke(); 
+  /**
+   * @scripting
+   * returns true if candle is lighted
+   */
+  bool get_burning() const;
+  /**
+   * true: light candle, false: extinguish candle
+   * @scripting
+   */
+  void set_burning(bool burning);
   /**
    * @}
    */

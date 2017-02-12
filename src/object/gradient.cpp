@@ -19,7 +19,6 @@
 #include "editor/editor.hpp"
 #include "object/camera.hpp"
 #include "scripting/squirrel_util.hpp"
-#include "scripting/gradient.hpp"
 #include "supertux/object_factory.hpp"
 #include "supertux/sector.hpp"
 #include "util/reader.hpp"
@@ -197,20 +196,11 @@ Gradient::draw(DrawingContext& context)
 void
 Gradient::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty())
-    return;
-
-  scripting::Gradient* _this = new scripting::Gradient(this);
-  expose_object(vm, table_idx, _this, name, true);
 }
 
 void
 Gradient::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty())
-    return;
-
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 bool

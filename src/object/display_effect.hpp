@@ -40,12 +40,29 @@ public:
    * @name Scriptable Methods
    * @{
    */
-
+  /**
+   * @scripting
+   */
   void fade_out(float fadetime);
+  /**
+   * @scripting
+   */
   void fade_in(float fadetime);
+  /**
+   * @scripting
+   */
   void set_black(bool enabled);
+  /**
+   * @scripting
+   */
   bool is_black() const;
+  /**
+   * @scripting
+   */
   void sixteen_to_nine(float fadetime);
+  /**
+   * @scripting
+   */
   void four_to_three(float fadetime);
 
   /**

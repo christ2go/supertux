@@ -29,7 +29,7 @@
 #include "storage/PowerupStore.hpp"
 #include "storage/storable.hpp"
 #include "util/dictionary.hpp"
-
+#include <sqrat.h>
 
 class BadGuy;
 class Portable;
@@ -63,7 +63,8 @@ public:
 
   virtual void expose(HSQUIRRELVM vm, SQInteger table_idx);
   virtual void unexpose(HSQUIRRELVM vm, SQInteger table_idx);
-
+  void exposeSqrat(Sqrat::Table t);
+  void unexposeSqrat(Sqrat::Table t);
   void set_controller(Controller* controller);
   /*
    * Level solved. Don't kill Tux any more.
@@ -78,8 +79,15 @@ public:
   {
     return controller;
   }
-
+  /**
+   * Uses a scriptable controller for all user input (or restores controls)
+   * @scripting
+   */
   void use_scripting_controller(bool use_or_release);
+  /**
+   * Instructs the scriptable controller to press or release a button 
+   * @scripting
+   */
   void do_scripting_controller(const std::string& control, bool pressed);
 
   virtual void update(float elapsed_time);
@@ -110,10 +118,25 @@ public:
   void kill(bool completely);
   void check_bounds();
   void move(const Vector& vector);
-
+  /**
+   * Adds the specified Bonus
+   * @scripting
+   */
   virtual bool add_bonus(const std::string& bonus);
+  /**
+   * Sets the bonus.
+   * @scripting
+   */
   virtual bool set_bonus(const std::string& bonus);
+  /**
+   * @scripting
+   * @param count Gives the player 'count' coins
+   */
   virtual void add_coins(int count);
+  /**
+   * @scripting
+   * @return Returns the Players anmount of coins
+   */
   virtual int get_coins() const;
 
   /**
@@ -131,34 +154,42 @@ public:
   {
     return player_status;
   }
-  // set kick animation
+  /**
+   * set kick animation
+   * @scripting
+  */
   void kick();
 
   /**
    * play cheer animation.
    * This might need some space and behave in an unpredictable way. Best to use this at level end.
+   * @scripting true
    */
   void do_cheer();
 
   /**
    * duck down if possible.
    * this won't last long as long as input is enabled.
+   * @scripting
    */
   void do_duck();
 
   /**
    * stand back up if possible.
+   * @scripting
    */
   void do_standup();
 
   /**
    * do a backflip if possible.
+   * @scripting
    */
   void do_backflip();
 
   /**
    * jump in the air if possible
    * sensible values for yspeed are negative - unless we want to jump into the ground of course
+   * @scripting
    */
   void do_jump(float yspeed);
 
@@ -176,7 +207,14 @@ public:
    * Returns the current velocity of the player
    */
   Vector get_velocity() const;
-
+  /**
+   * @scripting
+   */
+  float get_velocity_x() const;
+  /**
+   * @scripting
+   */
+  float get_velocity_y() const;
   void bounce(BadGuy& badguy);
 
   bool is_dead() const
@@ -202,12 +240,14 @@ public:
   /**
    * Switches ghost mode on/off.
    * Lets Tux float around and through solid objects.
+   * @scripting
    */
   void set_ghost_mode(bool enable);
 
   /**
    * Switches edit mode on/off.
    * In edit mode, Tux will enter ghost_mode instead of dying.
+   * @scripting
    */
   void set_edit_mode(bool enable);
 
@@ -224,6 +264,7 @@ public:
 
   /**
    * Orders the current GameSession to start a sequence
+   * @scripting
    */
   void trigger_sequence(const std::string& sequence_name);
   void trigger_sequence(Sequence seq);

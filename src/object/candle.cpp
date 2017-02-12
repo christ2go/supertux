@@ -17,7 +17,6 @@
 #include "math/random_generator.hpp"
 #include "object/candle.hpp"
 #include "object/sprite_particle.hpp"
-#include "scripting/candle.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "supertux/object_factory.hpp"
 #include "supertux/sector.hpp"
@@ -121,16 +120,11 @@ Candle::collision(GameObject&, const CollisionHit& )
 void
 Candle::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::Candle* _this = new scripting::Candle(this);
-  expose_object(vm, table_idx, _this, name, true);
 }
 
 void
 Candle::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 void

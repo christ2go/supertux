@@ -18,7 +18,6 @@
 
 #include "editor/editor.hpp"
 #include "object/player.hpp"
-#include "scripting/platform.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "supertux/object_factory.hpp"
 #include "supertux/sector.hpp"
@@ -168,16 +167,11 @@ Platform::stop_moving()
 void
 Platform::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::Platform* _this = new scripting::Platform(this);
-  expose_object(vm, table_idx, _this, name, true);
 }
 
 void
 Platform::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 void

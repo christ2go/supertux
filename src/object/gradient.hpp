@@ -32,7 +32,6 @@ public:
   virtual ~Gradient();
   virtual bool do_save() const;
   virtual void save(Writer& writer);
-
   void set_gradient(Color top, Color bottom);
 
   Color get_gradient_top() const
@@ -43,8 +42,68 @@ public:
 
   GradientDirection get_direction() const
   { return gradient_direction; }
+  /**
+   * @scripting
+   */
+  std::string get_direction_string() const
+  {
+    auto direction = this->get_direction();
+
+    if(direction == GradientDirection::HORIZONTAL)
+      return "horizontal";
+    if(direction == GradientDirection::VERTICAL)
+      return "vertical";
+    if(direction == GradientDirection::HORIZONTAL_SECTOR)
+      return "horizontal_sector";
+    if(direction == GradientDirection::VERTICAL_SECTOR)
+      return "vertical_sector";
+
+    return NULL;
+  }
 
   void set_direction(const GradientDirection& direction);
+  /**
+   * @scripting
+   */
+  void set_direction(const std::string& direction)
+  {
+    if(direction == "horizontal")
+      set_direction(GradientDirection::HORIZONTAL);
+    else if(direction == "vertical")
+      set_direction(GradientDirection::VERTICAL);
+    else if(direction == "horizontal_sector")
+      set_direction(GradientDirection::HORIZONTAL_SECTOR);
+    else if(direction == "vertical_sector")
+      set_direction(GradientDirection::VERTICAL_SECTOR);
+    else
+      log_info << "Invalid direction for gradient \"" << direction << "\"";
+  }
+  /**
+   * @scripting
+   */
+  void
+  set_color1(float red, float green, float blue)
+  {
+    set_gradient(Color(red, green, blue), get_gradient_bottom());
+  }
+
+  /**
+   * @scripting
+   */
+  void
+  set_color2(float red, float green, float blue)
+  {
+    set_gradient(get_gradient_top(), Color(red, green, blue));
+  }
+
+  /**
+   * @scripting
+   */
+  void
+  swap_colors()
+  {
+    set_gradient(get_gradient_bottom(), get_gradient_top());
+  }
 
   virtual void update(float elapsed_time);
 

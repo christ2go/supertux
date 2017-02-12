@@ -16,7 +16,6 @@
 
 #include "object/display_effect.hpp"
 
-#include "scripting/display_effect.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "supertux/globals.hpp"
 #include "video/drawing_context.hpp"
@@ -44,16 +43,11 @@ DisplayEffect::~DisplayEffect()
 void
 DisplayEffect::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  auto obj = new scripting::DisplayEffect(this);
-  expose_object(vm, table_idx, obj, name, true);
 }
 
 void
 DisplayEffect::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 void

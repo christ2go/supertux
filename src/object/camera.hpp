@@ -55,7 +55,14 @@ public:
   virtual void unexpose(HSQUIRRELVM vm, SQInteger table_idx);
 
   // shake camera in a direction 1 time
+  /**
+   * @scripting
+   */
   void shake(float speed, float x, float y);
+  /**
+   * @scripting
+   */
+  void set_mode(const std::string& mode);
 
   void set_scrolling(int scroll_x, int scroll_y)
   {
@@ -68,8 +75,16 @@ public:
    * to the position goal
    */
   void scroll_to(const Vector& goal, float scrolltime);
+  /**
+   * scroll the upper left edge of the camera in scrolltime seconds
+   * to the position goal
+   * @scripting
+   */
+  void scroll_to(float x, float y, float scrolltime);
   void move(const int dx, const int dy);
-
+  /**
+   * @scripting
+   */
   void reload_config();
 
   enum CameraMode

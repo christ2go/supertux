@@ -47,13 +47,13 @@ public:
    * @{
    */
 
-  /** Move platform until at given node, then stop */
+  /** Move platform until at given node, then stop @scripting */
   void goto_node(int node_no);
 
-  /** Start moving platform */
+  /** Start moving platform @scripting */
   void start_moving();
 
-  /** Stop platform at next node */
+  /** Stop platform at next node @scripting */
   void stop_moving();
 
   /**

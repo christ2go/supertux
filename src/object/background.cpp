@@ -338,8 +338,8 @@ Background::expose(HSQUIRRELVM vm, SQInteger table_idx)
   if (name.empty())
     return;
 
-  scripting::Background* _this = new scripting::Background(this);
-  expose_object(vm, table_idx, _this, name, true);
+  //scripting::Background* _this = new scripting::Background(this);
+  //expose_object(vm, table_idx, _this, name, true);
 }
 
 void

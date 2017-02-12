@@ -20,7 +20,6 @@
 #include <math.h>
 
 #include "object/player.hpp"
-#include "scripting/level_time.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "supertux/globals.hpp"
 #include "supertux/object_factory.hpp"
@@ -59,16 +58,11 @@ LevelTime::get_settings() {
 void
 LevelTime::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::LevelTime* _this = new scripting::LevelTime(this);
-  expose_object(vm, table_idx, _this, name, true);
 }
 
 void
 LevelTime::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if (name.empty()) return;
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 void

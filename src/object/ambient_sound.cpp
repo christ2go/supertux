@@ -22,7 +22,6 @@
 #include "editor/editor.hpp"
 #include "object/ambient_sound.hpp"
 #include "object/camera.hpp"
-#include "scripting/ambient_sound.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "supertux/object_factory.hpp"
 #include "supertux/sector.hpp"
@@ -236,14 +235,11 @@ AmbientSound::update(float deltat)
 void
 AmbientSound::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  auto obj = new scripting::AmbientSound(this);
-  expose_object(vm, table_idx, obj, name, true);
 }
 
 void
 AmbientSound::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 #ifndef SCRIPTING_API

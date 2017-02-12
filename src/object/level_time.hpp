@@ -46,21 +46,25 @@ public:
 
   /**
    * Resumes the countdown
+   * @scripting
    */
   void start();
 
   /**
    * Pauses the countdown
+   * @scripting
    */
   void stop();
 
   /**
    * Returns the number of seconds left on the clock
+   * @scripting
    */
   float get_time() const;
 
   /**
    * Changes the number of seconds left on the clock
+   * @scripting
    */
   void set_time(float time_left);
 

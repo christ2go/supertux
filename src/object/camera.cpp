@@ -22,7 +22,6 @@
 #include "editor/editor.hpp"
 #include "object/path_walker.hpp"
 #include "object/player.hpp"
-#include "scripting/camera.hpp"
 #include "scripting/squirrel_util.hpp"
 #include "supertux/globals.hpp"
 #include "supertux/sector.hpp"
@@ -152,6 +151,12 @@ Camera::get_settings() {
 }
 
 void
+Camera::scroll_to(float x, float y, float scrolltime)
+{
+  this->scroll_to(Vector(x, y), scrolltime);
+}
+
+void
 Camera::after_editor_set() {
   if (autoscroll_walker.get() && autoscroll_path->is_valid()) {
     if (defaultmode != AUTOSCROLL) {
@@ -199,16 +204,11 @@ Camera::~Camera()
 void
 Camera::expose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if(name.empty()) return;
-  scripting::Camera* _this = new scripting::Camera(this);
-  expose_object(vm, table_idx, _this, name, true);
 }
 
 void
 Camera::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
-  if(name.empty()) return;
-  scripting::unexpose_object(vm, table_idx, name);
 }
 
 void
@@ -354,6 +354,19 @@ Camera::shake()
     translation.y -= sin(shaketimer.get_timegone() * shakespeed) * shakedepth_y;
   }
 }
+
+void
+Camera::set_mode(const std::string& mode)
+{
+  if(mode == "normal") {
+    this->mode = Camera::NORMAL;
+  } else if(mode == "manual") {
+    this->mode = Camera::MANUAL;
+  } else {
+    log_fatal << "Camera mode '" << mode << "' unknown.";
+  }
+}
+
 
 void
 Camera::update_scroll_normal(float elapsed_time)

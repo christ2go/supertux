@@ -52,12 +52,14 @@ class AmbientSound : public MovingObject,
                      public ScriptInterface
 {
 public:
+  /**
+   * @scripting
+   */
   AmbientSound(const ReaderMapping& lisp);
   AmbientSound(Vector pos, float factor, float bias, float vol, const std::string& file);
   ~AmbientSound();
 
   HitResponse collision(GameObject& other, const CollisionHit& hit_);
-
   const Vector get_pos() const
   {
     return bbox.p1;
@@ -72,13 +74,20 @@ public:
 #ifndef SCRIPTING_API
   void set_pos(const Vector& pos);
 #endif
+/**
+ * @scripting
+ */
   void set_pos(float x, float y);
-  float get_pos_x() const;
-  float get_pos_y() const;
   /**
-   * @}
+   * Returns the current x position, to be used with scripting api
+   * @scripting
    */
-
+  float get_pos_x() const;
+  /**
+   * Returns the current y position, to be used with scripting api
+   * @scripting
+   */
+  float get_pos_y() const;
   void draw(DrawingContext& context);
 
   std::string get_display_name() const {

@@ -22,7 +22,10 @@
 #include "math/vector.hpp"
 
 class Rectf;
-
+/**
+ * @scripting
+ * Code for this enum will be generated.
+ */
 enum AnchorPoint {
   ANCHOR_H_MASK = 0x00f0,
   ANCHOR_TOP    = 0x0010,
@@ -37,8 +40,13 @@ enum AnchorPoint {
   ANCHOR_BOTTOM_LEFT = ANCHOR_BOTTOM | ANCHOR_LEFT,
   ANCHOR_BOTTOM_RIGHT = ANCHOR_BOTTOM | ANCHOR_RIGHT
 };
-
-std::string anchor_point_to_string(AnchorPoint point);
+/**
+ * @scripting
+ */
+ std::string anchor_point_to_string(AnchorPoint point);
+ /**
+  * @scripting
+  */
 AnchorPoint string_to_anchor_point(const std::string& str);
 Vector get_anchor_pos(const Rectf& rect, AnchorPoint point);
 Vector get_anchor_pos(const Rectf& destrect, float width, float height,

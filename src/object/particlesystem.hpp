@@ -57,7 +57,13 @@ public:
 
   virtual void parse(const ReaderMapping& reader);
   virtual void draw(DrawingContext& context) override;
+  /**
+   * @scripting
+   */
   void set_enabled(bool enabled_);
+  /**
+   * @scripting
+   */
   bool get_enabled() const;
 
   int get_layer() const

@@ -20,20 +20,27 @@
 #include "object/anchor_point.hpp"
 #include "sprite/sprite_ptr.hpp"
 #include "supertux/game_object.hpp"
-
+#include "supertux/sector.cpp"
 class FloatingImage : public GameObject
 {
 public:
+  /**
+   * @scripting
+   */
   FloatingImage(const std::string& sprite);
   virtual ~FloatingImage();
   virtual bool do_save() const {
     return false;
   }
-
+  /**
+   * @scripting
+   */
   void set_layer(int layer_) {
     this->layer = layer_;
   }
-
+  /**
+   * @scripting
+   */
   int get_layer() const {
     return layer;
   }
@@ -44,10 +51,41 @@ public:
   const Vector& get_pos() const {
     return pos;
   }
-
+  /**
+   * @scripting
+   */
   void set_anchor_point(AnchorPoint anchor_) {
     this->anchor = anchor_;
   }
+  /**
+   * @scripting
+   */
+  void
+  set_pos(float x, float y)
+  {
+    this->set_pos(Vector(x, y));
+  }
+  /**
+   * @scripting
+   */
+  float
+  get_pos_x() const
+  {
+    return this->get_pos().x;
+  }
+
+  /**
+   * @scripting
+   */
+  float
+  get_pos_y() const
+  {
+    return this->get_pos().y;
+  }
+
+  /**
+   * @scripting
+   */
   AnchorPoint get_anchor_point() const {
     return anchor;
   }
@@ -55,14 +93,25 @@ public:
   void set_visible(bool visible_) {
     this->visible = visible_;
   }
+
   bool get_visible() const {
     return visible;
   }
-
+  /**
+   * @scripting
+   */
   void set_action(const std::string& action);
+  /**
+   * @scripting
+   */
   std::string get_action();
-
+  /**
+   * @scripting
+   */
   void fade_in(float fadetime);
+  /**
+   * @scripting
+   */
   void fade_out(float fadetime);
 
   void update(float elapsed_time);

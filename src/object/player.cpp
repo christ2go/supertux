@@ -213,10 +213,21 @@ Player::expose(HSQUIRRELVM vm, SQInteger table_idx)
   if (name.empty())
     return;
 
-  auto obj = new scripting::Player(this);
-  scripting::expose_object(vm, table_idx, obj, name, false);
+  //auto obj = new scripting::Player(this);
+  //scripting::expose_object(vm, table_idx, obj, name, false);
+  // Get current sector
+
+}
+void Player::exposeSqrat(Sqrat::Table t)
+{
+  t.SetValue("Tux",this);
 }
 
+void Player::unexposeSqrat(Sqrat::Table t)
+{
+  // Key einfach löschen :-)
+  t.DeleteSlot("Tux");
+}
 void
 Player::unexpose(HSQUIRRELVM vm, SQInteger table_idx)
 {
@@ -1647,6 +1658,17 @@ Player::get_velocity() const
   return physic.get_velocity();
 }
 
+float
+Player::get_velocity_y() const
+{
+  return get_velocity().y;
+}
+
+float
+Player::get_velocity_x() const 
+{
+  return get_velocity().x;
+}
 void
 Player::bounce(BadGuy& )
 {
