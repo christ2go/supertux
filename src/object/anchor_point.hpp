@@ -22,7 +22,9 @@
 #include "math/vector.hpp"
 
 class Rectf;
-
+/**
+ * @scripting true
+ */
 enum AnchorPoint {
   ANCHOR_H_MASK = 0x00f0,
   ANCHOR_TOP    = 0x0010,

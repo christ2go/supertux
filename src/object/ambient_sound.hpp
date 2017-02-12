@@ -50,7 +50,7 @@ class ReaderMapping;
 class SoundSource;
 
 class AmbientSound : public MovingObject,
-                     public ExposedObject<AmbientSound, scripting::AmbientSound>
+                     public ExposedObject<AmbientSound>
 {
 public:
   AmbientSound(const ReaderMapping& lisp);
@@ -73,8 +73,13 @@ public:
 #ifndef SCRIPTING_API
   void set_pos(const Vector& pos);
 #endif
+/**
+ * @scripting
+ */
   void set_pos(float x, float y);
+  /** @scripting */
   float get_pos_x() const;
+    /** @scripting */
   float get_pos_y() const;
   /**
    * @}

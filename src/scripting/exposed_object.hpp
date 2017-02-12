@@ -21,6 +21,7 @@
 #include "scripting/squirrel_util.hpp"
 #include "supertux/script_interface.hpp"
 #include "util/log.hpp"
+#include <sqrat.h>
 
 /**
  * @class ExposedObject
@@ -39,7 +40,7 @@
  * @param class S: GameObject class (e.g. Gradient)
  * @param class T: Scripting class (e.g. scripting::Gradient)
  */
-template<class S, class T>
+template<class S>
 class ExposedObject : public ScriptInterface
 {
 private:
@@ -63,7 +64,7 @@ public:
    * @param vm The squirrel virtual machine to expose the object on
    * @param table_idx Index of the table to expose the object on
    */
-  void expose(HSQUIRRELVM vm, SQInteger table_idx)
+  void expose(Sqrat::Table t,S* object)
   {
     auto name = m_parent->get_name();
     if (name.empty())
@@ -71,10 +72,9 @@ public:
       return;
     }
 
-    log_debug << "Exposing " << m_parent->get_class() << " object " << name << std::endl;
+    log_debug << "Exposing " << object->get_class() << " object " << name << std::endl;
 
-    auto object = new T(m_parent);
-    scripting::expose_object(vm, table_idx, object, name, true);
+    t.SetInstance(name,object);
   }
 
   /**
@@ -82,7 +82,7 @@ public:
    * @param vm The squirrel virtual machine to un-expose the object on
    * @param table_idx Index of the table to un-expose the object on
    */
-  void unexpose(HSQUIRRELVM vm, SQInteger table_idx)
+  void unexpose(Sqrat::Table t)
   {
     auto name = m_parent->get_name();
     if (name.empty())
@@ -90,9 +90,7 @@ public:
       return;
     }
 
-    log_debug << "Unexposing object " << name << std::endl;
-
-    scripting::unexpose_object(vm, table_idx, name);
+    t.SetInstance(name,NULL);
   }
 
 private:

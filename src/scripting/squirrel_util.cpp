@@ -24,7 +24,7 @@
 #include <sqstdmath.h>
 #include <sqstdstring.h>
 #include <stdarg.h>
-
+#include <sqrat.h>
 #include "supertux/game_object.hpp"
 #include "supertux/script_interface.hpp"
 

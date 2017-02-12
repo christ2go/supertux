@@ -31,7 +31,7 @@ public:
   Background(const ReaderMapping& reader);
   virtual ~Background();
   virtual void save(Writer& writer);
-
+  
   void set_image(const std::string& name);
   void set_image(const std::string& name, float bkgd_speed);
   void set_images(const std::string& name_top_, const std::string& name_middle_, const std::string& name_bottom_);
