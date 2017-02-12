@@ -24,16 +24,24 @@
 #include "video/drawing_context.hpp"
 
 class Background : public GameObject,
-                   public ExposedObject<Background, scripting::Background>
+                   public ExposedObject<Background>
 {
 public:
   Background();
   Background(const ReaderMapping& reader);
   virtual ~Background();
   virtual void save(Writer& writer);
-  
+  /**
+   * @scripting
+   */
   void set_image(const std::string& name);
+  /**
+   * @scripting
+   */
   void set_image(const std::string& name, float bkgd_speed);
+  /**
+   * @scripting
+   */
   void set_images(const std::string& name_top_, const std::string& name_middle_, const std::string& name_bottom_);
   void set_speed(float bgd_speed);
 
@@ -46,6 +54,9 @@ public:
 
   virtual void draw(DrawingContext& context);
   void draw_image(DrawingContext& context, const Vector& pos);
+
+  virtual void expose(HSQUIRRELVM vm, SQInteger table_idx);
+  virtual void unexpose(HSQUIRRELVM vm, SQInteger table_idx);
 
   std::string get_class() const {
     return "background";
