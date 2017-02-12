@@ -52,7 +52,6 @@ public:
   void set_velocity(float x, float y);
   float get_velocity_x() const;
   float get_velocity_y() const;
-
   void enable_gravity(bool f);
   bool gravity_enabled() const;
 

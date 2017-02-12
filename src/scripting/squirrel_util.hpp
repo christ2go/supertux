@@ -19,10 +19,10 @@
 
 #include <sstream>
 #include <vector>
-
+#include <sqrat.h>
 #include "scripting/squirrel_error.hpp"
 #include "scripting/wrapper.hpp"
-
+using namespace Sqrat;
 namespace scripting {
 
 std::string squirrel2string(HSQUIRRELVM vm, SQInteger i);
@@ -40,10 +40,16 @@ void compile_and_run(HSQUIRRELVM vm, std::istream& in,
                      const std::string& sourcename);
 
 template<typename T>
+void expose_sqrat_object(Sqrat::Table t,T* object,const std::string& name)
+{
+  t.Bind(name,object);
+}
+
+template<typename T>
 void expose_object(HSQUIRRELVM v, SQInteger table_idx, T* object,
                    const std::string& name, bool free = false)
 {
-  sq_pushstring(v, name.c_str(), -1);
+  sq_pushstring(v, name.c_str(), -1); // Erstellt den Slot
   scripting::create_squirrel_instance(v, object, free);
 
   if(table_idx < 0)
@@ -55,6 +61,14 @@ void expose_object(HSQUIRRELVM v, SQInteger table_idx, T* object,
     msg << "Couldn't register object '" << name << "' in squirrel table";
     throw scripting::SquirrelError(v, msg.str());
   }
+}
+/**
+ *  Unexposes an sqrat object.
+ */
+static inline void sqrat_unexpose_object(Sqrat::Table t,const std::string& name)
+{
+  // Unexposes an object
+  //t.deleteKey(name);
 }
 
 static inline void unexpose_object(HSQUIRRELVM v, SQInteger table_idx,

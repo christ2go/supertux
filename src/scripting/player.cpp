@@ -13,7 +13,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#ifdef MYTEST_ONLY_FUNCTIONALITY_ENABLED
 #include "scripting/player.hpp"
 
 #include "object/player.hpp"
@@ -30,7 +30,7 @@ Player::~Player()
 }
 
 bool
-Player::add_bonus(const std::string& bonus)
+Player::add_bonus(std::string bonus)
 {
   return m_parent->add_bonus(bonus);
 }
@@ -174,5 +174,5 @@ Player::get_velocity_y() const
 }
 
 } // namespace scripting
-
+#endif
 /* EOF */

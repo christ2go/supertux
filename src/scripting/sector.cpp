@@ -68,5 +68,4 @@ Sector::set_music(const std::string& music)
 }
 
 } // namespace scripting
-
 /* EOF */

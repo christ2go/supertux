@@ -1,0 +1,26 @@
+# A list of files which contain classes to be added to squirrel.
+# You can specify options:
+# -a all functions/methods are being used !
+# Standard: Only functions or classes annotated with a doxygen @scripting are used
+# Comments begin with a # (you could have guessed that :-) )
+scripting/functions.hpp -a
+object/ambient_sound.hpp
+object/anchor_points.hpp
+object/background.hpp
+object/candle.hpp
+object/camera.hpp
+object/display_effect.hpp
+object/floating_image.hpp
+object/gradient.hpp
+object/level_time.hpp
+object/level.hpp
+object/particlesystem.hpp
+object/scripted_object.hpp
+object/text.hpp
+supertux/sector.hpp
+object/thunderstorm.hpp
+object/tilemap.hpp
+object/time_scheduler.hpp
+object/willowisp.hpp
+object/wind.hpp
+# EOF

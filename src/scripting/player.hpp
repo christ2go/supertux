@@ -13,6 +13,7 @@
 //
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#define HEADER_SUPERTUX_SCRIPTING_PLAYER_HPP
 
 #ifndef HEADER_SUPERTUX_SCRIPTING_PLAYER_HPP
 #define HEADER_SUPERTUX_SCRIPTING_PLAYER_HPP
@@ -45,7 +46,7 @@ public:
    * Set tux bonus.
    * This can be "grow", "fireflower" or "iceflower" at the moment
    */
-  bool add_bonus(const std::string& bonus);
+  bool add_bonus(std::string bonus);
   /**
    * Replaces the Tux's bonus with another bonus.
    * This can be "grow", "fireflower" or "iceflower" at the moment

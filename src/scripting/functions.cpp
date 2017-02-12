@@ -48,9 +48,10 @@ SQInteger display(HSQUIRRELVM vm)
   return 0;
 }
 
-void print_stacktrace(HSQUIRRELVM vm)
+SQInteger print_stacktrace(HSQUIRRELVM vm)
 {
   print_squirrel_stack(vm);
+  return 0;
 }
 
 SQInteger get_current_thread(HSQUIRRELVM vm)
@@ -64,14 +65,34 @@ SQInteger is_christmas(HSQUIRRELVM vm)
     return g_config->christmas_mode;
 }
 
-void wait(HSQUIRRELVM vm, float seconds)
+SQInteger wait(HSQUIRRELVM vm)
 {
-  TimeScheduler::instance->schedule_thread(vm, game_time + seconds);
+  HSQUIRRELVM arg0 = vm;
+  SQFloat arg1;
+  if(SQ_FAILED(sq_getfloat(vm, 2, &arg1))) {
+    sq_throwerror(vm, _SC("Argument 1 not a float"));
+    return SQ_ERROR;
+  }
+
+  try {
+    TimeScheduler::instance->schedule_thread(arg0, game_time + static_cast<float> (arg1));
+    return sq_suspendvm(vm);
+
+  } catch(std::exception& e) {
+    sq_throwerror(vm, e.what());
+    return SQ_ERROR;
+  } catch(...) {
+    sq_throwerror(vm, _SC("Unexpected exception while executing function 'wait'"));
+    return SQ_ERROR;
+  }
+
 }
 
-void wait_for_screenswitch(HSQUIRRELVM vm)
+
+SQInteger wait_for_screenswitch(HSQUIRRELVM vm)
 {
   ScreenManager::current()->m_waiting_threads.add(vm);
+  return 0;
 }
 
 void exit_screen()
@@ -135,20 +156,40 @@ void load_level(const std::string& filename)
   }
 }
 
-void import(HSQUIRRELVM vm, const std::string& filename)
+SQInteger import(HSQUIRRELVM vm)
 {
-  IFileStream in(filename);
-
-  if(SQ_FAILED(sq_compile(vm, squirrel_read_char, &in,
-                          filename.c_str(), SQTrue)))
-    throw SquirrelError(vm, "Couldn't parse script");
-
-  sq_pushroottable(vm);
-  if(SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
-    sq_pop(vm, 1);
-    throw SquirrelError(vm, "Couldn't execute script");
+  HSQUIRRELVM arg0 = vm;
+  const SQChar* arg1;
+  if(SQ_FAILED(sq_getstring(vm, 2, &arg1))) {
+    sq_throwerror(vm, _SC("Argument 1 not a string"));
+    return SQ_ERROR;
   }
-  sq_pop(vm, 1);
+  std::string filename = static_cast<std::string>(arg1);
+  try {
+
+    IFileStream in(filename);
+
+    if(SQ_FAILED(sq_compile(vm, scripting::squirrel_read_char, &in,
+                            filename.c_str(), SQTrue)))
+      throw SquirrelError(vm, "Couldn't parse script");
+
+    sq_pushroottable(vm);
+    if(SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue))) {
+      sq_pop(vm, 1);
+      throw SquirrelError(vm, "Couldn't execute script");
+    }
+    sq_pop(vm, 1);
+
+    return 0;
+
+  } catch(std::exception& e) {
+    sq_throwerror(vm, e.what());
+    return SQ_ERROR;
+  } catch(...) {
+    sq_throwerror(vm, _SC("Unexpected exception while executing function 'import'"));
+    return SQ_ERROR;
+  }
+
 }
 
 void debug_collrects(bool enable)

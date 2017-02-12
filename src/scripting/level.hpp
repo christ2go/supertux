@@ -20,15 +20,30 @@
 namespace scripting {
 
 /** Instantly finish the currently played level */
+/**
+ * @scripting
+ */
 void Level_finish(bool win);
 /** spawn tux at specified sector and spawnpoint */
+/**
+ * @scripting
+ */
 void Level_spawn(const std::string& sector, const std::string& spawnpoint);
 /** Flip level vertically */
+/**
+ * @scripting
+ */
 void Level_flip_vertically();
 /** toggle pause */
+/**
+ * @scripting
+ */
 void Level_toggle_pause();
 
 /** Switch to and from edit mode */
+/**
+ * @scripting
+ */
 void Level_edit(bool edit_mode);
 }
 
