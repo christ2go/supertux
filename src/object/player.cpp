@@ -113,7 +113,7 @@ static const float DUCKED_TUX_HEIGHT = 31.8f;
 bool no_water = true;
 }
 
-Player::Player(PlayerStatus* _player_status, const std::string& name_) :
+Player::Player(PlayerStatus* _player_status, const std::string& name_,int number) :
   ExposedObject<Player, scripting::Player>(this),
   deactivated(false),
   controller(InputManager::current()->get_controller()),
@@ -190,6 +190,13 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   powersprite->set_angle(0.0f);
   lightsprite->set_angle(0.0f);
   lightsprite->set_blend(Blend(GL_SRC_ALPHA, GL_ONE));
+  if(number > 1)
+  {
+    // Use a different controller
+    controller = InputManager::secondary_manager(number)->get_controller();
+    // Change color (debug only)
+
+  }
 
   physic.reset();
 }

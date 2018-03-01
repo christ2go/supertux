@@ -112,7 +112,8 @@ LevelsetState::get_level_state(const std::string& filename) const
 
 Savegame::Savegame(const std::string& filename) :
   m_filename(filename),
-  m_player_status(new PlayerStatus)
+  m_player_status(new PlayerStatus),
+  m_second_player_status(new PlayerStatus)
 {
 }
 
@@ -174,6 +175,14 @@ Savegame::load()
           }
           {
             m_player_status->read(tux);
+          }
+          ReaderMapping penny;
+          if(!mapping.get("penny", penny))
+          {
+            throw std::runtime_error("No tux section in savegame");
+          }
+          {
+            m_second_player_status->read(penny);
           }
 
           ReaderMapping state;
@@ -264,6 +273,9 @@ Savegame::save()
   writer.start_list("tux");
   m_player_status->write(writer);
   writer.end_list("tux");
+  writer.start_list("penny");
+  m_second_player_status->write(writer);
+  writer.end_list("penny");
 
   writer.start_list("state");
 

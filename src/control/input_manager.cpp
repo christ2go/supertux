@@ -28,14 +28,18 @@
 #include "util/log.hpp"
 #include "util/writer.hpp"
 
+InputManager* InputManager::s_second_player = NULL;
+
 InputManager::InputManager(KeyboardConfig& keyboard_config,
-                           JoystickConfig& joystick_config) :
+                           JoystickConfig& joystick_config,int pnr) :
   controller(new Controller),
   m_use_game_controller(joystick_config.use_game_controller),
   keyboard_manager(new KeyboardManager(this, keyboard_config)),
   joystick_manager(new JoystickManager(this, joystick_config)),
   game_controller_manager(new GameControllerManager(this))
 {
+  if(pnr == 2)
+    InputManager::s_second_player = this;
 }
 
 InputManager::~InputManager()

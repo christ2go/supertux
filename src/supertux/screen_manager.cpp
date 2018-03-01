@@ -233,11 +233,13 @@ void
 ScreenManager::process_events()
 {
   InputManager::current()->update();
+  InputManager::secondary_manager(2)->update();
   SDL_Event event;
   auto session = GameSession::current();
   while (SDL_PollEvent(&event))
   {
     InputManager::current()->process_event(event);
+    InputManager::secondary_manager(2)->process_event(event);
 
     m_menu_manager->event(event);
 

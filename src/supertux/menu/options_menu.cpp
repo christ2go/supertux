@@ -221,6 +221,12 @@ OptionsMenu::OptionsMenu(bool complete) :
   add_submenu(_("Setup Joystick"), MenuStorage::JOYSTICK_MENU)
     ->set_help(_("Configure joystick control-action mappings"));
 
+  add_submenu(_("Setup Keyboard (Player 2)"), MenuStorage::KEYBOARD_MENU_P2)
+    ->set_help(_("Configure key-action mappings"));
+
+  add_submenu(_("Setup Joystick (Player 2)"), MenuStorage::JOYSTICK_MENU_P2)
+    ->set_help(_("Configure joystick control-action mappings"));
+
   auto enable_transitions = add_toggle(MNID_TRANSITIONS, _("Enable transitions"), &g_config->transitions_enabled);
   enable_transitions->set_help(_("Enable screen transitions and smooth menu animation"));
 

@@ -68,6 +68,7 @@ class Savegame
 private:
   std::string m_filename;
   std::unique_ptr<PlayerStatus> m_player_status;
+  std::unique_ptr<PlayerStatus> m_second_player_status;
 
 public:
   Savegame(const std::string& filename);
@@ -75,7 +76,7 @@ public:
 
   /** Returns content of (tux ...) entry */
   PlayerStatus* get_player_status() const { return m_player_status.get(); }
-
+  PlayerStatus* get_second_player_status() const { return m_second_player_status.get(); }
   std::string get_title() const;
 
   std::vector<std::string> get_levelsets();

@@ -40,7 +40,8 @@
 #include "supertux/menu/worldmap_menu.hpp"
 #include "supertux/menu/worldmap_cheat_menu.hpp"
 #include "supertux/menu/world_set_menu.hpp"
-
+#include "supertux/globals.hpp"
+#include "supertux/gameconfig.hpp"
 MenuStorage* MenuStorage::s_instance = 0;
 
 MenuStorage&
@@ -82,11 +83,14 @@ MenuStorage::create(MenuId menu_id)
       return std::unique_ptr<Menu>(new ProfileMenu);
 
     case KEYBOARD_MENU:
-      return std::unique_ptr<Menu>(new KeyboardMenu(*InputManager::current()));
+      return std::unique_ptr<Menu>(new KeyboardMenu(*InputManager::current(),g_config->keyboard_config));
 
     case JOYSTICK_MENU:
       return std::unique_ptr<Menu>(new JoystickMenu(*InputManager::current()));
-
+    case KEYBOARD_MENU_P2:
+      return std::unique_ptr<Menu>(new KeyboardMenu(*InputManager::secondary_manager(2),g_config->keyboard_config_p2));
+    case JOYSTICK_MENU_P2:
+      return std::unique_ptr<Menu>(new JoystickMenu(*InputManager::secondary_manager(2)));
     case WORLDMAP_MENU:
       return std::unique_ptr<Menu>(new WorldmapMenu);
 
@@ -101,7 +105,7 @@ MenuStorage::create(MenuId menu_id)
 
     case WORLDSET_MENU:
       return std::unique_ptr<Menu>(new WorldSetMenu);
-      
+
     case CONTRIB_MENU:
       return std::unique_ptr<Menu>(new ContribMenu);
 

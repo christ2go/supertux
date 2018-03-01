@@ -170,7 +170,11 @@ public:
    * returns a list of players currently in the sector
    */
   std::vector<Player*> get_players() const {
-    return std::vector<Player*>(1, this->player);
+    std::vector<Player*> players;
+    players.push_back(this->player);
+    for(auto p:secondary_players)
+      players.push_back(p);
+    return players;
   }
   Player* get_nearest_player (const Vector& pos) const;
   Player* get_nearest_player (const Rectf& pos) const
@@ -345,6 +349,7 @@ public: // TODO make this private again
   // some special objects, where we need direct access
   // (try to avoid accessing them directly)
   Player* player;
+  std::list<Player*> secondary_players;
   std::list<TileMap*> solid_tilemaps;
   Camera* camera;
   DisplayEffect* effect;

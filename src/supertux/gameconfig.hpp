@@ -83,6 +83,8 @@ public:
   KeyboardConfig keyboard_config;
   JoystickConfig joystick_config;
 
+  KeyboardConfig keyboard_config_p2;
+  JoystickConfig joystick_config_p2;
   struct Addon
   {
     std::string id;

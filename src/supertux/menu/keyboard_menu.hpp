@@ -25,9 +25,9 @@ class KeyboardMenu : public Menu
 {
 private:
   InputManager& m_input_manager;
-
+  KeyboardConfig& m_keyboard_config;
 public:
-  KeyboardMenu(InputManager& input_manager);
+  KeyboardMenu(InputManager& input_manager,KeyboardConfig& conf);
   ~KeyboardMenu();
 
   void refresh() override;

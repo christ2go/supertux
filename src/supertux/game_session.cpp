@@ -250,13 +250,16 @@ GameSession::force_ghost_mode()
 void
 GameSession::check_end_conditions()
 {
-  Player* tux = currentsector->player;
-
+  for(const auto p:currentsector->get_players())
+  {
+    if(!end_sequence && p->is_dead())
+    {
+      restart_level(true);
+    }
+  }
   /* End of level? */
   if(end_sequence && end_sequence->is_done()) {
     finish(true);
-  } else if (!end_sequence && tux->is_dead()) {
-    restart_level(true);
   }
 }
 
@@ -336,6 +339,7 @@ GameSession::update(float elapsed_time)
     }
   }
 
+  // TODO Handle secondary controller (2nd player)
   process_events();
 
   // Unpause the game if the menu has been closed

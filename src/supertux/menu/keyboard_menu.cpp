@@ -23,8 +23,9 @@
 #include "supertux/globals.hpp"
 #include "util/gettext.hpp"
 
-KeyboardMenu::KeyboardMenu(InputManager& input_manager) :
-  m_input_manager(input_manager)
+KeyboardMenu::KeyboardMenu(InputManager& input_manager,KeyboardConfig& conf) :
+  m_input_manager(input_manager),
+  m_keyboard_config(conf)
 {
   add_label(_("Setup Keyboard"));
   add_hl();
@@ -50,7 +51,7 @@ KeyboardMenu::KeyboardMenu(InputManager& input_manager) :
   add_inactive(_("It will be removed from the next release"));
   // l10n: Continuation of string "It will be removed from the next release"
   add_inactive(_("of SuperTux."));
-  add_toggle(Controller::CONTROLCOUNT, _("Jump with Up"), &g_config->keyboard_config.jump_with_up_kbd);
+  add_toggle(Controller::CONTROLCOUNT, _("Jump with Up"), &m_keyboard_config.jump_with_up_kbd);
   add_hl();
   add_back(_("Back"));
   refresh();
@@ -114,7 +115,7 @@ KeyboardMenu::menu_action(MenuItem* item)
 void
 KeyboardMenu::refresh()
 {
-  KeyboardConfig& kbd_cfg = g_config->keyboard_config;
+  KeyboardConfig& kbd_cfg = m_keyboard_config;
   ItemControlField* micf;
 
   micf = dynamic_cast<ItemControlField*>(&get_item_by_id((int) Controller::UP));

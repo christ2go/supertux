@@ -55,7 +55,7 @@ public:
   }
 
 public:
-  Player(PlayerStatus* player_status, const std::string& name);
+  Player(PlayerStatus* player_status, const std::string& name,int number=1);
   virtual ~Player();
 
   void set_controller(Controller* controller);

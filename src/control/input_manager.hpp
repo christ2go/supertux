@@ -45,7 +45,7 @@ private:
 
 public:
   InputManager(KeyboardConfig& keyboard_config,
-               JoystickConfig& joystick_config);
+               JoystickConfig& joystick_config,int pnr=1);
   virtual ~InputManager();
 
   void process_event(const SDL_Event& event);
@@ -66,7 +66,11 @@ public:
   std::unique_ptr<KeyboardManager> keyboard_manager;
   std::unique_ptr<JoystickManager> joystick_manager;
   std::unique_ptr<GameControllerManager> game_controller_manager;
-
+  static InputManager* s_second_player;
+  static InputManager* secondary_manager(int playerNum)
+  {
+      return s_second_player;
+  }
 private:
   InputManager(const InputManager&);
   InputManager& operator=(const InputManager&);

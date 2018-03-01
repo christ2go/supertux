@@ -51,6 +51,8 @@ Config::Config() :
   locale(),
   keyboard_config(),
   joystick_config(),
+  keyboard_config_p2(),
+  joystick_config_p2(),
   addons(),
   developer_mode(false),
   christmas_mode(false),
@@ -125,6 +127,22 @@ Config::load()
 
   ReaderMapping config_control_lisp;
   if (config_lisp.get("control", config_control_lisp))
+  {
+    ReaderMapping keymap_lisp;
+    if (config_control_lisp.get("keymap", keymap_lisp))
+    {
+      keyboard_config.read(keymap_lisp);
+    }
+
+    ReaderMapping joystick_lisp;
+    if (config_control_lisp.get("joystick", joystick_lisp))
+    {
+      joystick_config.read(joystick_lisp);
+    }
+  }
+
+  ReaderMapping config_control_lisp_p2;
+  if (config_lisp.get("control-p2", config_control_lisp))
   {
     ReaderMapping keymap_lisp;
     if (config_control_lisp.get("keymap", keymap_lisp))
@@ -217,6 +235,18 @@ Config::save()
     writer.end_list("joystick");
   }
   writer.end_list("control");
+
+  writer.start_list("control-p2");
+  {
+    writer.start_list("keymap");
+    keyboard_config.write(writer);
+    writer.end_list("keymap");
+
+    writer.start_list("joystick");
+    joystick_config.write(writer);
+    writer.end_list("joystick");
+  }
+  writer.end_list("control-p2");
 
   writer.start_list("addons");
   for(const auto& addon : addons)

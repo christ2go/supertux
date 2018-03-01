@@ -88,15 +88,20 @@ Sector::Sector(Level* parent) :
   effect(0)
 {
   PlayerStatus* player_status;
+  PlayerStatus* second_player_status;
   if (Editor::is_active()) {
     player_status = Editor::current()->m_savegame->get_player_status();
+    second_player_status = Editor::current()->m_savegame->get_second_player_status();
+
   } else {
     player_status = GameSession::current()->get_savegame().get_player_status();
+    second_player_status = GameSession::current()->get_savegame().get_second_player_status();
   }
   if (!player_status) {
     log_warning << "Player status is not initialized." << std::endl;
   }
   add_object(std::make_shared<Player>(player_status, "Tux"));
+  add_object(std::make_shared<Player>(second_player_status, "Penny",2));
   add_object(std::make_shared<DisplayEffect>("Effect"));
   add_object(std::make_shared<TextObject>("Text"));
 
@@ -343,7 +348,8 @@ Sector::get_foremost_layer() const
 void
 Sector::update(float elapsed_time)
 {
-  player->check_bounds();
+  for(auto p:get_players())
+    p->check_bounds();
 
   if(ambient_light_fading)
   {
@@ -352,7 +358,7 @@ Sector::update(float elapsed_time)
     float r = (1.0f - percent_done) * source_ambient_light.red + percent_done * target_ambient_light.red;
     float g = (1.0f - percent_done) * source_ambient_light.green + percent_done * target_ambient_light.green;
     float b = (1.0f - percent_done) * source_ambient_light.blue + percent_done * target_ambient_light.blue;
-    
+
     if(r > 1.0)
       r = 1.0;
     if(g > 1.0)
@@ -366,7 +372,7 @@ Sector::update(float elapsed_time)
       g = 0;
     if(b < 0)
       b = 0;
-    
+
     ambient_light = Color(r, g, b);
 
     if(ambient_light_fade_accum >= ambient_light_fade_duration)
@@ -467,10 +473,10 @@ Sector::before_object_add(GameObjectPtr object)
   auto player_ = dynamic_cast<Player*>(object.get());
   if(player_) {
     if(this->player != 0) {
-      log_warning << "Multiple players added. Ignoring" << std::endl;
-      return false;
+      this->secondary_players.push_back(player_);
+    }else{
+      this->player = player_;
     }
-    this->player = player_;
   }
 
   auto effect_ = dynamic_cast<DisplayEffect*>(object.get());

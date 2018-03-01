@@ -365,7 +365,8 @@ Main::launch_game()
 
   SDLSubsystem sdl_subsystem;
   ConsoleBuffer console_buffer;
-
+  timelog("second-player");
+  InputManager input_manager_p2(g_config->keyboard_config_p2, g_config->joystick_config_p2,2);
   timelog("controller");
   InputManager input_manager(g_config->keyboard_config, g_config->joystick_config);
 
