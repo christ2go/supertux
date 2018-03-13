@@ -46,7 +46,9 @@ DrawingContext::DrawingContext(VideoSystem& video_system_) :
   target(NORMAL),
   target_stack(),
   obst(),
-  screenshot_requested(false)
+  screenshot_requested(false),
+  m_screen_width(SCREEN_WIDTH),
+  m_screen_height(SCREEN_HEIGHT)
 {
   obstack_init(&obst);
 }
@@ -86,7 +88,7 @@ DrawingContext::draw_surface(SurfacePtr surface, const Vector& position,
   request->type = SURFACE;
   request->pos = transform.apply(position);
 
-  if(request->pos.x >= SCREEN_WIDTH || request->pos.y >= SCREEN_HEIGHT
+  if(request->pos.x >= m_screen_width || request->pos.y >= m_screen_height
      || request->pos.x + surface->get_width() < 0
      || request->pos.y + surface->get_height() < 0)
     return;
@@ -101,7 +103,7 @@ DrawingContext::draw_surface(SurfacePtr surface, const Vector& position,
   auto surfacerequest = new(obst) SurfaceRequest();
   surfacerequest->surface = surface.get();
   request->request_data = surfacerequest;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -134,7 +136,7 @@ DrawingContext::draw_surface_part(SurfacePtr surface,
   surfacepartrequest->surface = surface.get();
 
   request->request_data = surfacepartrequest;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -157,7 +159,7 @@ DrawingContext::draw_text(FontPtr font, const std::string& text,
   textrequest->text = text;
   textrequest->alignment = alignment;
   request->request_data = textrequest;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -165,7 +167,7 @@ void
 DrawingContext::draw_center_text(FontPtr font, const std::string& text,
                                  const Vector& position, int layer, Color color)
 {
-  draw_text(font, text, Vector(position.x + SCREEN_WIDTH/2, position.y),
+  draw_text(font, text, Vector(position.x + m_screen_width/2, position.y),
             ALIGN_CENTER, layer, color);
 }
 
@@ -189,7 +191,7 @@ DrawingContext::draw_gradient(const Color& top, const Color& bottom, int layer,
   gradientrequest->direction = direction;
   gradientrequest->region = region;
   request->request_data = gradientrequest;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -213,7 +215,7 @@ DrawingContext::draw_filled_rect(const Vector& topleft, const Vector& size,
   fillrectrequest->color.alpha = color.alpha * transform.alpha;
   fillrectrequest->radius = 0.0f;
   request->request_data = fillrectrequest;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -243,7 +245,7 @@ DrawingContext::draw_filled_rect(const Rectf& rect, const Color& color, float ra
   fillrectrequest->color.alpha = color.alpha * transform.alpha;
   fillrectrequest->radius = radius;
   request->request_data = fillrectrequest;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -266,7 +268,7 @@ DrawingContext::draw_inverse_ellipse(const Vector& pos, const Vector& size, cons
   ellipse->color.alpha  = color.alpha * transform.alpha;
   ellipse->size         = size;
   request->request_data = ellipse;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -289,7 +291,7 @@ DrawingContext::draw_line(const Vector& pos1, const Vector& pos2, const Color& c
   line->color.alpha  = color.alpha * transform.alpha;
   line->dest_pos     = transform.apply(pos2);
   request->request_data = line;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -313,7 +315,7 @@ DrawingContext::draw_triangle(const Vector& pos1, const Vector& pos2, const Vect
   triangle->pos2         = transform.apply(pos2);
   triangle->pos3         = transform.apply(pos3);
   request->request_data = triangle;
-
+  request->playerno = m_curPlayer;
   requests->push_back(request);
 }
 
@@ -321,10 +323,22 @@ Rectf
 DrawingContext::get_cliprect() const
 {
   return Rectf(get_translation().x, get_translation().y,
-               get_translation().x + SCREEN_WIDTH,
-               get_translation().y + SCREEN_HEIGHT);
+               get_translation().x + m_screen_width,
+               get_translation().y + m_screen_height);
 }
 
+void
+DrawingContext::enable_screensplit(int player)
+{
+    Renderer& renderer = video_system.get_renderer();
+    renderer.setup_multiplayer(player);
+}
+
+void
+DrawingContext::set_draw_player(int player)
+{
+  m_curPlayer = player;
+}
 void
 DrawingContext::get_light(const Vector& position, Color* color)
 {
@@ -340,7 +354,7 @@ DrawingContext::get_light(const Vector& position, Color* color)
   request->pos = transform.apply(position);
 
   //There is no light offscreen.
-  if(request->pos.x >= SCREEN_WIDTH || request->pos.y >= SCREEN_HEIGHT
+  if(request->pos.x >= m_screen_width || request->pos.y >= m_screen_height
      || request->pos.x < 0 || request->pos.y < 0){
     *color = Color( 0, 0, 0);
     return;
@@ -401,6 +415,8 @@ DrawingContext::do_drawing()
   }
 
   renderer.flip();
+  // Reset multiplayer
+  enable_screensplit(1);
 }
 
 class RequestPtrCompare
@@ -421,9 +437,15 @@ DrawingContext::handle_drawing_requests(DrawingRequests& requests_)
   Lightmap& lightmap = video_system.get_lightmap();
 
   DrawingRequests::const_iterator i;
+  int lastplayer = -100;
   for(i = requests_.begin(); i != requests_.end(); ++i) {
+    // Check if player changed => change to that viewport
     const DrawingRequest& request = **i;
-
+    if(request.playerno != lastplayer)
+    {
+      // Tell the renderer to change the viewport to the setting.
+      renderer.draw_player(request.playerno);
+    }
     switch(request.target) {
       case NORMAL:
         switch(request.type) {

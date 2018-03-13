@@ -54,13 +54,27 @@ public:
   void set_gamma(float gamma) override;
 
   SDL_Window* get_window() const override { return m_window; }
-
+  /**
+   *  Set ups the game in order to play multiplayer
+   */
+  virtual void setup_multiplayer(int players);
+  /**
+   *  Adjusts viewport for the next player.
+   */
+   virtual void draw_player(int no);
+  /**
+   *  Disables all multiplayer options;
+   */
+  virtual void disable_multiplayer();
 private:
   void apply_video_mode();
 
 private:
   GLRenderer(const GLRenderer&) = delete;
   GLRenderer& operator=(const GLRenderer&) = delete;
+  int m_nplayers = 1;
+  int m_curplay = 0;
+  Size m_logical_size;
 };
 
 #endif

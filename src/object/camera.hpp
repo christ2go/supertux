@@ -25,6 +25,7 @@
 #include "scripting/exposed_object.hpp"
 #include "supertux/game_object.hpp"
 #include "supertux/timer.hpp"
+#include "object/player.hpp"
 
 class Sector;
 class Path;
@@ -60,6 +61,11 @@ public:
   {
     translation.x = scroll_x;
     translation.y = scroll_y;
+  }
+
+  void set_player(Player* p)
+  {
+    m_player = p;
   }
 
   /**
@@ -143,7 +149,7 @@ private:
   float scrollspeed;
 
   std::unique_ptr<CameraConfig> config;
-
+  Player* m_player;
 private:
   Camera(const Camera&);
   Camera& operator=(const Camera&);

@@ -101,7 +101,10 @@ Sector::Sector(Level* parent) :
     log_warning << "Player status is not initialized." << std::endl;
   }
   add_object(std::make_shared<Player>(player_status, "Tux"));
-  add_object(std::make_shared<Player>(second_player_status, "Penny",2));
+  if(level->multiplayer)
+  {
+    add_object(std::make_shared<Player>(second_player_status, "Penny",2));
+  }
   add_object(std::make_shared<DisplayEffect>("Effect"));
   add_object(std::make_shared<TextObject>("Text"));
 
@@ -260,12 +263,14 @@ Sector::activate(const Vector& player_pos)
   }
 
   //FIXME: This is a really dirty workaround for this strange camera jump
-  player->move(player->get_pos()+Vector(-32, 0));
-  camera->reset(player->get_pos());
-  camera->update(1);
-  player->move(player->get_pos()+(Vector(32, 0)));
-  camera->update(1);
-
+  for(const auto& camera:m_cameras)
+  {
+    player->move(player->get_pos()+Vector(-32, 0));
+    camera->reset(player->get_pos());
+    camera->update(1);
+    player->move(player->get_pos()+(Vector(32, 0)));
+    camera->update(1);
+  }
   update_game_objects();
 
   //Run default.nut just before init script
@@ -311,8 +316,8 @@ Rectf
 Sector::get_active_region() const
 {
   return Rectf(
-    camera->get_translation() - Vector(1600, 1200),
-    camera->get_translation() + Vector(1600, 1200) + Vector(SCREEN_WIDTH,SCREEN_HEIGHT));
+    m_cameras[0]->get_translation() - Vector(1600, 1200),
+    m_cameras[0]->get_translation() + Vector(1600, 1200) + Vector(SCREEN_WIDTH/2,SCREEN_HEIGHT));
 }
 
 int
@@ -466,14 +471,18 @@ Sector::before_object_add(GameObjectPtr object)
     if(this->camera != 0) {
       log_warning << "Multiple cameras added. Ignoring" << std::endl;
       return false;
+    }else{
+      camera = camera_;
     }
-    this->camera = camera_;
+    m_cameras.push_back(camera_);
   }
 
   auto player_ = dynamic_cast<Player*>(object.get());
   if(player_) {
     if(this->player != 0) {
       this->secondary_players.push_back(player_);
+      // Create a camera for the player
+      add_object(new Camera(this));
     }else{
       this->player = player_;
     }
@@ -554,34 +563,104 @@ Sector::try_unexpose_me()
 void
 Sector::draw(DrawingContext& context)
 {
-  context.set_ambient_color( ambient_light );
-  context.push_transform();
-  context.set_translation(camera->get_translation());
+  // Draw Splitscreen for every player (initially only 2 players)
+  if(secondary_players.size() >= 1)
+  {
+    // Split screen
+    context.enable_screensplit(2);
+    context.set_draw_player(0);
+    context.set_ambient_color( ambient_light );
+    context.push_transform();
+    context.set_translation(camera->get_translation());
 
-  for(const auto& object : gameobjects) {
-    if(!object->is_valid())
-      continue;
-
-    if (draw_solids_only)
-    {
-      auto tm = dynamic_cast<TileMap*>(object.get());
-      if (tm && !tm->is_solid())
+    for(const auto& object : gameobjects) {
+      if(!object->is_valid())
         continue;
+
+      if (draw_solids_only)
+      {
+        auto tm = dynamic_cast<TileMap*>(object.get());
+        if (tm && !tm->is_solid())
+          continue;
+      }
+
+      object->draw(context);
     }
 
-    object->draw(context);
-  }
+    if(show_collrects) {
+      Color color(1.0f, 0.0f, 0.0f, 0.75f);
+      for(auto& object : moving_objects) {
+        const Rectf& rect = object->get_bbox();
 
-  if(show_collrects) {
-    Color color(1.0f, 0.0f, 0.0f, 0.75f);
-    for(auto& object : moving_objects) {
-      const Rectf& rect = object->get_bbox();
-
-      context.draw_filled_rect(rect, color, LAYER_FOREGROUND1 + 10);
+        context.draw_filled_rect(rect, color, LAYER_FOREGROUND1 + 10);
+      }
     }
-  }
+    context.pop_transform();
+    int i = 1;
+    for(const auto& player:secondary_players)
+    {
+      context.set_draw_player(i);
+      context.set_ambient_color( ambient_light );
+      context.push_transform();
+      context.set_translation(m_cameras[i-1]->get_translation());
 
+      for(const auto& object : gameobjects) {
+        if(!object->is_valid())
+          continue;
+
+        if (draw_solids_only)
+        {
+          auto tm = dynamic_cast<TileMap*>(object.get());
+          if (tm && !tm->is_solid())
+            continue;
+        }
+
+        object->draw(context);
+      }
+
+      if(show_collrects) {
+        Color color(1.0f, 0.0f, 0.0f, 0.75f);
+        for(auto& object : moving_objects) {
+          const Rectf& rect = object->get_bbox();
+          context.draw_filled_rect(rect, color, LAYER_FOREGROUND1 + 10);
+        }
+      }
+      context.pop_transform();
+      i++;
+    }
+
+  }else{
+    context.enable_screensplit(1);
+    context.set_ambient_color( ambient_light );
+    context.push_transform();
+    context.set_translation(camera->get_translation());
+
+    for(const auto& object : gameobjects) {
+      if(!object->is_valid())
+        continue;
+
+      if (draw_solids_only)
+      {
+        auto tm = dynamic_cast<TileMap*>(object.get());
+        if (tm && !tm->is_solid())
+          continue;
+      }
+
+      object->draw(context);
+    }
+
+    if(show_collrects) {
+      Color color(1.0f, 0.0f, 0.0f, 0.75f);
+      for(auto& object : moving_objects) {
+        const Rectf& rect = object->get_bbox();
+
+        context.draw_filled_rect(rect, color, LAYER_FOREGROUND1 + 10);
+      }
+  }
   context.pop_transform();
+  }
+  context.set_draw_player(-1);
+  // All other drawing should be tu full screen
 }
 
 void

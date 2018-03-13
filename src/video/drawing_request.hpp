@@ -170,6 +170,7 @@ struct DrawingRequest
 
   DrawingRequestData* request_data;
 
+  int playerno = 0; /**< indicate to which player this request belongs */
   DrawingRequest() :
     target(),
     type(),
@@ -180,12 +181,13 @@ struct DrawingRequest
     blend(),
     angle(0.0f),
     color(1.0f, 1.0f, 1.0f, 1.0f),
-    request_data()
+    request_data(),
+    playerno(0)
   {}
 
   bool operator<(const DrawingRequest& other) const
   {
-    return layer < other.layer;
+    return std::make_pair(playerno,layer) < std::make_pair(playerno,other.layer);
   }
 };
 

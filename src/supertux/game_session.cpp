@@ -283,6 +283,7 @@ GameSession::on_window_resize()
 void
 GameSession::draw_pause(DrawingContext& context)
 {
+  context.set_draw_player(-1);
   context.draw_filled_rect(
     Vector(0,0), Vector(SCREEN_WIDTH, SCREEN_HEIGHT),
     Color(0.0f, 0.0f, 0.0f, .25f), LAYER_FOREGROUND1);

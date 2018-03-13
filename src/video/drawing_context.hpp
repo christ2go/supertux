@@ -127,7 +127,14 @@ public:
 
   void draw_line(const Vector& pos1, const Vector& pos2, const Color& color, int layer);
   void draw_triangle(const Vector& pos1, const Vector& pos2, const Vector& pos3, const Color& color, int layer);
-
+  /**
+   *  If player >= 1, enables the splitscreen mode.
+   */
+  void enable_screensplit(int player);
+  /**
+   *  Sets the current player
+   */
+  void set_draw_player(int player);
   /// Returns the visible area in world coordinates
   Rectf get_cliprect() const;
 
@@ -217,6 +224,11 @@ private:
   Target target;
   std::vector<Target> target_stack;
 
+  bool m_splitscreen;
+  int m_screens;
+  int m_curPlayer = 0;
+  int m_screen_height;
+  int m_screen_width;
   /* obstack holding the memory of the drawing requests */
   struct obstack obst;
 

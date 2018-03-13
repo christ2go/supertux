@@ -111,7 +111,7 @@ LevelParser::load(const std::string& filepath)
       level.get("contact", m_level.contact);
       level.get("license", m_level.license);
       level.get("target-time", m_level.target_time);
-
+      level.get("multiplayer",m_level.multiplayer,false);
       auto iter = level.get_iter();
       while(iter.next()) {
         if (iter.get_key() == "sector") {

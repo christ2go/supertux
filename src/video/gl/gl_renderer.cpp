@@ -250,16 +250,15 @@ GLRenderer::apply_config()
   Size min_size(640, 480);
 
   Vector scale;
-  Size logical_size;
   calculate_viewport(min_size, max_size, target_size,
                      pixel_aspect_ratio,
                      g_config->magnification,
                      scale,
-                     logical_size,
+                     m_logical_size,
                      m_viewport);
 
-  SCREEN_WIDTH = logical_size.width;
-  SCREEN_HEIGHT = logical_size.height;
+  SCREEN_WIDTH = m_logical_size.width;
+  SCREEN_HEIGHT = m_logical_size.height;
 
   if (m_viewport.x != 0 || m_viewport.y != 0)
   {
@@ -269,18 +268,17 @@ GLRenderer::apply_config()
     glClear(GL_COLOR_BUFFER_BIT);
     SDL_GL_SwapWindow(m_window);
   }
-
   glViewport(m_viewport.x, m_viewport.y, m_viewport.w, m_viewport.h);
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-
   glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -1, 1);
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glTranslatef(0, 0, 0);
   check_gl_error("Setting up view matrices");
+  setup_multiplayer(m_nplayers);
 }
 
 void
@@ -424,6 +422,56 @@ GLRenderer::draw_inverse_ellipse(const DrawingRequest& request)
   GLPainter::draw_inverse_ellipse(request);
 }
 
+void GLRenderer::setup_multiplayer(int players)
+{
+  m_nplayers = players;
+  // Set up the viewport
+  draw_player(0);
+}
+
+void GLRenderer::draw_player(int no)
+{
+  if(no == -1)
+  {
+    SCREEN_WIDTH = m_logical_size.width;
+    SCREEN_HEIGHT = m_logical_size.height;
+    glViewport(m_viewport.x, m_viewport.y, m_viewport.w, m_viewport.h);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -1, 1);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0, 0, 0);
+    check_gl_error("Setting up view matrices");
+    return;
+  }
+  if(no >= m_nplayers)
+    return;
+    SCREEN_WIDTH = m_logical_size.width/m_nplayers;
+    SCREEN_HEIGHT = m_logical_size.height;
+
+  // Set viewport
+  // TODO 4 Player Splitscreen
+  glViewport(m_viewport.x+no*(m_viewport.w/m_nplayers), m_viewport.y, m_viewport.w/m_nplayers, m_viewport.h);
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, -1, 1);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+  glTranslatef(0, 0, 0);
+  check_gl_error("Setting up view matrices");
+}
+
+void GLRenderer::disable_multiplayer()
+{
+  SCREEN_WIDTH = m_logical_size.width;
+  SCREEN_HEIGHT = m_logical_size.height;
+  glViewport(m_viewport.x, m_viewport.y, m_viewport.w, m_viewport.h);
+}
 void
 GLRenderer::draw_line(const DrawingRequest& request)
 {

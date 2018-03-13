@@ -59,6 +59,15 @@ public:
   virtual Vector to_logical(int physical_x, int physical_y) const = 0;
   virtual void set_gamma(float gamma) = 0;
   virtual SDL_Window* get_window() const = 0;
+  virtual void setup_multiplayer(int players){}
+  /**
+   *  Adjusts viewport for the next player.
+   */
+   virtual void draw_player(int no){}
+  /**
+   *  Disables all multiplayer options;
+   */
+  void disable_multiplayer(){}
 };
 
 #endif

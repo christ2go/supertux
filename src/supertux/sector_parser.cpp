@@ -182,7 +182,7 @@ SectorParser::parse(const ReaderMapping& sector)
     fix_old_tiles();
   }
 
-  if (!m_sector.camera) {
+  if (!m_sector.m_cameras[0]) {
     log_warning << "sector '" << m_sector.name << "' does not contain a camera." << std::endl;
     m_sector.update_game_objects();
     m_sector.add_object(std::make_shared<Camera>(&m_sector, "Camera"));

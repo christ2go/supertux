@@ -40,7 +40,7 @@ public:
   Statistics  stats;
   float       target_time;
   std::string tileset;
-
+  bool multiplayer; /*< Boolean flag to enable/disable multiplayer */
   friend class LevelParser;
 
 public:

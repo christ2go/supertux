@@ -45,7 +45,8 @@ Level::Level() :
   sectors(),
   stats(),
   target_time(),
-  tileset("images/tiles.strf")
+  tileset("images/tiles.strf"),
+  multiplayer()
 {
   _current = this;
 }
@@ -91,6 +92,7 @@ Level::save(const std::string& filepath, bool retry)
     writer.write("name", name, true);
     writer.write("author", author, false);
     writer.write("tileset", tileset, false);
+    writer.write("multiplayer",false);
     if (contact != "") {
       writer.write("contact", contact, false);
     }

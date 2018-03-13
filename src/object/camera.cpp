@@ -184,7 +184,8 @@ Camera::Camera(Sector* newsector, const std::string& name_) :
   scroll_to_pos(),
   scrollspeed(),
   config(std::unique_ptr<CameraConfig>(new CameraConfig)),
-  defaultmode(NORMAL)
+  defaultmode(NORMAL),
+  m_player(newsector->player)
 {
   this->name = name_;
   reload_config();
@@ -237,7 +238,7 @@ Camera::parse(const ReaderMapping& reader)
 void
 Camera::reset(const Vector& tuxpos)
 {
-  translation.x = tuxpos.x - SCREEN_WIDTH/2;
+  translation.x = tuxpos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1))/2;
   translation.y = tuxpos.y - SCREEN_HEIGHT/2;
 
   shakespeed = 0;
@@ -320,13 +321,13 @@ Camera::keep_in_bounds(Vector& translation_)
   float height = sector->get_height();
 
   // don't scroll before the start or after the level's end
-  translation_.x = clamp(translation_.x, 0, width - SCREEN_WIDTH);
+  translation_.x = clamp(translation_.x, 0, width - (SCREEN_WIDTH/(sector->secondary_players.size()+1)));
   translation_.y = clamp(translation_.y, 0, height - SCREEN_HEIGHT);
 
   if (height < SCREEN_HEIGHT)
     translation_.y = height/2.0 - SCREEN_HEIGHT/2.0;
-  if (width < SCREEN_WIDTH)
-    translation_.x = width/2.0 - SCREEN_WIDTH/2.0;
+  if (width < (SCREEN_WIDTH/(sector->secondary_players.size()+1)))
+    translation_.x = width/2.0 - (SCREEN_WIDTH/(sector->secondary_players.size()+1))/2.0;
 }
 
 void
@@ -342,8 +343,8 @@ void
 Camera::update_scroll_normal(float elapsed_time)
 {
   const auto& config_ = *(this->config);
-  auto player = sector->player;
-  // TODO: co-op mode needs a good camera
+  auto player = m_player;
+  // TODO: co-op mode needs a good camera // has splitscreen
   Vector player_pos(player->get_bbox().get_middle().x,
                                     player->get_bbox().get_bottom());
   static Vector last_player_pos = player_pos;
@@ -472,7 +473,7 @@ Camera::update_scroll_normal(float elapsed_time)
     xmode = 0;
 
   if(xmode == 1) {
-    cached_translation.x = player_pos.x - SCREEN_WIDTH * config_.target_x;
+    cached_translation.x = player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * config_.target_x;
   }
   if(xmode == 2) {
     // our camera is either in leftscrolling, rightscrolling or
@@ -491,10 +492,10 @@ Camera::update_scroll_normal(float elapsed_time)
 
     float LEFTEND, RIGHTEND;
     if(config_.sensitive_x > 0) {
-      LEFTEND = SCREEN_WIDTH * config_.sensitive_x;
-      RIGHTEND = SCREEN_WIDTH * (1-config_.sensitive_x);
+      LEFTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * config_.sensitive_x;
+      RIGHTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (1-config_.sensitive_x);
     } else {
-      LEFTEND = SCREEN_WIDTH;
+      LEFTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1));
       RIGHTEND = 0;
     }
 
@@ -507,9 +508,9 @@ Camera::update_scroll_normal(float elapsed_time)
         lookahead_mode = LOOKAHEAD_RIGHT;
       }
       /* at the ends of a level it's obvious which way we will go */
-      if(player_pos.x < SCREEN_WIDTH*0.5) {
+      if(player_pos.x < (SCREEN_WIDTH/(sector->secondary_players.size()+1))*0.5) {
         lookahead_mode = LOOKAHEAD_RIGHT;
-      } else if(player_pos.x >= sector->get_width() - SCREEN_WIDTH*0.5) {
+      } else if(player_pos.x >= sector->get_width() - (SCREEN_WIDTH/(sector->secondary_players.size()+1))*0.5) {
         lookahead_mode = LOOKAHEAD_LEFT;
       }
 
@@ -535,8 +536,8 @@ Camera::update_scroll_normal(float elapsed_time)
       changetime = -1;
     }
 
-    LEFTEND = SCREEN_WIDTH * config_.edge_x;
-    RIGHTEND = SCREEN_WIDTH * (1-config_.edge_x);
+    LEFTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * config_.edge_x;
+    RIGHTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (1-config_.edge_x);
 
     // calculate our scroll target depending on scroll mode
     float target_x;
@@ -563,12 +564,12 @@ Camera::update_scroll_normal(float elapsed_time)
   if(xmode == 3) {
     float halfsize = config_.kirby_rectsize_x * 0.5f;
     cached_translation.x = clamp(cached_translation.x,
-                                 player_pos.x - SCREEN_WIDTH * (0.5f + halfsize),
-                                 player_pos.x - SCREEN_WIDTH * (0.5f - halfsize));
+                                 player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (0.5f + halfsize),
+                                 player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (0.5f - halfsize));
   }
   if(xmode == 4) {
-    float LEFTEND = SCREEN_WIDTH * config_.edge_x;
-    float RIGHTEND = SCREEN_WIDTH * (1 - config_.edge_x);
+    float LEFTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * config_.edge_x;
+    float RIGHTEND = (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (1 - config_.edge_x);
 
     if (player_delta.x < -CAMERA_EPSILON) {
       // walking left
@@ -602,10 +603,10 @@ Camera::update_scroll_normal(float elapsed_time)
     float left_edge, right_edge;
     if(config_.clamp_x <= 0) {
       left_edge = 0;
-      right_edge = SCREEN_WIDTH;
+      right_edge = (SCREEN_WIDTH/(sector->secondary_players.size()+1));
     } else {
-      left_edge = SCREEN_WIDTH*config_.clamp_x;
-      right_edge = SCREEN_WIDTH*(1-config_.clamp_x);
+      left_edge = (SCREEN_WIDTH/(sector->secondary_players.size()+1))*config_.clamp_x;
+      right_edge = (SCREEN_WIDTH/(sector->secondary_players.size()+1))*(1-config_.clamp_x);
     }
 
     float peek_to = 0;
@@ -628,12 +629,12 @@ Camera::update_scroll_normal(float elapsed_time)
 
     if(config_.clamp_x > 0) {
       translation.x = clamp(translation.x,
-                            player_pos.x - SCREEN_WIDTH * (1-config_.clamp_x),
-                            player_pos.x - SCREEN_WIDTH * config_.clamp_x);
+                            player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (1-config_.clamp_x),
+                            player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * config_.clamp_x);
 
       cached_translation.x = clamp(cached_translation.x,
-                                   player_pos.x - SCREEN_WIDTH * (1-config_.clamp_x),
-                                   player_pos.x - SCREEN_WIDTH * config_.clamp_x);
+                                   player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * (1-config_.clamp_x),
+                                   player_pos.x - (SCREEN_WIDTH/(sector->secondary_players.size()+1)) * config_.clamp_x);
     }
   }
 
@@ -644,7 +645,7 @@ Camera::update_scroll_normal(float elapsed_time)
 void
 Camera::update_scroll_autoscroll(float elapsed_time)
 {
-  auto player = sector->player;
+  auto player = m_player;
   if(player->is_dying())
     return;
 
@@ -668,7 +669,7 @@ Camera::update_scroll_to(float elapsed_time)
 
 Vector
 Camera::get_center() const {
-  return translation + Vector(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+  return translation + Vector((SCREEN_WIDTH/(sector->secondary_players.size()+1)) / 2, SCREEN_HEIGHT / 2);
 }
 
 void

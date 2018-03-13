@@ -352,6 +352,7 @@ public: // TODO make this private again
   std::list<Player*> secondary_players;
   std::list<TileMap*> solid_tilemaps;
   Camera* camera;
+  std::vector< Camera* > m_cameras;
   DisplayEffect* effect;
 
 private:
