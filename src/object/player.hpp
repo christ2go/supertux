@@ -27,6 +27,7 @@
 #include "supertux/script_interface.hpp"
 #include "supertux/sequence.hpp"
 #include "supertux/timer.hpp"
+#include "physics/body.hpp"
 
 class BadGuy;
 class Portable;
@@ -320,6 +321,8 @@ public:
   Timer backflip_timer;
 
   Physic physic;
+  // The player has a physical body.
+  Body body;
 
   bool visible;
 

@@ -1,8 +1,11 @@
 #include "physics/body.hpp"
+#include <iostream>
+#include <limits>
+#include "supertux/sector.hpp"
 
-void Body::applyForce(Vector force)
+void Body::applyForce(Vector forceT)
 {
-  this->force += force;
+  this->force += forceT;
 }
 
 float Body::get_mass()
@@ -20,13 +23,25 @@ float Body::get_friction()
   return friction;
 }
 
-Vector get_position();
+Vector Body::get_position()
+{
+  return position;
+}
 
-Vector get_force();
+Vector Body::get_force()
+{
+  return force;
+}
 
-Vector get_velocity();
+Vector Body::get_velocity()
+{
+  return velocity;
+}
 
-void set_velocity(Vector vel);
+void Body::set_velocity(Vector vel)
+{
+  velocity = vel;
+}
 
 /**
  * Calculates the bodies next movement.
@@ -40,10 +55,10 @@ void set_velocity(Vector vel);
    // Declare a Vector for gravity.
    Vector gravity(0,0);
    Vector acceleration = get_acceleration();
-   if(gravity_enabled)
+   if(useGravity)
    {
      // Gravity only affects the x movement
-     gravity.x = Sector::current()->get_gravity() * gravity_modifier * 100.0f;
+     gravity.x = Sector::current()->get_gravity() * gravityModifier * 100.0f;
    }
    velocity += (acceleration+gravity) * dt;
    // Save last movement (for later)
@@ -55,8 +70,8 @@ void set_velocity(Vector vel);
  *  Static objects have infinite mass, and an inverse mass of zero.
  *  Can be used for all objects in collision group static.
  */
-void Body::set_static()
+void Body::setStatic()
 {
-  m_inv_mass = 0;
-  m_mass = std::numeric_limits<float>::infinity;
+  inv_mass = 0;
+  mass = std::numeric_limits<float>::infinity();
 }

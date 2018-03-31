@@ -158,6 +158,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   growing(false),
   backflip_timer(),
   physic(),
+  body(),
   visible(true),
   grabbed_object(NULL),
   // if/when we have complete penny gfx, we can
