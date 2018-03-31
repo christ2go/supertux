@@ -352,7 +352,7 @@ Sector::update(float elapsed_time)
     float r = (1.0f - percent_done) * source_ambient_light.red + percent_done * target_ambient_light.red;
     float g = (1.0f - percent_done) * source_ambient_light.green + percent_done * target_ambient_light.green;
     float b = (1.0f - percent_done) * source_ambient_light.blue + percent_done * target_ambient_light.blue;
-    
+
     if(r > 1.0)
       r = 1.0;
     if(g > 1.0)
@@ -366,7 +366,7 @@ Sector::update(float elapsed_time)
       g = 0;
     if(b < 0)
       b = 0;
-    
+
     ambient_light = Color(r, g, b);
 
     if(ambient_light_fade_accum >= ambient_light_fade_duration)
@@ -569,8 +569,7 @@ Sector::draw(DrawingContext& context)
   if(show_collrects) {
     Color color(1.0f, 0.0f, 0.0f, 0.75f);
     for(auto& object : moving_objects) {
-      const Rectf& rect = object->get_bbox();
-
+      Rectf rect = object->get_bbox();
       context.draw_filled_rect(rect, color, LAYER_FOREGROUND1 + 10);
     }
   }
@@ -834,7 +833,7 @@ Sector::collision_static(collision::Constraints* constraints,
                          MovingObject& object)
 {
   collision_tilemap(constraints, movement, dest, object);
-
+  return;
   // collision with other (static) objects
   for(auto& moving_object : moving_objects) {
     if(moving_object->get_group() != COLGROUP_STATIC
@@ -999,10 +998,9 @@ Sector::handle_collisions()
         && moving_object->get_group() != COLGROUP_MOVING_ONLY_STATIC)
        || !moving_object->is_valid())
       continue;
-
     collision_static_constrains(*moving_object);
   }
-
+/*
   // part2: COLGROUP_MOVING vs tile attributes
   for(const auto& moving_object : moving_objects) {
     if((moving_object->get_group() != COLGROUP_MOVING
@@ -1064,7 +1062,7 @@ Sector::handle_collisions()
       collision_object(moving_object, moving_object_2);
     }
   }
-
+*/
   // apply object movement
   for(const auto& moving_object : moving_objects) {
     moving_object->bbox = moving_object->dest;

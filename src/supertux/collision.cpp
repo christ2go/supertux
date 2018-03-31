@@ -23,6 +23,22 @@
 
 namespace collision {
 
+struct Manifold {
+  //void* ObjectA, ObjectB;
+  float penetration;
+  Vector normal;
+  Vector contacts[2];
+  int contactCount;
+
+};
+
+void collision_tilemap(/*MovingObject& moving*/)
+{
+  // Calculates a set of collisions between the moving object and the tilemap
+  //for(auto& solids: solid_tilemaps) {
+
+  //}
+}
 bool intersects(const Rectf& r1, const Rectf& r2)
 {
   if(r1.p2.x < r2.p1.x || r1.p1.x > r2.p2.x)
