@@ -75,3 +75,10 @@ void Body::setStatic()
   inv_mass = 0;
   mass = std::numeric_limits<float>::infinity();
 }
+/**
+ *  Sets the objects shape.
+ */
+void Body::set_shape(Shape* new_shape)
+{
+  shape = new_shape;
+}

@@ -1,6 +1,7 @@
 #ifndef SUPERTUX_PHYSICS_BODY_HPP_INCLUDED
 #define SUPERTUX_PHYSICS_BODY_HPP_INCLUDED
 #include "math/vector.hpp"
+#include "physics/shape.hpp"
 /**
  *  Bodies are the main class for everything physics related.
  *  A body stores an objects position, movement and velocity in the current world.
@@ -31,6 +32,8 @@ public:
   // Methods for convinience
   void set_velocity_x();
   void set_velocity_y();
+
+  void set_shape(Shape* new_shape);
 
 private:
   Vector position;

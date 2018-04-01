@@ -1,5 +1,8 @@
+#ifndef SUPERTUX_HEADER_PHYSICS_SHAPE_HPP_INCLUDED
+#define SUPERTUX_HEADER_PHYSICS_SHAPE_HPP_INCLUDED
+#include "physics/manifold.hpp"
 enum ShapeType {
-  AABB = 0
+  RectangleShape = 0
 };
 class Shape {
     /**
@@ -15,6 +18,7 @@ class Shape {
      /**
       * Every shape has to implement this method,
       * which will check for a collision against a different shape.
+      * Convention: The manifolds Shape A is this Shape.
       */
      virtual void fillManifold(Manifold* M) = 0;
      /**
@@ -23,3 +27,4 @@ class Shape {
       */
      virtual Rectf getAABB();
 };
+#endif
