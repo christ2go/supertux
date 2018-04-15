@@ -8,7 +8,11 @@
 class RectangleShape : Shape {
 public:
   RectangleShape();
+  Rectf getAABB()
+  {
+    return rectangle;
+  }
 private:
-  float x1, y1, x2, y2;
+  Rectf rectangle;
 };
 #endif

@@ -6,6 +6,13 @@
  *  Bodies are the main class for everything physics related.
  *  A body stores an objects position, movement and velocity in the current world.
  */
+
+enum Body_Type {
+  BODY_DYNAMIC, /** default rigid bodies */
+  BODY_KINEMATIC, /** does not collide with static bodies, used for moving platforms */
+  BODY_STATIC /** static bodies, does not move */
+};
+
 class Body {
 public:
   // Applies a force to the object
@@ -34,13 +41,13 @@ public:
   void set_velocity_y();
 
   void set_shape(Shape* new_shape);
-
+  Shape* get_shape();
 private:
   Vector position;
   Vector velocity;
   // F
   Vector force;
-  // save acceleration (A, can be derived via F = m*A)
+  // don't save acceleration (A, can be derived via F = m*A)
   Vector get_acceleration();
   // mass of the body
   float mass;
@@ -60,5 +67,7 @@ private:
   Vector movement;
   // Shape of the object (e.g. bounding box or slope or polygon)
   Shape* shape;
+  // Type of the body
+  Body_Type type;
 };
 #endif

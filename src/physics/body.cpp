@@ -82,3 +82,8 @@ void Body::set_shape(Shape* new_shape)
 {
   shape = new_shape;
 }
+
+Shape* Body::get_shape()
+{
+  return shape;
+}

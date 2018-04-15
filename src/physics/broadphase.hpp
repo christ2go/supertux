@@ -5,8 +5,10 @@
  #ifndef SUPERTUX_PHYSICS_BROADPHASE_HPP_INCLUDED
  #define SUPERTUX_PHYSICS_BROADPHASE_HPP_INCLUDED
  #include "physics/body.hpp"
- #include "physic/manifold.hpp"
+ #include "physics/manifold.hpp"
  class BroadPhase {
+ public: 
   virtual std::vector< Manifold > generateContacts(std::vector<Body>& b);
+  virtual ~BroadPhase();
  };
  #endif
