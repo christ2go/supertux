@@ -16,7 +16,7 @@ public:
   void timestep(float dt);
   // Sets the number of iterations used for collision response.
   void setIterations(int i);
-
+  // Used to set the algorithm used for Broadphase
   void setBroadphase(BroadPhase& broadp);
 private:
   // List of all bodies currently in the world

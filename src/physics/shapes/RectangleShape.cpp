@@ -12,9 +12,9 @@ void RectangleShape::fillManifold(Manifold* manifold)
     // Both axes overlap => calculate penetration for each axis
     // by projecting rectangles onto that axis and check for overlap
     float penetrationX = interval_overlap(0,0,1,1);
-    // Use axis of least penetration for collision resolution
     float penetrationY = interval_overlap(0,1,0.5,1);
-    if(penetrationX > penetrationY)
+    // Use axis of least penetration for collision resolution
+    if(penetrationX >= penetrationY)
     {
       manifold->penetrationDepth = penetrationY;
       if(n.y > 0){
@@ -28,7 +28,7 @@ void RectangleShape::fillManifold(Manifold* manifold)
       {
         manifold->normal.x = -1;
       }else{
-        manifold->normal.y = 1;
+        manifold->normal.x = 1;
       }
     }
 

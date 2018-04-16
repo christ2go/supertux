@@ -10,7 +10,7 @@
 enum Body_Type {
   BODY_DYNAMIC, /** default rigid bodies */
   BODY_KINEMATIC, /** does not collide with static bodies, used for moving platforms */
-  BODY_STATIC /** static bodies, does not move */
+  BODY_STATIC /** static bodies, do not move */
 };
 
 class Body {
@@ -41,7 +41,11 @@ public:
   void set_velocity_y();
 
   void set_shape(Shape* new_shape);
+
+  void set_type(Body_Type t);
   Shape* get_shape();
+  // Apply impulse of magnitude j
+  void applyLinearImpulse(float j);
 private:
   Vector position;
   Vector velocity;

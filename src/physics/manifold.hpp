@@ -1,9 +1,7 @@
 #ifndef SUPERTUX_PHYSICS_MANIFOLD_HPP_INCLUDED
 #define SUPERTUX_PHYSICS_MANIFOLD_HPP_INCLUDED
-class Body;
-
 #include "math/vector.hpp"
-#include "physics/body.hpp"
+class Body;
 #define EPSILON 0.001
 /**
  * Manifolds store information about collisions.
@@ -24,18 +22,8 @@ public:
                 normal = Vector(0,0);
         }
 
-        void solve()
-        {
-                // If both objects are static/kinematic do not resolve
-                if((A->get_inv_mass()+B->get_inv_mass()) <= EPSILON )
-                {
-                  return;
-                }
-                // Calculate the impulse
-                Vector j; // Store the impulse in j
-                
-                // Apply the impulse
-        }
+        void solve();
+        void positionalCorrection();
 
 };
 #endif

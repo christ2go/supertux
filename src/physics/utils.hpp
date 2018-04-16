@@ -6,15 +6,15 @@
  */
 double interval_overlap(double a, double b,double c, double d)
 {
-  double astart = std::min(a,b);
-  double aend   = std::max(a,b);
-  double bstart = std::min(c,d);
-  double bend   = std::max(c,d);
+        double astart = std::min(a,b);
+        double aend   = std::max(a,b);
+        double bstart = std::min(c,d);
+        double bend   = std::max(c,d);
 
-  double istart = std::max(astart,bstart);
-  double iend   = std::min(aend,bend);
-  if(istart >= iend)
-    return 0;
-  return iend-istart;
+        double istart = std::max(astart,bstart);
+        double iend   = std::min(aend,bend);
+        if(istart >= iend)
+                return 0;
+        return iend-istart;
 }
 #endif

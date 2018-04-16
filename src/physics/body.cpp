@@ -87,3 +87,13 @@ Shape* Body::get_shape()
 {
   return shape;
 }
+
+void Body::set_type(Body_Type t)
+{
+  type = t;
+  if(type == BODY_STATIC || type == BODY_KINEMATIC)
+  {
+    inv_mass = 0;
+    mass = std::numeric_limits<float>::infinity();
+  }
+}
