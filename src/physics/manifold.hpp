@@ -1,6 +1,8 @@
 #ifndef SUPERTUX_PHYSICS_MANIFOLD_HPP_INCLUDED
 #define SUPERTUX_PHYSICS_MANIFOLD_HPP_INCLUDED
 #include "math/vector.hpp"
+#include "supertux/collision.hpp"
+using namespace collision;
 class Body;
 #define EPSILON 0.001
 /**
@@ -11,7 +13,9 @@ class Body;
  */
 struct Manifold {
         Body *A, *B; // Colliding bodies
-        Vector normal;
+        // TODO Store collisionHits in manifold (one for A and one for B)
+        CollisionHit hit_a, hit_b;
+        Vector normal; 
         float penetrationDepth;
 public:
         Manifold(Body* A, Body* B)

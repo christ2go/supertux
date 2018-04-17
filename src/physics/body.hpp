@@ -18,23 +18,21 @@ public:
   // Applies a force to the object
   void applyForce(Vector forceT);
 
-  float get_mass();
+  float get_mass() const;
 
-  float get_inv_mass();
+  float get_inv_mass() const;
 
-  float get_friction();
+  float get_friction() const;
 
-  Vector get_position();
+  Vector get_position() const;
 
-  Vector get_force();
+  Vector get_force() const;
 
-  Vector get_velocity();
+  Vector get_velocity() const;
 
   void set_velocity(Vector vel);
   // Simulate movement (integrate Forces)
   void step(float dt);
-  // Set an object to be static (used for walls, etc)
-  void setStatic();
 
   // Methods for convinience
   void set_velocity_x();
@@ -43,7 +41,7 @@ public:
   void set_shape(Shape* new_shape);
 
   void set_type(Body_Type t);
-  Shape* get_shape();
+  Shape* get_shape() const;
   // Apply impulse of magnitude j
   void applyLinearImpulse(float j);
 private:

@@ -26,7 +26,7 @@ class Shape {
       * Returns a smallest axis aligned rectangle containing the whole shape.
       * Used for broad phase collision detection.
       */
-     virtual Rectf getAABB();
+     virtual const Rectf& getAABB();
 
      virtual ~Shape();
 };

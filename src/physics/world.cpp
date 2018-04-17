@@ -36,6 +36,7 @@ void World::timestep(float dt)
                         
                 }
         }
+        // Collisions have been resolved, clear forces and movement for all bodies.
 
 }
 

@@ -8,7 +8,7 @@
 class RectangleShape : Shape {
 public:
   RectangleShape();
-  Rectf getAABB()
+  const Rectf& getAABB()
   {
     return rectangle;
   }
