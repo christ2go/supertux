@@ -101,6 +101,16 @@ public:
   {
     return peekingY;
   }
+  
+  bool has_newphysics()
+  {
+    return true;
+  }
+  
+  Body* get_body()
+  {
+    return &body;
+  }
 
   void kill(bool completely);
   void check_bounds();

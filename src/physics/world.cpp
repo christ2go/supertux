@@ -32,12 +32,24 @@ void World::timestep(float dt)
                 {
                         // Apply impulse
                         manifold.solve();
-                        // Positional correction
-                        
                 }
         }
-        // Collisions have been resolved, clear forces and movement for all bodies.
-
+        // Integrate Velocity 
+        for(auto& b : bodies)
+        {
+          b.step(dt);
+        }
+        // Correct positions 
+        for(auto& m : manifolds)
+        {
+          
+        }
+        // Clear all forces 
+        for(auto& b:bodies)
+        {
+          b.set_force( Vector(0, 0) );
+        }
+        // Timestep completed
 }
 
 void World::setBroadphase(BroadPhase& broadp)

@@ -55,6 +55,10 @@
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 
+#include "physics/world.hpp"
+#include "physics/shapes/RectangleShape.hpp"
+#include "physics/body.hpp"
+
 Sector* Sector::_current = 0;
 
 bool Sector::show_collrects = false;
@@ -384,9 +388,22 @@ Sector::update(float elapsed_time)
 
     object->update(elapsed_time);
   }
-
+  World w;
   /* Handle all possible collisions. */
-  handle_collisions();
+  for(auto& gobj : gameobjects)
+  {
+    MovingObject* obj = dynamic_cast<MovingObject*>(gobj.get());
+    if(obj)
+    {
+      if(obj->has_newphysics())
+      {
+        w.addBody(*obj->getBody());
+      }
+    }
+  }
+  // Add a body for every tilemap 
+  w.step(elapsed_time);
+  //handle_collisions();
   update_game_objects();
 }
 
@@ -990,7 +1007,7 @@ Sector::handle_collisions()
     moving_object->dest = moving_object->get_bbox();
     moving_object->dest.move(moving_object->get_movement());
   }
-
+  /*
   // part1: COLGROUP_MOVING vs COLGROUP_STATIC and tilemap
   for(const auto& moving_object : moving_objects) {
     if((moving_object->get_group() != COLGROUP_MOVING
@@ -999,7 +1016,7 @@ Sector::handle_collisions()
        || !moving_object->is_valid())
       continue;
     collision_static_constrains(*moving_object);
-  }
+  }*/
 /*
   // part2: COLGROUP_MOVING vs tile attributes
   for(const auto& moving_object : moving_objects) {

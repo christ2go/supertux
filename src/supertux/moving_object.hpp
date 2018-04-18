@@ -22,7 +22,8 @@
 #include "math/rectf.hpp"
 #include "supertux/collision_hit.hpp"
 #include "supertux/game_object.hpp"
-
+#include "physics/body.hpp"
+class Body;
 class Sector;
 
 enum CollisionGroup {
@@ -98,7 +99,20 @@ public:
   virtual void collision_tile(uint32_t /*tile_attributes*/)
   {
   }
-
+  /**
+   *  Returns true if the object is able to use the new physics engine.
+   *  FIXME REMOVE AFTER DEVELOPMENT
+   */
+  virtual bool has_newphysics()
+  {
+    return false;
+  }
+  /**
+   * Returns the body if the object has one.
+   */
+  virtual Body* getBody(){
+    return NULL;
+  }
   /** This function saves the object.
    *  Editor will use that.
    */

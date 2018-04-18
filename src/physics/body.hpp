@@ -18,6 +18,8 @@ public:
   // Applies a force to the object
   void applyForce(Vector forceT);
 
+  void set_force(Vector force);
+  
   float get_mass() const;
 
   float get_inv_mass() const;

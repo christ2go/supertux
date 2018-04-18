@@ -8,32 +8,38 @@ void Body::applyForce(Vector forceT)
   this->force += forceT;
 }
 
-float Body::get_mass()
+void Body::set_force(Vector force)
+{
+  this->force += force;
+}
+
+
+float Body::get_mass() const
 {
   return mass;
 }
 
-float Body::get_inv_mass()
+float Body::get_inv_mass() const 
 {
   return inv_mass;
 }
 
-float Body::get_friction()
+float Body::get_friction() const 
 {
   return friction;
 }
 
-Vector Body::get_position()
+Vector Body::get_position() const 
 {
   return position;
 }
 
-Vector Body::get_force()
+Vector Body::get_force() const
 {
   return force;
 }
 
-Vector Body::get_velocity()
+Vector Body::get_velocity() const
 {
   return velocity;
 }
@@ -66,16 +72,6 @@ void Body::set_velocity(Vector vel)
    position += movement;
  }
 /**
- *  Sets this object to be static
- *  Static objects have infinite mass, and an inverse mass of zero.
- *  Can be used for all objects in collision group static.
- */
-void Body::setStatic()
-{
-  inv_mass = 0;
-  mass = std::numeric_limits<float>::infinity();
-}
-/**
  *  Sets the objects shape.
  */
 void Body::set_shape(Shape* new_shape)
@@ -83,7 +79,7 @@ void Body::set_shape(Shape* new_shape)
   shape = new_shape;
 }
 
-Shape* Body::get_shape()
+Shape* Body::get_shape() const
 {
   return shape;
 }
