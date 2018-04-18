@@ -15,10 +15,11 @@ enum Body_Type {
 
 class Body {
 public:
+  Body();
   // Applies a force to the object
   void applyForce(Vector forceT);
 
-  void set_force(Vector force);
+  void set_force(Vector Nforce);
   
   float get_mass() const;
 
@@ -46,6 +47,8 @@ public:
   Shape* get_shape() const;
   // Apply impulse of magnitude j
   void applyLinearImpulse(float j);
+  // Methods for setting and getting position 
+  void set_pos(const Vector& pos);
 private:
   Vector position;
   Vector velocity;
@@ -66,7 +69,7 @@ private:
   // Restitution (0 for many objects in supertux)
   float restitution;
   // Allow objects not to use gravity.
-  bool useGravity;
+  bool useGravity = true;
   // Stores the last movement (updated whenever step() is called)
   Vector movement;
   // Shape of the object (e.g. bounding box or slope or polygon)

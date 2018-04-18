@@ -8,7 +8,7 @@
  #include "physics/manifold.hpp"
  class BroadPhase {
  public: 
-  virtual std::vector< Manifold > generateContacts(std::vector<Body>& b);
-  virtual ~BroadPhase();
+  virtual std::vector< Manifold > generateContacts(std::vector<Body*>& b) = 0;
+  virtual ~BroadPhase(){};
  };
  #endif

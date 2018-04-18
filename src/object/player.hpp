@@ -102,15 +102,12 @@ public:
     return peekingY;
   }
   
-  bool has_newphysics()
+  bool has_newphysics() const
   {
     return true;
   }
   
-  Body* get_body()
-  {
-    return &body;
-  }
+  Body* getBody();
 
   void kill(bool completely);
   void check_bounds();
@@ -332,7 +329,7 @@ public:
 
   Physic physic;
   // The player has a physical body.
-  Body body;
+  Body* body;
 
   bool visible;
 

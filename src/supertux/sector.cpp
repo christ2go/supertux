@@ -58,7 +58,7 @@
 #include "physics/world.hpp"
 #include "physics/shapes/RectangleShape.hpp"
 #include "physics/body.hpp"
-
+#include "physics/SimpleBroadPhase.hpp"
 Sector* Sector::_current = 0;
 
 bool Sector::show_collrects = false;
@@ -389,6 +389,7 @@ Sector::update(float elapsed_time)
     object->update(elapsed_time);
   }
   World w;
+  w.setBroadphase(new SimpleBroadPhase());
   /* Handle all possible collisions. */
   for(auto& gobj : gameobjects)
   {
@@ -397,13 +398,18 @@ Sector::update(float elapsed_time)
     {
       if(obj->has_newphysics())
       {
-        w.addBody(*obj->getBody());
+        if(obj->getBody() == NULL)
+          continue;
+        log_debug << "Adding " << (obj->getBody() == NULL) << std::endl;
+        
+        w.addBody(obj->getBody());
       }
     }
   }
+  log_debug << "Elapsed: " << (double) elapsed_time << std::endl;
   // Add a body for every tilemap 
-  w.step(elapsed_time);
-  //handle_collisions();
+  w.timestep(elapsed_time);
+  handle_collisions();
   update_game_objects();
 }
 

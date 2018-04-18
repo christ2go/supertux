@@ -11,6 +11,7 @@ class Shape {
      */
    private:
      ShapeType typ;
+     Vector position;
    public:
      ShapeType getType()
      {
@@ -25,9 +26,15 @@ class Shape {
      /**
       * Returns a smallest axis aligned rectangle containing the whole shape.
       * Used for broad phase collision detection.
-      */
+      */  
      virtual const Rectf& getAABB();
-
+     /** 
+      * Sets the objects position.
+      */
+     void update_position(Vector pos)
+     {
+       position = pos;
+     }
      virtual ~Shape();
 };
 #endif

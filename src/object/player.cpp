@@ -158,7 +158,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   growing(false),
   backflip_timer(),
   physic(),
-  body(),
+  body(new Body()),
   visible(true),
   grabbed_object(NULL),
   // if/when we have complete penny gfx, we can
@@ -193,6 +193,7 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
   lightsprite->set_blend(Blend(GL_SRC_ALPHA, GL_ONE));
 
   physic.reset();
+  body->set_force( Vector(0,0) );
 }
 
 Player::~Player()
@@ -1751,6 +1752,12 @@ Player::has_grabbed(const std::string& object_name) const
     return object->get_name() == object_name;
   }
   return false;
+}
+
+Body* 
+Player::getBody()
+{
+  return body;
 }
 
 /* EOF */

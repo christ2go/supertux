@@ -2,15 +2,15 @@
 #include <iostream>
 #include <limits>
 #include "supertux/sector.hpp"
-
+#include "util/log.hpp"
 void Body::applyForce(Vector forceT)
 {
   this->force += forceT;
 }
 
-void Body::set_force(Vector force)
+void Body::set_force(Vector Nforce)
 {
-  this->force += force;
+  this->force = Nforce;
 }
 
 
@@ -70,6 +70,7 @@ void Body::set_velocity(Vector vel)
    // Save last movement (for later)
    movement = velocity*dt;
    position += movement;
+   log_debug << "Moved by gravity" << dt << " " <<  std::endl;
  }
 /**
  *  Sets the objects shape.
@@ -92,4 +93,19 @@ void Body::set_type(Body_Type t)
     inv_mass = 0;
     mass = std::numeric_limits<float>::infinity();
   }
+}
+
+Vector Body::get_acceleration()
+{
+  return force*inv_mass;
+}
+
+void Body::applyLinearImpulse(float j)
+{
+  
+}
+
+Body::Body():
+force( Vector(0,0) )
+{
 }

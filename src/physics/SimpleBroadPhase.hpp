@@ -1,40 +1,46 @@
 #ifndef SUPERTUX_HEADER_PHYSICS_SIMPLE_BROADPHASE_HPP_INCLUDED
 #define SUPERTUX_HEADER_PHYSICS_SIMPLE_BROADPHASE_HPP_INCLUDED
-class SimpleBroadPhase : BroadPhase {
+class SimpleBroadPhase : public BroadPhase {
 public:
-  std::vector< Manifold > generateContacts(std::vector<Body>& b)
+  std::vector< Manifold > generateContacts(std::vector<Body*>& list)
   {
-    std::vector< Manifold > manifolds();
+    std::vector< Manifold > manifolds;
     // Iterate over all pairs of bodies and check if bounding boxes overlap
-    for(auto i = b.begin(); i != b.end(); ++i)
+    for(auto i = list.begin(); i != list.end(); ++i)
     {
-      for(auto j = i+1; j != b.end(); ++j)
+      for(auto j = i+1; j != list.end(); ++j)
       {
         // Check if bounding box intersects
-        Rectf a = (*i).getAABB();
-        Rectf b = (*j).getAABB();
+        Rectf a = (*i)->get_shape()->getAABB();
+        Rectf b = (*j)->get_shape()->getAABB();
         // Check if x axis overlaps
-        max_ax = std::max(a.left, a.right);
-        max_bx = std::max(b.left, b.right);
+        double max_ax = std::max(a.get_left(), a.get_right());
+        double max_bx = std::max(b.get_left(), b.get_right());
 
-        min_ax = std::min(a.left, a.right);
-        min_bx = std::min(b.left, b.right);
+        double min_ax = std::min(a.get_left(), a.get_right());
+        double min_bx = std::min(b.get_left(), b.get_right());
 
-        max_ay = std::max(a.bottom, a.top);
-        max_by = std::max(b.bottom, b.top);
+        double max_ay = std::max(a.get_bottom(), a.get_top());
+        double max_by = std::max(b.get_bottom(), b.get_top());
 
-        min_ay = std::min(a.bottom, a.top);
-        min_by = std::min(b.bottom, b.top);
+        double min_ay = std::min(a.get_bottom(), a.get_top());
+        double min_by = std::min(b.get_bottom(), b.get_top());
 
         // Check if y axis overlap
         if(max_ax < min_bx || min_ax > max_bx)
-          return false;
+          continue;
         if(max_ay < min_by || min_ay > max_by)
-          return false;
+          continue;
         // Both overlap => Initialize Manifold
         manifolds.emplace_back(*i,*j);
       }
     }
+    return manifolds;
+  }
+  
+  ~SimpleBroadPhase()
+  {
+    
   }
 };
 #endif

@@ -23,6 +23,8 @@
 #include "supertux/collision_hit.hpp"
 #include "supertux/game_object.hpp"
 #include "physics/body.hpp"
+#include "physics/shapes/RectangleShape.hpp"
+
 class Body;
 class Sector;
 
@@ -103,7 +105,7 @@ public:
    *  Returns true if the object is able to use the new physics engine.
    *  FIXME REMOVE AFTER DEVELOPMENT
    */
-  virtual bool has_newphysics()
+  virtual bool has_newphysics() const
   {
     return false;
   }
@@ -123,6 +125,10 @@ public:
 
   const Vector& get_pos() const
   {
+    if(has_newphysics())
+    {
+      // Return the current position from the body 
+    }
     return bbox.p1;
   }
 
@@ -132,6 +138,10 @@ public:
   /** returns the bounding box of the Object */
   const Rectf& get_bbox() const
   {
+    if(has_newphysics())
+    {
+      // Return the shapes bounding box
+    }
     return bbox;
   }
 
@@ -145,6 +155,10 @@ public:
       performed here so bad things could happen. */
   virtual void set_pos(const Vector& pos)
   {
+    if(has_newphysics())
+    {
+      
+    }
     dest.move(pos-get_pos());
     bbox.set_pos(pos);
   }
@@ -162,6 +176,17 @@ public:
       checks performed here so bad things could happen. */
   virtual void set_width(float w)
   {
+    if(has_newphysics())
+    {
+      // All moving objects have rectangular shape 
+      class RectangleShape* s = dynamic_cast<class RectangleShape*>(getBody()->get_shape());
+      if(s)
+      {
+        // 
+        //s->set_width(w);
+      }
+      return;
+    }
     dest.set_width(w);
     bbox.set_width(w);
   }
@@ -171,6 +196,10 @@ public:
       checks performed here so bad things could happen. */
   virtual void set_size(float w, float h)
   {
+    if(has_newphysics())
+    {
+      
+    }
     dest.set_size(w, h);
     bbox.set_size(w, h);
   }
