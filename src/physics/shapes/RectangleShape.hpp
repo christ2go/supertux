@@ -25,8 +25,10 @@ public:
   
   void set_position(Vector position)
   {
-    
+    rectangle.move(position);
   }
+  
+  void fillManifold(Manifold* M);
 private:
   Rectf& rectangle;
 };

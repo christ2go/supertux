@@ -49,8 +49,9 @@ public:
   void applyLinearImpulse(float j);
   // Methods for setting and getting position 
   void set_pos(const Vector& pos);
+  //  Moves the body by the precalculated movement vector
+  void move();
 private:
-  Vector position;
   Vector velocity;
   // F
   Vector force;

@@ -194,6 +194,9 @@ Player::Player(PlayerStatus* _player_status, const std::string& name_) :
 
   physic.reset();
   body->set_force( Vector(0,0) );
+  // Add a shape to the body 
+  RectangleShape* r = new RectangleShape(bbox);
+  body->set_shape(r);
 }
 
 Player::~Player()

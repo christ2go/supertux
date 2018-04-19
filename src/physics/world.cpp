@@ -29,7 +29,7 @@ void World::timestep(float dt)
                 // Initialize the manifold
                 if(manifold.A->get_shape() == NULL || manifold.B->get_shape() == NULL)
                   continue;
-                manifold.A->get_shape()->fillManifold(manifold);
+                manifold.A->get_shape()->fillManifold(&manifold);
         }
         // Manifold information has been generated, let's solve
         for(int i = 0; i<m_iterations; i++)

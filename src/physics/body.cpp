@@ -31,7 +31,7 @@ float Body::get_friction() const
 
 Vector Body::get_position() const 
 {
-  return position;
+  return shape->get_position();
 }
 
 Vector Body::get_force() const
@@ -69,8 +69,6 @@ void Body::set_velocity(Vector vel)
    velocity += (acceleration+gravity) * dt;
    // Save last movement (for later)
    movement = velocity*dt;
-   position += movement;
-   log_debug << "Moved by gravity" << dt << " " <<  std::endl;
  }
 /**
  *  Sets the objects shape.
@@ -103,6 +101,12 @@ Vector Body::get_acceleration()
 void Body::applyLinearImpulse(float j)
 {
   
+}
+
+void Body::move()
+{
+  shape->move(movement);
+  movement.x = movement.y = 0; // Reset movement after move
 }
 
 Body::Body():
