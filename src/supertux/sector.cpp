@@ -386,7 +386,7 @@ Sector::update(float elapsed_time)
     if(!object->is_valid())
       continue;
 
-    object->update(elapsed_time);
+    //object->update(elapsed_time);
   }
   World w;
   w.setBroadphase(new SimpleBroadPhase());
@@ -410,7 +410,7 @@ Sector::update(float elapsed_time)
   // Add a body for every tilemap 
   w.timestep(elapsed_time);
   handle_collisions();
-  update_game_objects();
+  //update_game_objects();
 }
 
 void

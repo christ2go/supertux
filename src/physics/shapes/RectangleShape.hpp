@@ -7,7 +7,6 @@
  */
 class RectangleShape : public Shape {
 public:
-  RectangleShape();
   /** 
    *  Initializes with a specific rectangle (e.g.) an objects bbox
    */
@@ -30,7 +29,7 @@ public:
   
   void fillManifold(Manifold* M);
   
-  ~RectangleShape(){}
+  //~RectangleShape(){}
 private:
   Rectf& rectangle;
 };

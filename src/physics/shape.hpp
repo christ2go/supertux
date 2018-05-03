@@ -45,6 +45,6 @@ class Shape {
      {
        return position;
      }
-     virtual ~Shape();
+    virtual ~Shape(){}
 };
 #endif

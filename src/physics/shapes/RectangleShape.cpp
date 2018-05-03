@@ -1,6 +1,10 @@
 #include "physics/shapes/RectangleShape.hpp"
+#include "physics/body.hpp"
+#include "physics/shape.hpp"
+#include "physics/utils.hpp"
 
-RectangleShape::RectangleShape(Rectf& bbox)
+RectangleShape::RectangleShape(Rectf& bbox):
+rectangle(bbox)
 {
   rectangle = bbox;
 }
@@ -11,19 +15,19 @@ RectangleShape::RectangleShape(Rectf& bbox)
 void RectangleShape::fillManifold(Manifold* M)
 {
   // Collision with another rectangle
-  if(M->B->getType() == ShapeType.RectangleShape)
+  if(M->B->get_shape()->getType() == TRectangleShape)
   {
     // Get the shapes
     RectangleShape* shape_a = this;
-    RectangleShape* shape_b = static_cast<RectangleShape>(B->get_shape());
+    RectangleShape* shape_b = static_cast<RectangleShape*>(M->B->get_shape());
     // AABB is the actual shape for Rectangles
     auto aabb_a = shape_a->getAABB();
     auto aabb_b = shape_b->getAABB();
     Vector n = M->A->get_position()-M->B->get_position();
     // Both axes overlap => calculate penetration for each axis
     // by projecting rectangles onto that axis and check for overlap
-    float penetrationX = interval_overlap(aabb_a.left, aabb_a.right, aabb_b.left, aabb_b.right);
-    float penetrationY = interval_overlap(aabb_a.bottom, aabb_a.top, aabb_b.bottom, aabb_b.top);
+    float penetrationX = interval_overlap(aabb_a.get_left(), aabb_a.get_right(), aabb_b.get_left(), aabb_b.get_right());
+    float penetrationY = interval_overlap(aabb_a.get_bottom(), aabb_a.get_top(), aabb_b.get_bottom(), aabb_b.get_top());
     // Use axis of least penetration for collision resolution
     if(penetrationX >= penetrationY)
     {
