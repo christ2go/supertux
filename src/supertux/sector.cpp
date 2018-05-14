@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <math.h>
 #include <vector>
+#include <memory>
 
 #include "scripting/scripting.hpp"
 #include "scripting/squirrel_util.hpp"
@@ -54,7 +55,8 @@
 #include "util/reader_collection.hpp"
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
-
+#include <limits>
+ 
 #include "physics/world.hpp"
 #include "physics/shapes/RectangleShape.hpp"
 #include "physics/body.hpp"
@@ -345,7 +347,7 @@ Sector::get_foremost_layer() const
 }
 
 void
-Sector::update(float elapsed_time)
+Sector::update(double elapsed_time)
 {
   player->check_bounds();
 
@@ -385,11 +387,14 @@ Sector::update(float elapsed_time)
   for(const auto& object : gameobjects) {
     if(!object->is_valid())
       continue;
-
     //object->update(elapsed_time);
   }
-  World w;
-  w.setBroadphase(new SimpleBroadPhase());
+  log_debug << "Elpt: " << elapsed_time << std::endl;
+  thread_local std::unique_ptr<World> w = std::make_unique<World>();
+  
+  log_debug << "Setting broadphase" << std::endl;
+  w->setBroadphase(std::make_unique<SimpleBroadPhase>());
+  //w.reset();
   /* Handle all possible collisions. */
   for(auto& gobj : gameobjects)
   {
@@ -401,14 +406,13 @@ Sector::update(float elapsed_time)
         if(obj->getBody() == NULL)
           continue;
         log_debug << "Adding " << (obj->getBody() == NULL) << std::endl;
-        
-        w.addBody(obj->getBody());
+      //  w.addBody(obj->getBody());
       }
     }
   }
-  log_debug << "Elapsed: " << (double) elapsed_time << std::endl;
+  log_debug << "Elapsed: " <<  elapsed_time << std::endl;
   // Add a body for every tilemap 
-  w.timestep(elapsed_time);
+//  w.timestep(elapsed_time);
   handle_collisions();
   //update_game_objects();
 }

@@ -51,6 +51,8 @@ public:
   void set_pos(const Vector& pos);
   //  Moves the body by the precalculated movement vector
   void move();
+  
+  ~Body();
 private:
   Vector velocity;
   // F

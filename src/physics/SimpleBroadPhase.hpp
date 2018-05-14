@@ -2,7 +2,7 @@
 #define SUPERTUX_HEADER_PHYSICS_SIMPLE_BROADPHASE_HPP_INCLUDED
 class SimpleBroadPhase : public BroadPhase {
 public:
-  std::vector< Manifold > generateContacts(std::vector<Body*>& list)
+  std::vector< Manifold > generateContacts(std::vector< std::shared_ptr<Body> >& list)
   {
     std::vector< Manifold > manifolds;
     // Iterate over all pairs of bodies and check if bounding boxes overlap

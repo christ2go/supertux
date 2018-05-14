@@ -12,13 +12,13 @@ class Body;
  * (The normal is a unit vector.)
  */
 struct Manifold {
-        Body *A, *B; // Colliding bodies
+        std::shared_ptr<Body> A, B; // Colliding bodies
         // TODO Store collisionHits in manifold (one for A and one for B)
         CollisionHit hit_a, hit_b;
         Vector normal; 
         float penetrationDepth;
 public:
-        Manifold(Body* A, Body* B)
+        Manifold(std::shared_ptr<Body> A, std::shared_ptr<Body> B)
         {
                 this->A = A;
                 this->B = B;

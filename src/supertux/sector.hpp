@@ -74,7 +74,7 @@ public:
   void activate(const Vector& player_pos);
   void deactivate();
 
-  void update(float elapsed_time);
+  void update(double elapsed_time);
   void update_game_objects();
 
   void draw(DrawingContext& context);

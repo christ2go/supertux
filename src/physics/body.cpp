@@ -66,6 +66,7 @@ void Body::set_velocity(Vector vel)
      // Gravity only affects the x movement
      gravity.x = Sector::current()->get_gravity() * gravityModifier * 100.0f;
    }
+   log_debug << "Gravity is " << gravity.x << std::endl;
    velocity += (acceleration+gravity) * dt;
    // Save last movement (for later)
    movement = velocity*dt;
@@ -106,10 +107,15 @@ void Body::applyLinearImpulse(float j)
 void Body::move()
 {
   shape->move(movement);
+  log_debug << "Moved by " << movement.x  << " , y " << movement.y << std::endl;
   movement.x = movement.y = 0; // Reset movement after move
 }
 
 Body::Body():
 force( Vector(0,0) )
 {
+}
+
+Body::~Body(){
+  free(shape);
 }
