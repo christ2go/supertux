@@ -7,11 +7,11 @@
 #include "physics/body.hpp"
 #include "physics/broadphase.hpp"
 #include <vector>
-class World {
+class PhysicWorld {
 public:
-  World();
-  //void addBody(std::shared_ptr<Body> b);
-  //void removeBody(std::shared_ptr<Body> b);
+  PhysicWorld();
+  void addBody(Body* b);
+  void removeBody(Body* b);
   // Main method: advances the simulation by time
   void timestep(float dt);
   // Sets the number of iterations used for collision response.
@@ -21,9 +21,9 @@ public:
   
 private:
   // List of all bodies currently in the world
-  //std::vector< std::shared_ptr<Body> > bodies;
+  std::vector<Body*> bodies;
   // Number of iterations
-  int m_iterations;
+  int m_iterations = 7;
   // Class used for broadphase
   std::unique_ptr<BroadPhase> broad;
 };

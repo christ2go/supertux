@@ -390,7 +390,7 @@ Sector::update(double elapsed_time)
     //object->update(elapsed_time);
   }
   log_debug << "Elpt: " << elapsed_time << std::endl;
-  thread_local std::unique_ptr<World> w = std::make_unique<World>();
+   std::unique_ptr<PhysicWorld> w = std::make_unique<PhysicWorld>();
   
   log_debug << "Setting broadphase" << std::endl;
   w->setBroadphase(std::make_unique<SimpleBroadPhase>());
@@ -406,13 +406,13 @@ Sector::update(double elapsed_time)
         if(obj->getBody() == NULL)
           continue;
         log_debug << "Adding " << (obj->getBody() == NULL) << std::endl;
-      //  w.addBody(obj->getBody());
+       w->addBody(obj->getBody());
       }
     }
   }
   log_debug << "Elapsed: " <<  elapsed_time << std::endl;
   // Add a body for every tilemap 
-//  w.timestep(elapsed_time);
+  w->timestep(elapsed_time);
   handle_collisions();
   //update_game_objects();
 }
