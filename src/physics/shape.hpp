@@ -36,7 +36,7 @@ class Shape {
        position = pos;
      }
      
-     void move(Vector movement)
+     virtual void move(Vector movement)
      {
        position += movement;
      }

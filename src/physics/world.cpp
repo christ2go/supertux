@@ -50,10 +50,10 @@ void PhysicWorld::timestep(float dt)
           b->move();
         }
         // Correct positions 
-      //  for(auto& m : manifolds)
-      //  {
-          //m.solve();
-      //  }
+      for(auto& m : manifolds)
+       {
+          m.solve();
+       }
         log_debug << "Resetting forces" << std::endl;
         // Clear all forces 
         for(auto b:bodies)

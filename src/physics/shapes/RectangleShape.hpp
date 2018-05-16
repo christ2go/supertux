@@ -1,6 +1,7 @@
 #ifndef SUPERTUX_PHYSICS_SHAPES_RECTANGLE_HPP_INCLUDED
 #define SUPERTUX_PHYSICS_SHAPES_RECTANGLE_HPP_INCLUDED
 #include "physics/shape.hpp"
+#include "util/log.hpp"
 /**
  *  This shape represents axis aligned bounding boxes.
  *
@@ -25,6 +26,13 @@ public:
   void set_position(Vector position)
   {
     rectangle.move(position);
+  }
+  
+  void move(Vector movement)
+  {
+    Shape::move(movement);
+    log_debug << "Moving shape by " << movement.x << " " << movement.y << std::endl;
+    rectangle.move(movement);
   }
   
   void fillManifold(Manifold* M);

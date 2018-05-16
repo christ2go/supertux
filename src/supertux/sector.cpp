@@ -414,7 +414,7 @@ Sector::update(double elapsed_time)
   // Add a body for every tilemap 
   w->timestep(elapsed_time);
   handle_collisions();
-  //update_game_objects();
+  update_game_objects();
 }
 
 void
@@ -1017,7 +1017,7 @@ Sector::handle_collisions()
     moving_object->dest = moving_object->get_bbox();
     moving_object->dest.move(moving_object->get_movement());
   }
-  /*
+  
   // part1: COLGROUP_MOVING vs COLGROUP_STATIC and tilemap
   for(const auto& moving_object : moving_objects) {
     if((moving_object->get_group() != COLGROUP_MOVING
@@ -1026,7 +1026,7 @@ Sector::handle_collisions()
        || !moving_object->is_valid())
       continue;
     collision_static_constrains(*moving_object);
-  }*/
+  }
 /*
   // part2: COLGROUP_MOVING vs tile attributes
   for(const auto& moving_object : moving_objects) {

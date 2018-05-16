@@ -63,8 +63,8 @@ void Body::set_velocity(Vector vel)
    Vector acceleration = get_acceleration();
    if(useGravity)
    {
-     // Gravity only affects the x movement
-     gravity.x = Sector::current()->get_gravity() * gravityModifier * 100.0f;
+     // Gravity only affects the y movement
+     gravity.y = Sector::current()->get_gravity() * gravityModifier * 100.0f;
    }
    log_debug << "Gravity is " << gravity.x << std::endl;
    velocity += (acceleration+gravity) * dt;
