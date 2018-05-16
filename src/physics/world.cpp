@@ -8,9 +8,7 @@ void PhysicWorld::setIterations(int i)
 
 void PhysicWorld::addBody(Body* b)
 {
-  log_debug << "Adding body" << std::endl;
-        bodies.push_back(b);
-  log_debug << "Add finished" << std::endl;
+    bodies.push_back(b);
 }
 
 void PhysicWorld::removeBody(Body* b)
@@ -32,6 +30,15 @@ void PhysicWorld::timestep(float dt)
                 if(manifold.A->get_shape() == NULL || manifold.B->get_shape() == NULL)
                   continue;
                 manifold.A->get_shape()->fillManifold(&manifold);
+                // Alert both objects of the contact 
+                if(manifold.A->get_contact_listener() != NULL)
+                {
+                  manifold.A->get_contact_listener()->notifyContact(manifold);
+                }
+                if(manifold.B->get_contact_listener() != NULL)
+                {
+                  manifold.B->get_contact_listener()->notifyContact(manifold);
+                }
         }
         
         // Manifold information has been generated, let's solve
@@ -39,6 +46,7 @@ void PhysicWorld::timestep(float dt)
         {
                 for(auto& manifold: manifolds)
                 {
+                  // TODO Check if manifold is enabled
                         // Apply impulse
                         manifold.solve();
                 }
@@ -54,7 +62,7 @@ void PhysicWorld::timestep(float dt)
        {
           m.solve();
        }
-        log_debug << "Resetting forces" << std::endl;
+      log_debug << "Resetting forces" << std::endl;
         // Clear all forces 
         for(auto b:bodies)
         {
@@ -67,8 +75,7 @@ void PhysicWorld::timestep(float dt)
 
 void PhysicWorld::setBroadphase(std::unique_ptr<BroadPhase> broadp)
 {
-  log_debug << "Assigning" << std::endl;
-    //broad = std::move(broadp);
+  broad = std::move(broadp);
 }
 
 PhysicWorld::PhysicWorld(){

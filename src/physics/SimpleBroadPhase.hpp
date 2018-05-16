@@ -1,5 +1,10 @@
 #ifndef SUPERTUX_HEADER_PHYSICS_SIMPLE_BROADPHASE_HPP_INCLUDED
 #define SUPERTUX_HEADER_PHYSICS_SIMPLE_BROADPHASE_HPP_INCLUDED
+/**
+ *  This is a reference implementation of a simple O(n^2) broadphase.
+ *  It compares every objects AABB to every other AABB and thus is not 
+ *  particulary fast (other strctures like dynamic AABB trees are better)
+ */
 class SimpleBroadPhase : public BroadPhase {
 public:
   std::vector< Manifold > generateContacts(std::vector< Body*  >& list)
@@ -25,7 +30,8 @@ public:
 
         double min_ay = std::min(a.get_bottom(), a.get_top());
         double min_by = std::min(b.get_bottom(), b.get_top());
-
+        // Application of seperating axes theorem:
+        // Bodies verlap iff all axes overlap
         // Check if y axis overlap
         if(max_ax < min_bx || min_ax > max_bx)
           continue;

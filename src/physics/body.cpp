@@ -111,6 +111,11 @@ void Body::move()
   movement.x = movement.y = 0; // Reset movement after move
 }
 
+ContactListener* Body::get_contact_listener() const
+{
+  return listener;
+}
+
 Body::Body():
 force( Vector(0,0) )
 {

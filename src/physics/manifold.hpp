@@ -17,6 +17,8 @@ struct Manifold {
         CollisionHit hit_a, hit_b;
         Vector normal; 
         float penetrationDepth;
+        
+        bool m_enabled;
 public:
         Manifold(Body* A, Body* B)
         {
@@ -28,6 +30,9 @@ public:
 
         void solve();
         void positionalCorrection();
-
+        void setEnabled(bool enabled=true)
+        {
+          this->m_enabled = enabled;
+        }
 };
 #endif

@@ -63,7 +63,7 @@
 #include "physics/SimpleBroadPhase.hpp"
 Sector* Sector::_current = 0;
 
-bool Sector::show_collrects = false;
+bool Sector::show_collrects = true;
 bool Sector::draw_solids_only = false;
 
 Sector::Sector(Level* parent) :
@@ -410,6 +410,7 @@ Sector::update(double elapsed_time)
       }
     }
   }
+  // 
   log_debug << "Elapsed: " <<  elapsed_time << std::endl;
   // Add a body for every tilemap 
   w->timestep(elapsed_time);
@@ -596,8 +597,10 @@ Sector::draw(DrawingContext& context)
   if(show_collrects) {
     Color color(1.0f, 0.0f, 0.0f, 0.75f);
     for(auto& object : moving_objects) {
+      if(!object->has_newphysics())
+        continue;
       Rectf rect = object->get_bbox();
-      context.draw_filled_rect(rect, color, LAYER_FOREGROUND1 + 10);
+      context.draw_filled_rect(object->getBody()->get_shape()->getAABB(), color, LAYER_FOREGROUND1 + 10);
     }
   }
 

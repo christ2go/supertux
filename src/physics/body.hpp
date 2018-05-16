@@ -2,6 +2,8 @@
 #define SUPERTUX_PHYSICS_BODY_HPP_INCLUDED
 #include "math/vector.hpp"
 #include "physics/shape.hpp"
+#include "physics/contact_listener.hpp"
+
 /**
  *  Bodies are the main class for everything physics related.
  *  A body stores an objects position, movement and velocity in the current world.
@@ -52,6 +54,7 @@ public:
   //  Moves the body by the precalculated movement vector
   void move();
   
+  ContactListener* get_contact_listener() const;
   ~Body();
 private:
   Vector velocity;
@@ -79,5 +82,7 @@ private:
   Shape* shape;
   // Type of the body
   Body_Type type;
+  // Listens to any collisions
+  ContactListener* listener;
 };
 #endif
