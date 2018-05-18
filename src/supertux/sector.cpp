@@ -413,6 +413,11 @@ Sector::update(double elapsed_time)
   // 
   log_debug << "Elapsed: " <<  elapsed_time << std::endl;
   // Add a body for every tilemap 
+  int ww = get_width();
+  int h = get_width();
+  log_debug << "Sector is " << ww << " x " << h << std::endl;
+  std::vector< Rectf > rectangles;
+  
   w->timestep(elapsed_time);
   handle_collisions();
   update_game_objects();
