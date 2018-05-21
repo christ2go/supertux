@@ -396,7 +396,7 @@ Sector::update(double elapsed_time)
   w->setBroadphase(std::make_unique<SimpleBroadPhase>());
   //w.reset();
   /* Handle all possible collisions. */
-  for(auto& gobj : gameobjects)
+  for(const auto& gobj : gameobjects)
   {
     MovingObject* obj = dynamic_cast<MovingObject*>(gobj.get());
     if(obj)
@@ -416,8 +416,40 @@ Sector::update(double elapsed_time)
   int ww = get_width();
   int h = get_width();
   log_debug << "Sector is " << ww << " x " << h << std::endl;
-  std::vector< Rectf > rectangles;
+  // Set of rectangles
+  std::set< Rectf > rectangles;
+  // Use a 10x10 Rect around the current position 
+  for(const auto& gobj : gameobjects)
+  {
+    // Get position => add into set of rectangles 
+    int shift = 20;
+    MovingObject* obj = dynamic_cast<MovingObject*>(gobj.get());
+    if(obj)
+    {
+      Rectf r = obj->get_bbox();
+      r.set_width(r.get_width()+shift);
+      r.set_height(r.get_height()+shift);
+      r.move(Vector(-shift/2,-shift/2));
+      rectangles.insert(r);
+    }  
+  }
+  // (For now) Use iterative merge algorithm in O(k*n^2)
+  // faster algos might be possible (at least O(n^2 * \alpha(n)) should be doable)
+  bool changed = true;
+  while(changed)
+  {
+    changed = false;
+    for(const auto& recta : rectangles)
+    {
+      for(const auto& rectb : rectangles)
+      {
+        
+      }
+    }
+  }
   
+  // Set of rectangles generated => create "tilemap"
+  // for now use a rectangular decomposition
   w->timestep(elapsed_time);
   handle_collisions();
   update_game_objects();
