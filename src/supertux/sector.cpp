@@ -18,6 +18,7 @@
 
 #include <algorithm>
 #include <math.h>
+#include <iterator>
 #include <vector>
 #include <memory>
 
@@ -422,7 +423,7 @@ Sector::update(double elapsed_time)
   for(const auto& gobj : gameobjects)
   {
     // Get position => add into set of rectangles 
-    int shift = 20;
+    int shift = 10;
     MovingObject* obj = dynamic_cast<MovingObject*>(gobj.get());
     if(obj)
     {
@@ -436,19 +437,57 @@ Sector::update(double elapsed_time)
   // (For now) Use iterative merge algorithm in O(k*n^2)
   // faster algos might be possible (at least O(n^2 * \alpha(n)) should be doable)
   bool changed = true;
+  
+  std::set< Rectf > toRemove;
+  std::set< Rectf > toInsert;
+  
   while(changed)
   {
     changed = false;
-    for(const auto& recta : rectangles)
+    for( auto i = rectangles.begin(); i != rectangles.end() ; ++i)
     {
-      for(const auto& rectb : rectangles)
+      auto recta = *i;
+      bool looped = false;
+      for( auto j = i; j != rectangles.end(); ++j)
       {
-        
+        if(!looped)
+          j++;
+        if(j == rectangles.end())
+          break;
+        looped = true;
+        auto rectb = *j;
+        if(i == j)
+          continue;
+        // TODO Check that the symmetric difference of the rectangles is not empty 
+        // i.e. they overlap but contain a region which is in A \setminus B \cup B \setminus A
+        if(recta.contains(rectb) && !(recta == rectb))
+        {
+          Rectf rectc = Rectf::unite(recta,rectb);
+          if(rectc == recta || rectc == rectb)
+            continue;
+          toRemove.insert(recta);
+          toRemove.insert(rectb);
+          toInsert.insert(rectc);
+          changed = true;
+        }
       }
+      
     }
+    log_debug << "Deleting" << std::endl;
+    // Remove every rectangle from toRemove
+    for(const auto& rem : toRemove)
+      rectangles.erase(rem);
+    log_debug << "Inserting" << std::endl; 
+    // Add every rectangle from toInsert
+    rectangles.insert(toInsert.begin(), toInsert.end());
+    toRemove.clear();
+    toInsert.clear();
   }
-  
   // Set of rectangles generated => create "tilemap"
+  for(const auto& rect : rectangles)
+  {
+    log_debug << rect.get_width() << " " << rect.get_height() << std::endl;
+  }
   // for now use a rectangular decomposition
   w->timestep(elapsed_time);
   handle_collisions();
