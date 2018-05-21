@@ -135,11 +135,33 @@ public:
 
   // leave these two public to save the headaches of set/get functions for such
   // simple things :)
+  /**
+   *  Comparison operator for rectangles 
+   *
+   *  Compares them by first x-values and if those are equal by y-value 
+   *  (This is only used so that rectangles can be inserted into sets)
+   */
+  friend bool operator<(const Rectf& a,const Rectf& b)
+  {
+    return std::tie(a.p1.x, a.p1.y) < std::tie(b.p1.x, b.p1.y);
+  }
+  
+  friend bool operator==(const Rectf& a, const Rectf& b)
+  {
+    return std::tie(a.p1.x, a.p1.y) == std::tie(b.p1.x, b.p1.y) &&
+           std::tie(a.p2.x, a.p2.y) == std::tie(b.p2.x, b.p2.y);
+  }
 
   /// upper left edge
   Vector p1;
   /// lower right edge
   Vector p2;
+  
+  static Rectf unite(const Rectf& a, const Rectf& b)
+  {
+    return Rectf(std::min(a.p1.x, b.p1.x), std::min(a.p1.y, b.p1.y),
+                 std::max(a.p2.x, b.p2.x), std::max(a.p2.y, b.p2.y));
+  }
 };
 
 #endif
