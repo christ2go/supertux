@@ -4896,16 +4896,14 @@ static SQInteger translate_plural_wrapper(HSQUIRRELVM vm)
     sq_throwerror(vm, _SC("Argument 1 not a string"));
     return SQ_ERROR;
   }
-
   const SQChar* arg1;
   if(SQ_FAILED(sq_getstring(vm, 3, &arg1))) {
     sq_throwerror(vm, _SC("Argument 2 not a string"));
     return SQ_ERROR;
   }
-
   SQInteger arg2;
   if(SQ_FAILED(sq_getinteger(vm, 4, &arg2))) {
-    sq_throwerror(vm, _SC("Argument 3 not a integer"));
+    sq_throwerror(vm, _SC("Argument 3 not an integer"));
     return SQ_ERROR;
   }
 
@@ -4932,16 +4930,14 @@ static SQInteger ___wrapper(HSQUIRRELVM vm)
     sq_throwerror(vm, _SC("Argument 1 not a string"));
     return SQ_ERROR;
   }
-
   const SQChar* arg1;
   if(SQ_FAILED(sq_getstring(vm, 3, &arg1))) {
     sq_throwerror(vm, _SC("Argument 2 not a string"));
     return SQ_ERROR;
   }
-
   SQInteger arg2;
   if(SQ_FAILED(sq_getinteger(vm, 4, &arg2))) {
-    sq_throwerror(vm, _SC("Argument 3 not a integer"));
+    sq_throwerror(vm, _SC("Argument 3 not an integer"));
     return SQ_ERROR;
   }
 
@@ -6301,7 +6297,7 @@ void register_supertux_wrapper(HSQUIRRELVM v)
   sq_newclosure(v, &translate_plural_wrapper, 0);
   sq_setparamscheck(v, SQ_MATCHTYPEMASKSTRING, "x|tssi");
   if(SQ_FAILED(sq_createslot(v, -3))) {
-    throw SquirrelError(v, "Couldn't register function 'translate'");
+    throw SquirrelError(v, "Couldn't register function 'translate_plural'");
   }
 
   sq_pushstring(v, "__", -1);

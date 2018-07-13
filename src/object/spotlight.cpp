@@ -22,6 +22,7 @@
 #include "util/reader_mapping.hpp"
 
 Spotlight::Spotlight(const ReaderMapping& lisp) :
+  ExposedObject<Spotlight, scripting::Spotlight>(this),
   angle(),
   center(SpriteManager::current()->create("images/objects/spotlight/spotlight_center.sprite")),
   base(SpriteManager::current()->create("images/objects/spotlight/spotlight_base.sprite")),
@@ -41,6 +42,8 @@ Spotlight::Spotlight(const ReaderMapping& lisp) :
   lisp.get("angle", angle, 0.0f);
   lisp.get("speed", speed, 50.0f);
   lisp.get("counter-clockwise", counter_clockwise, false);
+
+  emitting=true;
 
   std::vector<float> vColor;
   if( lisp.get( "color", vColor ) ){
@@ -83,27 +86,34 @@ Spotlight::draw(DrawingContext& context)
 {
   context.push_target();
   context.set_target(DrawingContext::LIGHTMAP);
-
-  light->set_color(color);
-  light->set_blend(Blend(GL_SRC_ALPHA, GL_ONE));
-  light->set_angle(angle);
-  light->draw(context, bbox.p1, 0);
+  if (emitting == true)
+  {
+    light->set_color(color);
+    light->set_blend(Blend(GL_SRC_ALPHA, GL_ONE));
+    light->set_angle(angle);
+    light->draw(context, bbox.p1, 0);
+  }
 
   //lightcone->set_angle(angle);
   //lightcone->draw(context, position, 0);
 
   context.set_target(DrawingContext::NORMAL);
 
-  lights->set_angle(angle);
-  lights->draw(context, bbox.p1, 0);
+ if (emitting == true)
+  {
+    lights->set_angle(angle);
+    lights->draw(context, bbox.p1, 0);
+  }
 
   base->set_angle(angle);
   base->draw(context, bbox.p1, 0);
 
   center->draw(context, bbox.p1, 0);
-
-  lightcone->set_angle(angle);
-  lightcone->draw(context, bbox.p1, LAYER_FOREGROUND1 + 10);
+ if (emitting == true)
+  {
+    lightcone->set_angle(angle);
+    lightcone->draw(context, bbox.p1, LAYER_FOREGROUND1 + 10);
+  }
 
   context.pop_target();
 }
@@ -112,6 +122,14 @@ HitResponse
 Spotlight::collision(GameObject& other, const CollisionHit& hit_)
 {
   return FORCE_MOVE;
+}
+
+bool Spotlight::is_emitting() const { return emitting; }
+
+void
+Spotlight::set_emitting(bool emit)
+{
+  emitting=emit;
 }
 
 /* EOF */

@@ -22,10 +22,13 @@
 #include "sprite/sprite_ptr.hpp"
 #include "supertux/moving_object.hpp"
 #include "video/color.hpp"
+#include "scripting/exposed_object.hpp"
+#include "scripting/spotlight.hpp"
 
 class ReaderMapping;
 
-class Spotlight : public MovingObject
+class Spotlight : public MovingObject, 
+                  public ExposedObject<Spotlight, scripting::Spotlight>
 {
 public:
   Spotlight(const ReaderMapping& reader);
@@ -33,6 +36,7 @@ public:
 
   void update(float elapsed_time);
   void draw(DrawingContext& context);
+  void set_emitting(bool emit);
 
   HitResponse collision(GameObject& other, const CollisionHit& hit_);
 
@@ -42,6 +46,8 @@ public:
   std::string get_display_name() const {
     return _("Spotlight");
   }
+
+  bool is_emitting() const;
 
   virtual ObjectSettings get_settings();
 
@@ -58,6 +64,8 @@ private:
    * Speed that the spotlight is rotating with
    */
   float speed;
+
+  bool emitting;
 
   /**
    * If true, the spotlight will rotate counter-clockwise

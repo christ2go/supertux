@@ -22,5 +22,6 @@
 #include "scripting/torch.hpp"
 #include "scripting/willowisp.hpp"
 #include "scripting/wind.hpp"
+#include "scripting/spotlight.hpp"
 
 /* EOF */
