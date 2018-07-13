@@ -38,8 +38,6 @@ class ScriptedObject;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::ScriptedObject* object, bool setup_releasehook = false);
 class Sector;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::Sector* object, bool setup_releasehook = false);
-class Spotlight;
-void create_squirrel_instance(HSQUIRRELVM v, scripting::Spotlight* object, bool setup_releasehook = false);
 class Text;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::Text* object, bool setup_releasehook = false);
 class Thunderstorm;
@@ -52,6 +50,8 @@ class WillOWisp;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::WillOWisp* object, bool setup_releasehook = false);
 class Wind;
 void create_squirrel_instance(HSQUIRRELVM v, scripting::Wind* object, bool setup_releasehook = false);
+class Spotlight;
+void create_squirrel_instance(HSQUIRRELVM v, scripting::Spotlight* object, bool setup_releasehook = false);
 
 }
 
