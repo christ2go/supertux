@@ -28,32 +28,21 @@
 #include "video/ttf_surface.hpp"
 #include "video/video_system.hpp"
 
-TTFSurfaceManager::CacheEntry::CacheEntry(const TTFSurfacePtr& s) :
-  ttf_surface(s),
-  last_access(g_game_time)
-{
-}
+TTFSurfaceManager::CacheEntry::CacheEntry(const TTFSurfacePtr& s)
+    : ttf_surface(s), last_access(g_game_time) {}
 
-TTFSurfaceManager::TTFSurfaceManager() :
-  m_cache(),
-  m_cache_iter(m_cache.end())
-{
-}
+TTFSurfaceManager::TTFSurfaceManager()
+    : m_cache(), m_cache_iter(m_cache.end()) {}
 
-TTFSurfacePtr
-TTFSurfaceManager::create_surface(const TTFFont& font, const std::string& text)
-{
+TTFSurfacePtr TTFSurfaceManager::create_surface(const TTFFont& font,
+                                                const std::string& text) {
   auto key = Key(font.get_ttf_font(), text);
   auto it = m_cache.find(key);
-  if (it != m_cache.end())
-  {
+  if (it != m_cache.end()) {
     auto& entry = m_cache[key];
     entry.last_access = g_game_time;
     return entry.ttf_surface;
-  }
-  else
-  {
-
+  } else {
 #if 0
     // Font debug output should go to 'std::cerr', not any of the
     // log_* functions, as those are mirrored on the console which
@@ -70,35 +59,26 @@ TTFSurfaceManager::create_surface(const TTFFont& font, const std::string& text)
   }
 }
 
-int
-TTFSurfaceManager::get_cached_surface_width(const TTFFont& font,
-  const std::string& text)
-{
+int TTFSurfaceManager::get_cached_surface_width(const TTFFont& font,
+                                                const std::string& text) {
   auto key = Key(font.get_ttf_font(), text);
   auto it = m_cache.find(key);
-  if (it == m_cache.end())
-    return -1;
+  if (it == m_cache.end()) return -1;
   auto& entry = m_cache[key];
   entry.last_access = g_game_time;
   return entry.ttf_surface->get_width();
 }
 
-void
-TTFSurfaceManager::cache_cleanup_step()
-{
-  if (m_cache.empty())
-    return;
+void TTFSurfaceManager::cache_cleanup_step() {
+  if (m_cache.empty()) return;
 
-  if (m_cache_iter == m_cache.end())
-  {
+  if (m_cache_iter == m_cache.end()) {
     m_cache_iter = m_cache.begin();
   }
 
-  while (g_game_time - m_cache_iter->second.last_access > 10.0f)
-  {
+  while (g_game_time - m_cache_iter->second.last_access > 10.0f) {
     m_cache_iter = m_cache.erase(m_cache_iter);
-    if (m_cache_iter == m_cache.end())
-    {
+    if (m_cache_iter == m_cache.end()) {
       return;
     }
   }
@@ -106,13 +86,15 @@ TTFSurfaceManager::cache_cleanup_step()
   ++m_cache_iter;
 }
 
-void
-TTFSurfaceManager::print_debug_info(std::ostream& out)
-{
-  int cache_bytes = std::accumulate(m_cache.begin(), m_cache.end(), 0, [](int accumulator, const std::pair<Key, CacheEntry>& entry) {
-    return accumulator + entry.second.ttf_surface->get_width() * entry.second.ttf_surface->get_height() * 4;
-  });
-  out << "TTFSurfaceManager.cache_size: " << m_cache.size() << "  " << cache_bytes / 1000 << "KB" << std::endl;
+void TTFSurfaceManager::print_debug_info(std::ostream& out) {
+  int cache_bytes = std::accumulate(
+      m_cache.begin(), m_cache.end(), 0,
+      [](int accumulator, const std::pair<Key, CacheEntry>& entry) {
+        return accumulator + entry.second.ttf_surface->get_width() *
+                                 entry.second.ttf_surface->get_height() * 4;
+      });
+  out << "TTFSurfaceManager.cache_size: " << m_cache.size() << "  "
+      << cache_bytes / 1000 << "KB" << std::endl;
 }
 
 /* EOF */

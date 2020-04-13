@@ -19,146 +19,101 @@
 #include "audio/sound_manager.hpp"
 #include "util/log.hpp"
 
-OpenALSoundSource::OpenALSoundSource() :
-  m_source(),
-  m_gain(1.0f),
-  m_volume(1.0f)
-{
+OpenALSoundSource::OpenALSoundSource()
+    : m_source(), m_gain(1.0f), m_volume(1.0f) {
   alGenSources(1, &m_source);
-  try
-  {
+  try {
     SoundManager::check_al_error("Couldn't create audio source: ");
-  }
-  catch(std::exception& e)
-  {
+  } catch (std::exception& e) {
     log_warning << e.what() << std::endl;
   }
   set_reference_distance(128);
 }
 
-OpenALSoundSource::~OpenALSoundSource()
-{
+OpenALSoundSource::~OpenALSoundSource() {
   stop();
   alDeleteSources(1, &m_source);
 }
 
-void
-OpenALSoundSource::stop()
-{
-  alSourceRewindv(1, &m_source); // Stops the source
+void OpenALSoundSource::stop() {
+  alSourceRewindv(1, &m_source);  // Stops the source
   alSourcei(m_source, AL_BUFFER, AL_NONE);
-  try
-  {
+  try {
     SoundManager::check_al_error("Problem stopping audio source: ");
-  }
-  catch(const std::exception& e)
-  {
+  } catch (const std::exception& e) {
     // Internal OpenAL error. Don't you crash on me, baby!
     log_warning << e.what() << std::endl;
   }
 }
 
-void
-OpenALSoundSource::play()
-{
+void OpenALSoundSource::play() {
   alSourcePlay(m_source);
 
-  try
-  {
+  try {
     SoundManager::check_al_error("Couldn't start audio source: ");
-  }
-  catch(const std::exception& e)
-  {
+  } catch (const std::exception& e) {
     // We probably have too many sources playing simultaneously.
     log_warning << e.what() << std::endl;
   }
 }
 
-bool
-OpenALSoundSource::playing() const
-{
+bool OpenALSoundSource::playing() const {
   ALint state = AL_PLAYING;
   alGetSourcei(m_source, AL_SOURCE_STATE, &state);
   return state == AL_PLAYING;
 }
 
-void
-OpenALSoundSource::pause()
-{
+void OpenALSoundSource::pause() {
   alSourcePause(m_source);
   SoundManager::check_al_error("Couldn't pause audio source: ");
 }
 
-void
-OpenALSoundSource::resume()
-{
-  if ( !paused() )
-  {
+void OpenALSoundSource::resume() {
+  if (!paused()) {
     return;
   }
 
   play();
 }
 
-bool
-OpenALSoundSource::paused() const
-{
-    ALint state = AL_PAUSED;
-    alGetSourcei(m_source, AL_SOURCE_STATE, &state);
-    return state == AL_PAUSED;
+bool OpenALSoundSource::paused() const {
+  ALint state = AL_PAUSED;
+  alGetSourcei(m_source, AL_SOURCE_STATE, &state);
+  return state == AL_PAUSED;
 }
 
-void
-OpenALSoundSource::update()
-{
-}
+void OpenALSoundSource::update() {}
 
-void
-OpenALSoundSource::set_looping(bool looping)
-{
+void OpenALSoundSource::set_looping(bool looping) {
   alSourcei(m_source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
 }
 
-void
-OpenALSoundSource::set_relative(bool relative)
-{
+void OpenALSoundSource::set_relative(bool relative) {
   alSourcei(m_source, AL_SOURCE_RELATIVE, relative ? AL_TRUE : AL_FALSE);
 }
 
-void
-OpenALSoundSource::set_position(const Vector& position)
-{
+void OpenALSoundSource::set_position(const Vector& position) {
   alSource3f(m_source, AL_POSITION, position.x, position.y, 0);
 }
 
-void
-OpenALSoundSource::set_velocity(const Vector& velocity)
-{
+void OpenALSoundSource::set_velocity(const Vector& velocity) {
   alSource3f(m_source, AL_VELOCITY, velocity.x, velocity.y, 0);
 }
 
-void
-OpenALSoundSource::set_gain(float gain)
-{
+void OpenALSoundSource::set_gain(float gain) {
   alSourcef(m_source, AL_GAIN, gain * m_volume);
   m_gain = gain;
 }
 
-void
-OpenALSoundSource::set_pitch(float pitch)
-{
+void OpenALSoundSource::set_pitch(float pitch) {
   alSourcef(m_source, AL_PITCH, pitch);
 }
 
-void
-OpenALSoundSource::set_reference_distance(float distance)
-{
+void OpenALSoundSource::set_reference_distance(float distance) {
   alSourcef(m_source, AL_REFERENCE_DISTANCE, distance);
 }
 
-void
-OpenALSoundSource::set_volume(float volume)
-{
+void OpenALSoundSource::set_volume(float volume) {
   m_volume = volume;
   alSourcef(m_source, AL_GAIN, m_gain * m_volume);
 }

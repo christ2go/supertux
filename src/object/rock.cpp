@@ -24,91 +24,79 @@
 #include "util/reader_mapping.hpp"
 
 namespace {
-const std::string ROCK_SOUND = "sounds/brick.wav"; //TODO use own sound.
+const std::string ROCK_SOUND = "sounds/brick.wav";  // TODO use own sound.
 }
 
-Rock::Rock(const Vector& pos, const std::string& spritename) :
-  MovingSprite(pos, spritename),
-  ExposedObject<Rock, scripting::Rock>(this),
-  physic(),
-  on_ground(false),
-  last_movement(),
-  on_grab_script(),
-  on_ungrab_script()
-{
+Rock::Rock(const Vector& pos, const std::string& spritename)
+    : MovingSprite(pos, spritename),
+      ExposedObject<Rock, scripting::Rock>(this),
+      physic(),
+      on_ground(false),
+      last_movement(),
+      on_grab_script(),
+      on_ungrab_script() {
   SoundManager::current()->preload(ROCK_SOUND);
   set_group(COLGROUP_MOVING_STATIC);
 }
 
-Rock::Rock(const ReaderMapping& reader) :
-  MovingSprite(reader, "images/objects/rock/rock.sprite"),
-  ExposedObject<Rock, scripting::Rock>(this),
-  physic(),
-  on_ground(false),
-  last_movement(),
-  on_grab_script(),
-  on_ungrab_script()
-{
+Rock::Rock(const ReaderMapping& reader)
+    : MovingSprite(reader, "images/objects/rock/rock.sprite"),
+      ExposedObject<Rock, scripting::Rock>(this),
+      physic(),
+      on_ground(false),
+      last_movement(),
+      on_grab_script(),
+      on_ungrab_script() {
   reader.get("on-grab-script", on_grab_script, "");
   reader.get("on-ungrab-script", on_ungrab_script, "");
   SoundManager::current()->preload(ROCK_SOUND);
   set_group(COLGROUP_MOVING_STATIC);
 }
 
-Rock::Rock(const ReaderMapping& reader, const std::string& spritename) :
-  MovingSprite(reader, spritename),
-  ExposedObject<Rock, scripting::Rock>(this),
-  physic(),
-  on_ground(false),
-  last_movement(),
-  on_grab_script(),
-  on_ungrab_script()
-{
+Rock::Rock(const ReaderMapping& reader, const std::string& spritename)
+    : MovingSprite(reader, spritename),
+      ExposedObject<Rock, scripting::Rock>(this),
+      physic(),
+      on_ground(false),
+      last_movement(),
+      on_grab_script(),
+      on_ungrab_script() {
   if (!reader.get("on-grab-script", on_grab_script)) on_grab_script = "";
   if (!reader.get("on-ungrab-script", on_ungrab_script)) on_ungrab_script = "";
   SoundManager::current()->preload(ROCK_SOUND);
   set_group(COLGROUP_MOVING_STATIC);
 }
 
-void
-Rock::update(float dt_sec)
-{
-  if (!is_grabbed())
-    m_col.m_movement = physic.get_movement(dt_sec);
+void Rock::update(float dt_sec) {
+  if (!is_grabbed()) m_col.m_movement = physic.get_movement(dt_sec);
 }
 
-void
-Rock::collision_solid(const CollisionHit& hit)
-{
+void Rock::collision_solid(const CollisionHit& hit) {
   if (is_grabbed()) {
     return;
   }
-  if (hit.top || hit.bottom)
-    physic.set_velocity_y(0);
+  if (hit.top || hit.bottom) physic.set_velocity_y(0);
   if (hit.left || hit.right) {
     // Bounce back slightly when hitting a wall
     float velx = physic.get_velocity_x();
     physic.set_velocity_x(-0.1f * velx);
   }
-  if (hit.crush)
-    physic.set_velocity(0, 0);
+  if (hit.crush) physic.set_velocity(0, 0);
 
-  if (hit.bottom  && !on_ground && !is_grabbed()) {
+  if (hit.bottom && !on_ground && !is_grabbed()) {
     SoundManager::current()->play(ROCK_SOUND, get_pos());
     physic.set_velocity_x(0);
     on_ground = true;
   }
 }
 
-HitResponse
-Rock::collision(GameObject& other, const CollisionHit& hit)
-{
-  auto heavy_coin = dynamic_cast<HeavyCoin*> (&other);
+HitResponse Rock::collision(GameObject& other, const CollisionHit& hit) {
+  auto heavy_coin = dynamic_cast<HeavyCoin*>(&other);
   if (heavy_coin) {
     return ABORT_MOVE;
   }
 
-  auto explosion = dynamic_cast<Explosion*> (&other);
+  auto explosion = dynamic_cast<Explosion*>(&other);
   if (explosion) {
     return ABORT_MOVE;
   }
@@ -119,7 +107,7 @@ Rock::collision(GameObject& other, const CollisionHit& hit)
 
   // Don't fall further if we are on a rock which is on the ground.
   // This is to avoid jittering.
-  auto rock = dynamic_cast<Rock*> (&other);
+  auto rock = dynamic_cast<Rock*>(&other);
   if (rock && rock->on_ground && hit.bottom) {
     physic.set_velocity_y(0);
     return CONTINUE;
@@ -127,9 +115,9 @@ Rock::collision(GameObject& other, const CollisionHit& hit)
 
   if (!on_ground) {
     if (hit.bottom && physic.get_velocity_y() > 200) {
-      auto moving_object = dynamic_cast<MovingObject*> (&other);
+      auto moving_object = dynamic_cast<MovingObject*>(&other);
       if (moving_object) {
-        //Getting a rock on the head hurts. A lot.
+        // Getting a rock on the head hurts. A lot.
         moving_object->collision_tile(Tile::HURTS);
         physic.set_velocity_y(0);
       }
@@ -140,13 +128,11 @@ Rock::collision(GameObject& other, const CollisionHit& hit)
   return FORCE_MOVE;
 }
 
-void
-Rock::grab(MovingObject& object, const Vector& pos, Direction dir_)
-{
+void Rock::grab(MovingObject& object, const Vector& pos, Direction dir_) {
   Portable::grab(object, pos, dir_);
   m_col.m_movement = pos - get_pos();
   last_movement = m_col.m_movement;
-  set_group(COLGROUP_TOUCHABLE); //needed for lanterns catching willowisps
+  set_group(COLGROUP_TOUCHABLE);  // needed for lanterns catching willowisps
   on_ground = false;
 
   if (!on_grab_script.empty()) {
@@ -154,9 +140,7 @@ Rock::grab(MovingObject& object, const Vector& pos, Direction dir_)
   }
 }
 
-void
-Rock::ungrab(MovingObject& object, Direction dir)
-{
+void Rock::ungrab(MovingObject& object, Direction dir) {
   set_group(COLGROUP_MOVING_STATIC);
   on_ground = false;
   if (dir == Direction::UP) {
@@ -175,14 +159,12 @@ Rock::ungrab(MovingObject& object, Direction dir)
   Portable::ungrab(object, dir);
 }
 
-ObjectSettings
-Rock::get_settings()
-{
+ObjectSettings Rock::get_settings() {
   auto result = MovingSprite::get_settings();
   result.add_script(_("On-grab script"), &on_grab_script, "on-grab-script");
-  result.add_script(_("On-ungrab script"), &on_ungrab_script, "on-ungrab-script");
+  result.add_script(_("On-ungrab script"), &on_ungrab_script,
+                    "on-ungrab-script");
   return result;
 }
-
 
 /* EOF */

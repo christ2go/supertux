@@ -25,38 +25,25 @@
 #include "util/log.hpp"
 #include "util/reader_mapping.hpp"
 
-UndoManager::UndoManager() :
-  m_max_snapshots(100),
-  m_index_pos(),
-  m_undo_stack(),
-  m_redo_stack()
-{
-}
+UndoManager::UndoManager()
+    : m_max_snapshots(100), m_index_pos(), m_undo_stack(), m_redo_stack() {}
 
-void
-UndoManager::try_snapshot(Level& level)
-{
+void UndoManager::try_snapshot(Level& level) {
   std::ostringstream out;
   level.save(out);
   std::string level_snapshot = out.str();
 
-  if (m_undo_stack.empty())
-  {
+  if (m_undo_stack.empty()) {
     push_undo_stack(std::move(level_snapshot));
-  }
-  else if (level_snapshot == m_undo_stack.back())
-  {
+  } else if (level_snapshot == m_undo_stack.back()) {
     log_debug << "skipping snapshot as nothing has changed" << std::endl;
-  }
-  else // level_snapshot changed
+  } else  // level_snapshot changed
   {
     push_undo_stack(std::move(level_snapshot));
   }
 }
 
-void
-UndoManager::debug_print(const char* action)
-{
+void UndoManager::debug_print(const char* action) {
 #if 0
   std::cout << action << std::endl;
   std::cout << "undo_stack: ";
@@ -74,9 +61,7 @@ UndoManager::debug_print(const char* action)
 #endif
 }
 
-void
-UndoManager::push_undo_stack(std::string&& level_snapshot)
-{
+void UndoManager::push_undo_stack(std::string&& level_snapshot) {
   log_info << "doing snapshot" << std::endl;
 
   m_redo_stack.clear();
@@ -88,18 +73,14 @@ UndoManager::push_undo_stack(std::string&& level_snapshot)
   debug_print("snapshot");
 }
 
-void
-UndoManager::cleanup()
-{
+void UndoManager::cleanup() {
   while (m_undo_stack.size() > m_max_snapshots) {
     m_undo_stack.erase(m_undo_stack.end() - m_max_snapshots,
                        m_undo_stack.end());
   }
 }
 
-std::unique_ptr<Level>
-UndoManager::undo()
-{
+std::unique_ptr<Level> UndoManager::undo() {
   if (m_undo_stack.size() < 2) return {};
 
   m_redo_stack.push_back(std::move(m_undo_stack.back()));
@@ -107,7 +88,8 @@ UndoManager::undo()
 
   std::istringstream in(m_undo_stack.back());
   ReaderMapping::s_translations_enabled = false;
-  auto level = LevelParser::from_stream(in, "<undo_stack>", Editor::current()->get_level()->is_worldmap(), true);
+  auto level = LevelParser::from_stream(
+      in, "<undo_stack>", Editor::current()->get_level()->is_worldmap(), true);
   ReaderMapping::s_translations_enabled = true;
 
   m_index_pos -= 1;
@@ -117,9 +99,7 @@ UndoManager::undo()
   return level;
 }
 
-std::unique_ptr<Level>
-UndoManager::redo()
-{
+std::unique_ptr<Level> UndoManager::redo() {
   if (m_redo_stack.empty()) return {};
 
   m_undo_stack.push_back(std::move(m_redo_stack.back()));
@@ -129,7 +109,8 @@ UndoManager::redo()
 
   std::istringstream in(m_undo_stack.back());
   ReaderMapping::s_translations_enabled = false;
-  auto level = LevelParser::from_stream(in, "<redo_stack>", Editor::current()->get_level()->is_worldmap(), true);
+  auto level = LevelParser::from_stream(
+      in, "<redo_stack>", Editor::current()->get_level()->is_worldmap(), true);
   ReaderMapping::s_translations_enabled = true;
 
   debug_print("redo");

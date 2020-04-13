@@ -19,29 +19,20 @@
 #include "math/rectf.hpp"
 #include "video/surface.hpp"
 
-SurfaceBatch::SurfaceBatch(const SurfacePtr& surface) :
-  m_surface(surface),
-  m_srcrects(),
-  m_dstrects(),
-  m_angles()
-{
-}
+SurfaceBatch::SurfaceBatch(const SurfacePtr& surface)
+    : m_surface(surface), m_srcrects(), m_dstrects(), m_angles() {}
 
-void
-SurfaceBatch::draw(const Vector& pos, float angle)
-{
+void SurfaceBatch::draw(const Vector& pos, float angle) {
   m_srcrects.emplace_back(Rectf(0, 0,
                                 static_cast<float>(m_surface->get_width()),
                                 static_cast<float>(m_surface->get_height())));
-  m_dstrects.emplace_back(Rectf(pos,
-                                Sizef(static_cast<float>(m_surface->get_width()),
-                                      static_cast<float>(m_surface->get_height()))));
+  m_dstrects.emplace_back(
+      Rectf(pos, Sizef(static_cast<float>(m_surface->get_width()),
+                       static_cast<float>(m_surface->get_height()))));
   m_angles.emplace_back(angle);
 }
 
-void
-SurfaceBatch::draw(const Rectf& dstrect, float angle)
-{
+void SurfaceBatch::draw(const Rectf& dstrect, float angle) {
   m_srcrects.emplace_back(Rectf(0, 0,
                                 static_cast<float>(m_surface->get_width()),
                                 static_cast<float>(m_surface->get_height())));
@@ -49,9 +40,8 @@ SurfaceBatch::draw(const Rectf& dstrect, float angle)
   m_angles.emplace_back(angle);
 }
 
-void
-SurfaceBatch::draw(const Rectf& srcrect, const Rectf& dstrect, float angle)
-{
+void SurfaceBatch::draw(const Rectf& srcrect, const Rectf& dstrect,
+                        float angle) {
   m_srcrects.emplace_back(srcrect);
   m_dstrects.emplace_back(dstrect);
   m_angles.emplace_back(angle);

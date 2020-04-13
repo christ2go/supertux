@@ -1,5 +1,6 @@
 //  SuperTux - Teleporter Worldmap Tile
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -22,14 +23,13 @@
 
 namespace worldmap {
 
-Teleporter::Teleporter(const ReaderMapping& mapping) :
-  m_pos(),
-  m_sprite(),
-  m_worldmap(),
-  m_spawnpoint(),
-  m_automatic(false),
-  m_message()
-{
+Teleporter::Teleporter(const ReaderMapping& mapping)
+    : m_pos(),
+      m_sprite(),
+      m_worldmap(),
+      m_spawnpoint(),
+      m_automatic(false),
+      m_message() {
   mapping.get("x", m_pos.x);
   mapping.get("y", m_pos.y);
 
@@ -52,19 +52,15 @@ Teleporter::Teleporter(const ReaderMapping& mapping) :
   }
 }
 
-void
-Teleporter::draw(DrawingContext& context)
-{
+void Teleporter::draw(DrawingContext& context) {
   if (m_sprite) {
-    m_sprite->draw(context.color(), m_pos * 32 + Vector(16, 16), LAYER_OBJECTS - 1);
+    m_sprite->draw(context.color(), m_pos * 32 + Vector(16, 16),
+                   LAYER_OBJECTS - 1);
   }
 }
 
-void
-Teleporter::update(float )
-{
-}
+void Teleporter::update(float) {}
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

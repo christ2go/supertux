@@ -19,24 +19,22 @@
 #include "video/glutil.hpp"
 #include "video/gl/gl_texture.hpp"
 
-GLFramebuffer::GLFramebuffer(/*GLVideoSystem& video_system,*/ GLTexture& texture) :
-  //m_video_system(video_system),
-  m_handle(0)
-{
+GLFramebuffer::GLFramebuffer(
+    /*GLVideoSystem& video_system,*/ GLTexture& texture)
+    :  // m_video_system(video_system),
+      m_handle(0) {
   assert_gl();
 
   glGenFramebuffers(1, &m_handle);
 
   glBindFramebuffer(GL_FRAMEBUFFER, m_handle);
-  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.get_handle(), 0);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         texture.get_handle(), 0);
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   assert_gl();
 }
 
-GLFramebuffer::~GLFramebuffer()
-{
-  glDeleteFramebuffers(1, &m_handle);
-}
+GLFramebuffer::~GLFramebuffer() { glDeleteFramebuffers(1, &m_handle); }
 
 /* EOF */

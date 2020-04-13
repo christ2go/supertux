@@ -22,15 +22,11 @@
 #include "util/log.hpp"
 #include "video/drawing_context.hpp"
 
-Tip::Tip(GameObject& object) :
-  m_strings(),
-  m_header()
-{
+Tip::Tip(GameObject& object) : m_strings(), m_header() {
   auto os = object.get_settings();
   m_header = os.get_name();
 
-  for (const auto& oo_ptr : os.get_options())
-  {
+  for (const auto& oo_ptr : os.get_options()) {
     const auto& oo = *oo_ptr;
 
     if (!(oo.get_flags() & OPTION_HIDDEN)) {
@@ -42,25 +38,24 @@ Tip::Tip(GameObject& object) :
   }
 }
 
-void
-Tip::draw(DrawingContext& context, const Vector& pos)
-{
+void Tip::draw(DrawingContext& context, const Vector& pos) {
   auto position = pos;
   position.y += 35;
   context.color().draw_text(Resources::normal_font, m_header, position,
-                              ALIGN_LEFT, LAYER_GUI-11, ColorScheme::Menu::label_color);
+                            ALIGN_LEFT, LAYER_GUI - 11,
+                            ColorScheme::Menu::label_color);
 
   for (const auto& str : m_strings) {
     position.y += 22;
-    context.color().draw_text(Resources::normal_font, str, position,
-                                ALIGN_LEFT, LAYER_GUI-11, ColorScheme::Menu::default_color);
+    context.color().draw_text(Resources::normal_font, str, position, ALIGN_LEFT,
+                              LAYER_GUI - 11, ColorScheme::Menu::default_color);
   }
 }
 
-void
-Tip::draw_up(DrawingContext& context, const Vector& pos)
-{
-  auto position = Vector(pos.x, pos.y - (static_cast<float>(m_strings.size()) + 1.0f) * 22.0f - 35.0f);
+void Tip::draw_up(DrawingContext& context, const Vector& pos) {
+  auto position = Vector(
+      pos.x,
+      pos.y - (static_cast<float>(m_strings.size()) + 1.0f) * 22.0f - 35.0f);
   draw(context, position);
 }
 

@@ -16,10 +16,7 @@
 
 #include "gl_renderer.hpp"
 
-GLRenderer::GLRenderer(GLVideoSystem& video_system) :
-  m_video_system(video_system),
-  m_painter(m_video_system, *this)
-{
-}
+GLRenderer::GLRenderer(GLVideoSystem& video_system)
+    : m_video_system(video_system), m_painter(m_video_system, *this) {}
 
 /* EOF */

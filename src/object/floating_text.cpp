@@ -21,20 +21,14 @@
 #include "supertux/resources.hpp"
 #include "video/drawing_context.hpp"
 
-FloatingText::FloatingText(const Vector& pos, const std::string& text_) :
-  position(pos),
-  text(text_),
-  timer()
-{
+FloatingText::FloatingText(const Vector& pos, const std::string& text_)
+    : position(pos), text(text_), timer() {
   timer.start(.1f);
   position.x -= static_cast<float>(text.size()) * 8.0f;
 }
 
-FloatingText::FloatingText(const Vector& pos, int score) :
-  position(pos),
-  text(),
-  timer()
-{
+FloatingText::FloatingText(const Vector& pos, int score)
+    : position(pos), text(), timer() {
   timer.start(.1f);
 
   // turn int into a string
@@ -45,20 +39,15 @@ FloatingText::FloatingText(const Vector& pos, int score) :
   position.x -= static_cast<float>(text.size()) * 8.0f;
 }
 
-void
-FloatingText::update(float dt_sec)
-{
+void FloatingText::update(float dt_sec) {
   position.y -= 1.4f * dt_sec;
 
-  if (timer.check())
-    remove_me();
+  if (timer.check()) remove_me();
 }
 
 const float FADING_TIME = .350f;
 
-void
-FloatingText::draw(DrawingContext& context)
-{
+void FloatingText::draw(DrawingContext& context) {
   // make an alpha animation when disappearing
   float alpha;
   if (timer.get_timeleft() < FADING_TIME)
@@ -69,7 +58,8 @@ FloatingText::draw(DrawingContext& context)
   context.push_transform();
   context.set_alpha(alpha);
 
-  context.color().draw_text(Resources::normal_font, text, position, ALIGN_LEFT, LAYER_OBJECTS+1, FloatingText::text_color);
+  context.color().draw_text(Resources::normal_font, text, position, ALIGN_LEFT,
+                            LAYER_OBJECTS + 1, FloatingText::text_color);
 
   context.pop_transform();
 }

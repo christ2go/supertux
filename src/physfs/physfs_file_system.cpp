@@ -20,18 +20,14 @@
 
 #include "physfs/ifile_stream.hpp"
 
-PhysFSFileSystem::PhysFSFileSystem()
-{
-}
+PhysFSFileSystem::PhysFSFileSystem() {}
 
-std::vector<std::string>
-PhysFSFileSystem::open_directory(const std::string& pathname)
-{
+std::vector<std::string> PhysFSFileSystem::open_directory(
+    const std::string& pathname) {
   std::vector<std::string> files;
 
   char** directory = PHYSFS_enumerateFiles(pathname.c_str());
-  for (char** i = directory; *i != nullptr; ++i)
-  {
+  for (char** i = directory; *i != nullptr; ++i) {
     files.push_back(*i);
   }
   PHYSFS_freeList(directory);
@@ -39,9 +35,8 @@ PhysFSFileSystem::open_directory(const std::string& pathname)
   return files;
 }
 
-std::unique_ptr<std::istream>
-PhysFSFileSystem::open_file(const std::string& filename)
-{
+std::unique_ptr<std::istream> PhysFSFileSystem::open_file(
+    const std::string& filename) {
   return std::make_unique<IFileStream>(filename);
 }
 

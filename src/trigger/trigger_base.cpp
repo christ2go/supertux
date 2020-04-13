@@ -19,37 +19,30 @@
 #include "object/player.hpp"
 #include "sprite/sprite.hpp"
 
-TriggerBase::TriggerBase(const ReaderMapping& mapping) :
-  MovingObject(mapping),
-  m_sprite(),
-  m_lasthit(false),
-  m_hit(false),
-  m_losetouch_listeners()
-{
+TriggerBase::TriggerBase(const ReaderMapping& mapping)
+    : MovingObject(mapping),
+      m_sprite(),
+      m_lasthit(false),
+      m_hit(false),
+      m_losetouch_listeners() {
   set_group(COLGROUP_TOUCHABLE);
 }
 
-TriggerBase::TriggerBase() :
-  m_sprite(),
-  m_lasthit(false),
-  m_hit(false),
-  m_losetouch_listeners()
-{
+TriggerBase::TriggerBase()
+    : m_sprite(), m_lasthit(false), m_hit(false), m_losetouch_listeners() {
   set_group(COLGROUP_TOUCHABLE);
 }
 
-TriggerBase::~TriggerBase()
-{
-  // unregister remove_listener hooks, so nobody will try to call us after we've been destroyed
+TriggerBase::~TriggerBase() {
+  // unregister remove_listener hooks, so nobody will try to call us after we've
+  // been destroyed
   for (auto& p : m_losetouch_listeners) {
     p->del_remove_listener(this);
   }
   m_losetouch_listeners.clear();
 }
 
-void
-TriggerBase::update(float )
-{
+void TriggerBase::update(float) {
   if (m_lasthit && !m_hit) {
     for (auto& p : m_losetouch_listeners) {
       event(*p, EVENT_LOSETOUCH);
@@ -61,19 +54,14 @@ TriggerBase::update(float )
   m_hit = false;
 }
 
-void
-TriggerBase::draw(DrawingContext& context)
-{
-  if (!m_sprite.get())
-    return;
+void TriggerBase::draw(DrawingContext& context) {
+  if (!m_sprite.get()) return;
 
-  m_sprite->draw(context.color(), get_pos(), LAYER_TILES+1);
+  m_sprite->draw(context.color(), get_pos(), LAYER_TILES + 1);
 }
 
-HitResponse
-TriggerBase::collision(GameObject& other, const CollisionHit& )
-{
-  auto player = dynamic_cast<Player*> (&other);
+HitResponse TriggerBase::collision(GameObject& other, const CollisionHit&) {
+  auto player = dynamic_cast<Player*>(&other);
   if (player) {
     m_hit = true;
     if (!m_lasthit) {
@@ -86,12 +74,9 @@ TriggerBase::collision(GameObject& other, const CollisionHit& )
   return ABORT_MOVE;
 }
 
-void
-TriggerBase::object_removed(GameObject* object)
-{
+void TriggerBase::object_removed(GameObject* object) {
   m_losetouch_listeners.erase(std::remove(m_losetouch_listeners.begin(),
-                                          m_losetouch_listeners.end(),
-                                          object),
+                                          m_losetouch_listeners.end(), object),
                               m_losetouch_listeners.end());
 }
 

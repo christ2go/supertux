@@ -17,13 +17,9 @@
 #include "supertux/level.hpp"
 #include "supertux/level_transformer.hpp"
 
-LevelTransformer::~LevelTransformer()
-{
-}
+LevelTransformer::~LevelTransformer() {}
 
-void
-LevelTransformer::transform(Level& level)
-{
+void LevelTransformer::transform(Level& level) {
   for (size_t i = 0; i < level.get_sector_count(); ++i) {
     transform_sector(*level.get_sector(i));
   }

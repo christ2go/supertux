@@ -28,23 +28,18 @@
 #include "util/reader_object.hpp"
 #include "video/surface.hpp"
 
-SpriteData::Action::Action() :
-  name(),
-  x_offset(0),
-  y_offset(0),
-  hitbox_w(0),
-  hitbox_h(0),
-  fps(10),
-  loops(-1),
-  has_custom_loops(false),
-  surfaces()
-{
-}
+SpriteData::Action::Action()
+    : name(),
+      x_offset(0),
+      y_offset(0),
+      hitbox_w(0),
+      hitbox_h(0),
+      fps(10),
+      loops(-1),
+      has_custom_loops(false),
+      surfaces() {}
 
-SpriteData::SpriteData(const ReaderMapping& mapping) :
-  actions(),
-  name()
-{
+SpriteData::SpriteData(const ReaderMapping& mapping) : actions(), name() {
   auto iter = mapping.get_iter();
   while (iter.next()) {
     if (iter.get_key() == "name") {
@@ -59,21 +54,18 @@ SpriteData::SpriteData(const ReaderMapping& mapping) :
     throw std::runtime_error("Error: Sprite without actions.");
 }
 
-void
-SpriteData::parse_action(const ReaderMapping& mapping)
-{
+void SpriteData::parse_action(const ReaderMapping& mapping) {
   auto action = std::make_unique<Action>();
 
   if (!mapping.get("name", action->name)) {
     if (!actions.empty())
       throw std::runtime_error(
-        "If there are more than one action, they need names!");
+          "If there are more than one action, they need names!");
   }
 
   std::vector<float> hitbox;
   if (mapping.get("hitbox", hitbox)) {
-    switch (hitbox.size())
-    {
+    switch (hitbox.size()) {
       case 4:
         action->hitbox_h = hitbox[3];
         action->hitbox_w = hitbox[2];
@@ -88,8 +80,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
     }
   }
   mapping.get("fps", action->fps);
-  if (mapping.get("loops", action->loops))
-  {
+  if (mapping.get("loops", action->loops)) {
     action->has_custom_loops = true;
   }
 
@@ -99,7 +90,8 @@ SpriteData::parse_action(const ReaderMapping& mapping)
     const auto act_tmp = get_action(mirror_action);
     if (act_tmp == nullptr) {
       std::ostringstream msg;
-      msg << "Could not mirror action. Action not found: \"" << mirror_action << "\"\n"
+      msg << "Could not mirror action. Action not found: \"" << mirror_action
+          << "\"\n"
           << "Mirror actions must be defined after the real one!";
       throw std::runtime_error(msg.str());
     } else {
@@ -112,22 +104,19 @@ SpriteData::parse_action(const ReaderMapping& mapping)
         action->surfaces.push_back(surface);
       }
 
-      if (action->hitbox_w < 1 && action->hitbox_h < 1)
-      {
+      if (action->hitbox_w < 1 && action->hitbox_h < 1) {
         action->hitbox_w = act_tmp->hitbox_w;
         action->hitbox_h = act_tmp->hitbox_h;
         action->x_offset = act_tmp->x_offset;
         action->y_offset = act_tmp->y_offset;
       }
 
-      if (!action->has_custom_loops && act_tmp->has_custom_loops)
-      {
+      if (!action->has_custom_loops && act_tmp->has_custom_loops) {
         action->has_custom_loops = act_tmp->has_custom_loops;
         action->loops = act_tmp->loops;
       }
 
-      if (action->fps == 0)
-      {
+      if (action->fps == 0) {
         action->fps = act_tmp->fps;
       }
     }
@@ -135,7 +124,8 @@ SpriteData::parse_action(const ReaderMapping& mapping)
     const auto* act_tmp = get_action(clone_action);
     if (act_tmp == nullptr) {
       std::ostringstream msg;
-      msg << "Could not clone action. Action not found: \"" << clone_action << "\"\n"
+      msg << "Could not clone action. Action not found: \"" << clone_action
+          << "\"\n"
           << "Mirror actions must be defined after the real one!";
       throw std::runtime_error(msg.str());
     } else {
@@ -144,34 +134,29 @@ SpriteData::parse_action(const ReaderMapping& mapping)
       *action = *act_tmp;
       action->name = oldname;
     }
-  } else { // Load images
+  } else {  // Load images
     boost::optional<ReaderCollection> surfaces_collection;
     std::vector<std::string> images;
-    if (mapping.get("images", images))
-    {
+    if (mapping.get("images", images)) {
       float max_w = 0;
       float max_h = 0;
       for (const auto& image : images) {
-        auto surface = Surface::from_file(FileSystem::join(mapping.get_doc().get_directory(), image));
+        auto surface = Surface::from_file(
+            FileSystem::join(mapping.get_doc().get_directory(), image));
         max_w = std::max(max_w, static_cast<float>(surface->get_width()));
         max_h = std::max(max_h, static_cast<float>(surface->get_height()));
         action->surfaces.push_back(surface);
       }
       if (action->hitbox_w < 1) action->hitbox_w = max_w - action->x_offset;
       if (action->hitbox_h < 1) action->hitbox_h = max_h - action->y_offset;
-    }
-    else if (mapping.get("surfaces", surfaces_collection))
-    {
-      for (const auto& i : surfaces_collection->get_objects())
-      {
-        if (i.get_name() == "surface")
-        {
+    } else if (mapping.get("surfaces", surfaces_collection)) {
+      for (const auto& i : surfaces_collection->get_objects()) {
+        if (i.get_name() == "surface") {
           action->surfaces.push_back(Surface::from_reader(i.get_mapping()));
-        }
-        else
-        {
+        } else {
           std::stringstream msg;
-          msg << "Sprite '" << name << "' unknown tag in 'surfaces' << " << i.get_name();
+          msg << "Sprite '" << name << "' unknown tag in 'surfaces' << "
+              << i.get_name();
           throw std::runtime_error(msg.str());
         }
       }
@@ -179,16 +164,13 @@ SpriteData::parse_action(const ReaderMapping& mapping)
       // calculate hitbox
       float max_w = 0;
       float max_h = 0;
-      for (const auto& surface : action->surfaces)
-      {
+      for (const auto& surface : action->surfaces) {
         max_w = std::max(max_w, static_cast<float>(surface->get_width()));
         max_h = std::max(max_h, static_cast<float>(surface->get_height()));
       }
       if (action->hitbox_w < 1) action->hitbox_w = max_w - action->x_offset;
       if (action->hitbox_h < 1) action->hitbox_h = max_h - action->y_offset;
-    }
-    else
-    {
+    } else {
       std::stringstream msg;
       msg << "Sprite '" << name << "' contains no images in action '"
           << action->name << "'.";
@@ -198,9 +180,7 @@ SpriteData::parse_action(const ReaderMapping& mapping)
   actions[action->name] = std::move(action);
 }
 
-const SpriteData::Action*
-SpriteData::get_action(const std::string& act) const
-{
+const SpriteData::Action* SpriteData::get_action(const std::string& act) const {
   Actions::const_iterator i = actions.find(act);
   if (i == actions.end()) {
     return nullptr;

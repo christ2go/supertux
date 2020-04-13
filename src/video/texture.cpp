@@ -18,15 +18,10 @@
 
 #include "video/texture_manager.hpp"
 
-Texture::Texture() :
-  m_cache_key()
-{
-}
+Texture::Texture() : m_cache_key() {}
 
-Texture::~Texture()
-{
-  if (TextureManager::current() && m_cache_key)
-  {
+Texture::~Texture() {
+  if (TextureManager::current() && m_cache_key) {
     // The cache entry is now useless: its weak pointer to us has
     // been cleared. Remove the entry altogether to save memory.
     TextureManager::current()->reap_cache_entry(*m_cache_key);

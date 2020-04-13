@@ -19,27 +19,22 @@
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
 
-SmokeCloud::SmokeCloud(const Vector& pos) :
-  sprite(SpriteManager::current()->create("images/objects/particles/stomp.sprite")),
-  timer(),
-  position(pos)
-{
+SmokeCloud::SmokeCloud(const Vector& pos)
+    : sprite(SpriteManager::current()->create(
+          "images/objects/particles/stomp.sprite")),
+      timer(),
+      position(pos) {
   timer.start(.3f);
 }
 
-void
-SmokeCloud::update(float dt_sec)
-{
+void SmokeCloud::update(float dt_sec) {
   position.y -= 120 * dt_sec;
 
-  if (timer.check())
-    remove_me();
+  if (timer.check()) remove_me();
 }
 
-void
-SmokeCloud::draw(DrawingContext& context)
-{
-  sprite->draw(context.color(), position, LAYER_OBJECTS+1);
+void SmokeCloud::draw(DrawingContext& context) {
+  sprite->draw(context.color(), position, LAYER_OBJECTS + 1);
 }
 
 /* EOF */

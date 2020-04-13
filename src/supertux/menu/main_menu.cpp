@@ -37,14 +37,13 @@
 #include "video/viewport.hpp"
 
 #if defined(_WIN32)
-  #include <windows.h>
-  #include <shellapi.h>
+#include <windows.h>
+#include <shellapi.h>
 #else
-  #include <cstdlib>
+#include <cstdlib>
 #endif
 
-MainMenu::MainMenu()
-{
+MainMenu::MainMenu() {
   set_center_pos(static_cast<float>(SCREEN_WIDTH) / 2.0f,
                  static_cast<float>(SCREEN_HEIGHT) / 2.0f + 35.0f);
 
@@ -57,19 +56,13 @@ MainMenu::MainMenu()
   add_entry(MNID_QUITMAINMENU, _("Quit"));
 }
 
-void
-MainMenu::on_window_resize()
-{
+void MainMenu::on_window_resize() {
   set_center_pos(static_cast<float>(SCREEN_WIDTH) / 2.0f,
                  static_cast<float>(SCREEN_HEIGHT) / 2.0f + 35.0f);
 }
 
-void
-MainMenu::menu_action(MenuItem& item)
-{
-  switch (item.get_id())
-  {
-
+void MainMenu::menu_action(MenuItem& item) {
+  switch (item.get_id()) {
     case MNID_STARTGAME:
       // World selection menu
       MenuManager::instance().push_menu(MenuStorage::WORLDSET_MENU);
@@ -80,26 +73,21 @@ MainMenu::menu_action(MenuItem& item)
       MenuManager::instance().push_menu(MenuStorage::ADDON_MENU);
       break;
 
-
-     case MNID_CREDITS:
-    {
+    case MNID_CREDITS: {
       // Credits Level
       SoundManager::current()->stop_music(0.2f);
       std::unique_ptr<World> world = World::from_directory("levels/misc");
       GameManager::current()->start_level(*world, "credits.stl");
-    }
-	  break;
+    } break;
 
-    case MNID_LEVELEDITOR:
-      {
-        MenuManager::instance().clear_menu_stack();
-        std::unique_ptr<Screen> screen(new Editor());
-        auto fade = std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5);
-        SoundManager::current()->stop_music(0.5);
-        ScreenManager::current()->push_screen(move(screen),move(fade));
-        //Editor::current()->setup();
-      }
-      break;
+    case MNID_LEVELEDITOR: {
+      MenuManager::instance().clear_menu_stack();
+      std::unique_ptr<Screen> screen(new Editor());
+      auto fade = std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5);
+      SoundManager::current()->stop_music(0.5);
+      ScreenManager::current()->push_screen(move(screen), move(fade));
+      // Editor::current()->setup();
+    } break;
 
     case MNID_DONATE:
       FileSystem::open_path("https://www.supertux.org/donate.html");
@@ -107,7 +95,8 @@ MainMenu::menu_action(MenuItem& item)
 
     case MNID_QUITMAINMENU:
       MenuManager::instance().clear_menu_stack();
-      ScreenManager::current()->quit(std::unique_ptr<ScreenFade>(new FadeToBlack(FadeToBlack::FADEOUT, 0.25)));
+      ScreenManager::current()->quit(std::unique_ptr<ScreenFade>(
+          new FadeToBlack(FadeToBlack::FADEOUT, 0.25)));
       SoundManager::current()->stop_music(0.25);
       break;
   }

@@ -20,118 +20,86 @@
 
 namespace scripting {
 
-void
-ScriptedObject::set_action(const std::string& animation)
-{
+void ScriptedObject::set_action(const std::string& animation) {
   SCRIPT_GUARD_VOID;
   object.set_action(animation);
 }
 
-std::string
-ScriptedObject::get_action() const
-{
+std::string ScriptedObject::get_action() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_action();
 }
 
-void
-ScriptedObject::move(float x, float y)
-{
+void ScriptedObject::move(float x, float y) {
   SCRIPT_GUARD_VOID;
   object.move(x, y);
 }
 
-void
-ScriptedObject::set_pos(float x, float y)
-{
+void ScriptedObject::set_pos(float x, float y) {
   SCRIPT_GUARD_VOID;
   object.set_pos(Vector(x, y));
 }
 
-float
-ScriptedObject::get_pos_x() const
-{
+float ScriptedObject::get_pos_x() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos_x();
 }
 
-float
-ScriptedObject::get_pos_y() const
-{
+float ScriptedObject::get_pos_y() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos_y();
 }
 
-void
-ScriptedObject::set_velocity(float x, float y)
-{
+void ScriptedObject::set_velocity(float x, float y) {
   SCRIPT_GUARD_VOID;
   object.set_velocity(x, y);
 }
 
-float
-ScriptedObject::get_velocity_x() const
-{
+float ScriptedObject::get_velocity_x() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_velocity_x();
 }
 
-float
-ScriptedObject::get_velocity_y() const
-{
+float ScriptedObject::get_velocity_y() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_velocity_y();
 }
 
-void
-ScriptedObject::enable_gravity(bool f)
-{
+void ScriptedObject::enable_gravity(bool f) {
   SCRIPT_GUARD_VOID;
   object.enable_gravity(f);
 }
 
-bool
-ScriptedObject::gravity_enabled() const
-{
+bool ScriptedObject::gravity_enabled() const {
   SCRIPT_GUARD_DEFAULT;
   return object.gravity_enabled();
 }
 
-void
-ScriptedObject::set_visible(bool visible)
-{
+void ScriptedObject::set_visible(bool visible) {
   SCRIPT_GUARD_VOID;
   object.set_visible(visible);
 }
 
-bool
-ScriptedObject::is_visible() const
-{
+bool ScriptedObject::is_visible() const {
   SCRIPT_GUARD_DEFAULT;
   return object.is_visible();
 }
 
-void
-ScriptedObject::set_solid(bool solid)
-{
+void ScriptedObject::set_solid(bool solid) {
   SCRIPT_GUARD_VOID;
   return object.set_solid(solid);
 }
 
-bool
-ScriptedObject::is_solid() const
-{
+bool ScriptedObject::is_solid() const {
   SCRIPT_GUARD_DEFAULT;
   return object.is_solid();
 }
 
-std::string
-ScriptedObject::get_name() const
-{
+std::string ScriptedObject::get_name() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_name();
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

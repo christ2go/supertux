@@ -1,5 +1,6 @@
 //  SuperTux - Decal
-//  Copyright (C) 2008 Christoph Sommer <christoph.sommer@2008.expires.deltadevelopment.de>
+//  Copyright (C) 2008 Christoph Sommer
+//  <christoph.sommer@2008.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -19,36 +20,31 @@
 #include "util/reader.hpp"
 #include "util/reader_mapping.hpp"
 
-Decal::Decal(const ReaderMapping& reader) :
-  MovingSprite(reader, "images/decal/explanations/billboard-bigtux.png", LAYER_OBJECTS, COLGROUP_DISABLED),
-  default_action("default"),
-  solid()
-{
+Decal::Decal(const ReaderMapping& reader)
+    : MovingSprite(reader, "images/decal/explanations/billboard-bigtux.png",
+                   LAYER_OBJECTS, COLGROUP_DISABLED),
+      default_action("default"),
+      solid() {
   m_layer = reader_get_layer(reader, LAYER_OBJECTS);
 
   reader.get("solid", solid, false);
-  if (solid)
-    set_group(COLGROUP_STATIC);
-  if (reader.get("action", default_action))
-    set_action(default_action, -1);
+  if (solid) set_group(COLGROUP_STATIC);
+  if (reader.get("action", default_action)) set_action(default_action, -1);
 }
 
-ObjectSettings
-Decal::get_settings()
-{
+ObjectSettings Decal::get_settings() {
   ObjectSettings result = MovingSprite::get_settings();
 
   result.add_int(_("Z-pos"), &m_layer, "z-pos", LAYER_OBJECTS);
   result.add_bool(_("Solid"), &solid, "solid", false);
-  result.add_text(_("Action"), &default_action, "action", std::string("default"));
+  result.add_text(_("Action"), &default_action, "action",
+                  std::string("default"));
 
   result.reorder({"z-pos", "sprite", "x", "y"});
 
   return result;
 }
 
-Decal::~Decal()
-{
-}
+Decal::~Decal() {}
 
 /* EOF */

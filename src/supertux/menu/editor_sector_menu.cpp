@@ -22,13 +22,12 @@
 #include "supertux/sector.hpp"
 #include "util/gettext.hpp"
 
-EditorSectorMenu::EditorSectorMenu() :
-  sector(Editor::current()->get_sector()),
-  original_name(sector->get_name()),
-  size(sector->get_editor_size()),
-  new_size(size),
-  offset(0, 0)
-{
+EditorSectorMenu::EditorSectorMenu()
+    : sector(Editor::current()->get_sector()),
+      original_name(sector->get_name()),
+      size(sector->get_editor_size()),
+      new_size(size),
+      offset(0, 0) {
   add_label(_("Sector") + " " + sector->get_name());
   add_hl();
   add_textfield(_("Name"), &sector->m_name);
@@ -46,8 +45,7 @@ EditorSectorMenu::EditorSectorMenu() :
   add_back(_("OK"));
 }
 
-EditorSectorMenu::~EditorSectorMenu()
-{
+EditorSectorMenu::~EditorSectorMenu() {
   auto editor = Editor::current();
   if (editor == nullptr) {
     return;
@@ -68,9 +66,7 @@ EditorSectorMenu::~EditorSectorMenu()
   }
 }
 
-void
-EditorSectorMenu::menu_action(MenuItem& item)
-{
+void EditorSectorMenu::menu_action(MenuItem& item) {
   switch (item.get_id()) {
     case MNID_RESIZESECTOR:
       if (new_size.is_valid()) {

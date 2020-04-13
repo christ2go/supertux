@@ -1,5 +1,6 @@
 //  DartTrap - Shoots a Dart at regular intervals
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -29,22 +30,25 @@ namespace {
 const float MUZZLE_Y = 25; /**< [px] muzzle y-offset from top */
 }
 
-DartTrap::DartTrap(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/darttrap/darttrap.sprite", LAYER_TILES-1),
-  enabled(true),
-  initial_delay(),
-  fire_delay(),
-  ammo(),
-  state(IDLE),
-  fire_timer()
-{
+DartTrap::DartTrap(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/darttrap/darttrap.sprite",
+             LAYER_TILES - 1),
+      enabled(true),
+      initial_delay(),
+      fire_delay(),
+      ammo(),
+      state(IDLE),
+      fire_timer() {
   reader.get("enabled", enabled, true);
   reader.get("initial-delay", initial_delay, 0.0f);
   reader.get("fire-delay", fire_delay, 2.0f);
   reader.get("ammo", ammo, -1);
   m_countMe = false;
   SoundManager::current()->preload("sounds/dartfire.wav");
-  if (m_start_dir == Direction::AUTO) { log_warning << "Setting a DartTrap's direction to AUTO is no good idea" << std::endl; }
+  if (m_start_dir == Direction::AUTO) {
+    log_warning << "Setting a DartTrap's direction to AUTO is no good idea"
+                << std::endl;
+  }
   state = IDLE;
   set_colgroup_active(COLGROUP_DISABLED);
 
@@ -53,27 +57,17 @@ DartTrap::DartTrap(const ReaderMapping& reader) :
   }
 }
 
-void
-DartTrap::initialize()
-{
+void DartTrap::initialize() {
   m_sprite->set_action(m_dir == Direction::LEFT ? "idle-left" : "idle-right");
 }
 
-void
-DartTrap::activate()
-{
-  fire_timer.start(initial_delay);
-}
+void DartTrap::activate() { fire_timer.start(initial_delay); }
 
-HitResponse
-DartTrap::collision_player(Player& , const CollisionHit& )
-{
+HitResponse DartTrap::collision_player(Player&, const CollisionHit&) {
   return ABORT_MOVE;
 }
 
-void
-DartTrap::active_update(float )
-{
+void DartTrap::active_update(float) {
   if (!enabled) {
     return;
   }
@@ -97,16 +91,13 @@ DartTrap::active_update(float )
   }
 }
 
-void
-DartTrap::load()
-{
+void DartTrap::load() {
   state = LOADING;
-  m_sprite->set_action(m_dir == Direction::LEFT ? "loading-left" : "loading-right", 1);
+  m_sprite->set_action(
+      m_dir == Direction::LEFT ? "loading-left" : "loading-right", 1);
 }
 
-void
-DartTrap::fire()
-{
+void DartTrap::fire() {
   float px = get_pos().x;
   if (m_dir == Direction::RIGHT) px += 5;
   float py = get_pos().y;
@@ -118,9 +109,7 @@ DartTrap::fire()
   m_sprite->set_action(m_dir == Direction::LEFT ? "idle-left" : "idle-right");
 }
 
-ObjectSettings
-DartTrap::get_settings()
-{
+ObjectSettings DartTrap::get_settings() {
   ObjectSettings result = BadGuy::get_settings();
 
   result.add_float(_("Initial delay"), &initial_delay, "initial-delay");
@@ -128,7 +117,8 @@ DartTrap::get_settings()
   result.add_float(_("Fire delay"), &fire_delay, "fire-delay");
   result.add_int(_("Ammo"), &ammo, "ammo");
 
-  result.reorder({"initial-delay", "fire-delay", "ammo", "direction", "x", "y"});
+  result.reorder(
+      {"initial-delay", "fire-delay", "ammo", "direction", "x", "y"});
 
   return result;
 }

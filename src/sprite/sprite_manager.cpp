@@ -24,14 +24,9 @@
 
 #include <sstream>
 
-SpriteManager::SpriteManager() :
-  sprites()
-{
-}
+SpriteManager::SpriteManager() : sprites() {}
 
-SpritePtr
-SpriteManager::create(const std::string& name)
-{
+SpritePtr SpriteManager::create(const std::string& name) {
   Sprites::iterator i = sprites.find(name);
   SpriteData* data;
   if (i == sprites.end()) {
@@ -49,10 +44,8 @@ SpriteManager::create(const std::string& name)
   return SpritePtr(new Sprite(*data));
 }
 
-SpriteData*
-SpriteManager::load(const std::string& filename)
-{
-  ReaderDocument doc = [filename](){
+SpriteData* SpriteManager::load(const std::string& filename) {
+  ReaderDocument doc = [filename]() {
     try {
       if (StringUtil::has_suffix(filename, ".sprite")) {
         return ReaderDocument::from_file(filename);
@@ -63,10 +56,10 @@ SpriteManager::load(const std::string& filename)
              << "(images \"" << FileSystem::basename(filename) << "\")))";
         return ReaderDocument::from_stream(text, filename);
       }
-    } catch(const std::exception& e) {
+    } catch (const std::exception& e) {
       std::ostringstream msg;
       msg << "Parse error when trying to load sprite '" << filename
-      << "': " << e.what() << "\n";
+          << "': " << e.what() << "\n";
       throw std::runtime_error(msg.str());
     }
   }();

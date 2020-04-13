@@ -30,10 +30,8 @@
 #include "util/file_system.hpp"
 #include "util/gettext.hpp"
 
-ContribLevelsetMenu::ContribLevelsetMenu(std::unique_ptr<World> world) :
-  m_world(std::move(world)),
-  m_levelset()
-{
+ContribLevelsetMenu::ContribLevelsetMenu(std::unique_ptr<World> world)
+    : m_world(std::move(world)), m_levelset() {
   assert(m_world->is_levelset());
 
   m_levelset = std::unique_ptr<Levelset>(new Levelset(m_world->get_basedir()));
@@ -44,20 +42,17 @@ ContribLevelsetMenu::ContribLevelsetMenu(std::unique_ptr<World> world) :
   add_label(m_world->get_title());
   add_hl();
 
-  for (int i = 0; i < m_levelset->get_num_levels(); ++i)
-  {
+  for (int i = 0; i < m_levelset->get_num_levels(); ++i) {
     std::string filename = m_levelset->get_level_filename(i);
-    std::string full_filename = FileSystem::join(m_world->get_basedir(), filename);
+    std::string full_filename =
+        FileSystem::join(m_world->get_basedir(), filename);
     std::string title = LevelParser::get_level_name(full_filename);
     LevelState level_state = state.get_level_state(filename);
 
     std::ostringstream out;
-    if (level_state.solved)
-    {
+    if (level_state.solved) {
       out << title << " [*]";
-    }
-    else
-    {
+    } else {
       out << title << " [ ]";
     }
     add_entry(i, out.str());
@@ -67,17 +62,16 @@ ContribLevelsetMenu::ContribLevelsetMenu(std::unique_ptr<World> world) :
   add_back(_("Back"));
 }
 
-void
-ContribLevelsetMenu::menu_action(MenuItem& item)
-{
-  if (dynamic_cast<ItemAction*>(&item))
-  {
+void ContribLevelsetMenu::menu_action(MenuItem& item) {
+  if (dynamic_cast<ItemAction*>(&item)) {
     SoundManager::current()->stop_music();
 
     // reload the World so that we have something that we can safely
     // std::move() around without wreaking the ContribMenu
-    std::unique_ptr<World> world = World::from_directory(m_world->get_basedir());
-    GameManager::current()->start_level(*world, m_levelset->get_level_filename(item.get_id()));
+    std::unique_ptr<World> world =
+        World::from_directory(m_world->get_basedir());
+    GameManager::current()->start_level(
+        *world, m_levelset->get_level_filename(item.get_id()));
   }
 }
 

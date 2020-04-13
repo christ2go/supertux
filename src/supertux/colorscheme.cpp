@@ -26,41 +26,41 @@
 #include "trigger/secretarea_trigger.hpp"
 #include "worldmap/worldmap.hpp"
 
-Color LevelIntro::s_header_color(1.f,1.f,0.6f);
-Color LevelIntro::s_author_color(1.f,1.f,1.f);
-Color LevelIntro::s_stat_hdr_color(0.2f,0.5f,1.f);
-Color LevelIntro::s_stat_color(1.f,1.f,1.f);
-Color LevelIntro::s_stat_perfect_color(0.4f,1.f,0.4f);
+Color LevelIntro::s_header_color(1.f, 1.f, 0.6f);
+Color LevelIntro::s_author_color(1.f, 1.f, 1.f);
+Color LevelIntro::s_stat_hdr_color(0.2f, 0.5f, 1.f);
+Color LevelIntro::s_stat_color(1.f, 1.f, 1.f);
+Color LevelIntro::s_stat_perfect_color(0.4f, 1.f, 0.4f);
 
-Color Statistics::header_color(1.f,1.f,1.f);
-Color Statistics::text_color(1.f,1.f,0.6f);
-Color Statistics::perfect_color(0.4f,1.f,0.4f);
+Color Statistics::header_color(1.f, 1.f, 1.f);
+Color Statistics::text_color(1.f, 1.f, 0.6f);
+Color Statistics::perfect_color(0.4f, 1.f, 0.4f);
 
-Color ColorScheme::Menu::default_color(1.f,1.f,1.f);
-Color ColorScheme::Menu::active_color(0.4f,0.66f,1.f);
-Color ColorScheme::Menu::inactive_color(0.5f,0.5f,0.5f);
-Color ColorScheme::Menu::label_color(0.f,1.f,1.f);
-Color ColorScheme::Menu::field_color(1.f,1.f,0.6f);
+Color ColorScheme::Menu::default_color(1.f, 1.f, 1.f);
+Color ColorScheme::Menu::active_color(0.4f, 0.66f, 1.f);
+Color ColorScheme::Menu::inactive_color(0.5f, 0.5f, 0.5f);
+Color ColorScheme::Menu::label_color(0.f, 1.f, 1.f);
+Color ColorScheme::Menu::field_color(1.f, 1.f, 0.6f);
 
-Color PlayerStatusHUD::text_color(1.f,1.f,0.6f);
+Color PlayerStatusHUD::text_color(1.f, 1.f, 0.6f);
 
-Color TextObject::default_color(1.f,1.f,1.f);
+Color TextObject::default_color(1.f, 1.f, 1.f);
 
-Color FloatingText::text_color(1.f,1.f,0.6f);
+Color FloatingText::text_color(1.f, 1.f, 0.6f);
 
-Color LevelTime::text_color(1.f,1.f,0.6f);
+Color LevelTime::text_color(1.f, 1.f, 0.6f);
 
-Color SecretAreaTrigger::text_color(1.f,1.f,0.6f);
+Color SecretAreaTrigger::text_color(1.f, 1.f, 0.6f);
 
-Color Climbable::text_color(1.f,1.f,0.6f);
+Color Climbable::text_color(1.f, 1.f, 0.6f);
 
-Color worldmap::WorldMap::level_title_color(1.f,1.f,1.f);
-Color worldmap::WorldMap::message_color(1.f,1.f,0.6f);
-Color worldmap::WorldMap::teleporter_message_color(1.f,1.f,1.f);
+Color worldmap::WorldMap::level_title_color(1.f, 1.f, 1.f);
+Color worldmap::WorldMap::message_color(1.f, 1.f, 0.6f);
+Color worldmap::WorldMap::teleporter_message_color(1.f, 1.f, 1.f);
 
-Color ColorScheme::Text::small_color(1.f,1.f,1.f);
-Color ColorScheme::Text::heading_color(1.f,1.f,0.6f);
-Color ColorScheme::Text::reference_color(0.2f,0.6f,1.f);
-Color ColorScheme::Text::normal_color(1.f,1.f,1.f);
+Color ColorScheme::Text::small_color(1.f, 1.f, 1.f);
+Color ColorScheme::Text::heading_color(1.f, 1.f, 0.6f);
+Color ColorScheme::Text::reference_color(0.2f, 0.6f, 1.f);
+Color ColorScheme::Text::normal_color(1.f, 1.f, 1.f);
 
 /* EOF */

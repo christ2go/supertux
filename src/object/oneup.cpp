@@ -19,28 +19,25 @@
 #include "object/player.hpp"
 #include "supertux/sector.hpp"
 
-OneUp::OneUp(const Vector& pos, Direction direction) :
-  MovingSprite(pos, "images/powerups/1up/1up.sprite", LAYER_FLOATINGOBJECTS, COLGROUP_TOUCHABLE),
-  physic()
-{
-  physic.set_velocity( (direction == Direction::LEFT) ? -100.0f : 100.0f, -400.0f);
-  if (direction == Direction::DOWN) // this causes the doll to drop when opened with a butt-jump
+OneUp::OneUp(const Vector& pos, Direction direction)
+    : MovingSprite(pos, "images/powerups/1up/1up.sprite", LAYER_FLOATINGOBJECTS,
+                   COLGROUP_TOUCHABLE),
+      physic() {
+  physic.set_velocity((direction == Direction::LEFT) ? -100.0f : 100.0f,
+                      -400.0f);
+  if (direction == Direction::DOWN)  // this causes the doll to drop when opened
+                                     // with a butt-jump
     physic.set_velocity(0, -100);
 }
 
-void
-OneUp::update(float dt_sec)
-{
-  if (!Sector::get().inside(m_col.m_bbox))
-    remove_me();
+void OneUp::update(float dt_sec) {
+  if (!Sector::get().inside(m_col.m_bbox)) remove_me();
 
   m_col.m_movement = physic.get_movement(dt_sec);
 }
 
-HitResponse
-OneUp::collision(GameObject& other, const CollisionHit& )
-{
-  auto player = dynamic_cast<Player*> (&other);
+HitResponse OneUp::collision(GameObject& other, const CollisionHit&) {
+  auto player = dynamic_cast<Player*>(&other);
   if (player) {
     player->get_status().add_coins(100);
 #if 0

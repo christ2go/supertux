@@ -18,19 +18,12 @@
 
 #include "util/reader_mapping.hpp"
 
-ObjectGroup::ObjectGroup() :
-  m_name(),
-  m_icons(),
-  m_for_worldmap(false)
-{
+ObjectGroup::ObjectGroup() : m_name(), m_icons(), m_for_worldmap(false) {
   m_icons.clear();
 }
 
-ObjectGroup::ObjectGroup(const ReaderMapping& reader) :
-  m_name(),
-  m_icons(),
-  m_for_worldmap(false)
-{
+ObjectGroup::ObjectGroup(const ReaderMapping& reader)
+    : m_name(), m_icons(), m_for_worldmap(false) {
   m_icons.clear();
 
   reader.get("name", m_name);
@@ -40,13 +33,13 @@ ObjectGroup::ObjectGroup(const ReaderMapping& reader) :
   while (iter.next()) {
     const std::string& token = iter.get_key();
     if (token == "object") {
-      m_icons.push_back( ObjectIcon( iter.as_mapping() ) );
+      m_icons.push_back(ObjectIcon(iter.as_mapping()));
     }
   }
 }
 
-void
-ObjectGroup::add_icon(const std::string& object, const std::string& icon_path) {
+void ObjectGroup::add_icon(const std::string& object,
+                           const std::string& icon_path) {
   ObjectIcon new_icon(object, icon_path);
   m_icons.push_back(new_icon);
 }

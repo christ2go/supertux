@@ -22,16 +22,14 @@
 #include "object/player.hpp"
 #include "supertux/sector.hpp"
 
-Snowman::Snowman(const ReaderMapping& reader) :
-  WalkingBadguy(reader, "images/creatures/snowman/snowman.sprite", "left", "right")
-{
+Snowman::Snowman(const ReaderMapping& reader)
+    : WalkingBadguy(reader, "images/creatures/snowman/snowman.sprite", "left",
+                    "right") {
   walk_speed = 40;
   SoundManager::current()->preload("sounds/pop.ogg");
 }
 
-void
-Snowman::loose_head()
-{
+void Snowman::loose_head() {
   // replace with Snowball
   Vector snowball_pos = get_pos();
   // Hard-coded values from sprites
@@ -39,21 +37,21 @@ Snowman::loose_head()
   snowball_pos.y += 1;
 
   /* Create death animation for the (now headless) snowman. */
-  set_action (m_dir == Direction::LEFT ? "headless-left" : "headless-right", /* loops = */ -1);
-  set_pos (get_pos () + Vector (-4.0, 19.0)); /* difference in the sprite offsets */
+  set_action(m_dir == Direction::LEFT ? "headless-left" : "headless-right",
+             /* loops = */ -1);
+  set_pos(get_pos() +
+          Vector(-4.0, 19.0)); /* difference in the sprite offsets */
   m_physic.set_velocity_y(0);
   m_physic.set_acceleration_y(0);
   m_physic.enable_gravity(true);
-  set_state (STATE_FALLING);
+  set_state(STATE_FALLING);
   m_countMe = false;
 
   /* Create a new snowball where the snowman's head was */
   Sector::get().add<SnowBall>(snowball_pos, m_dir, m_dead_script);
 }
 
-HitResponse
-Snowman::collision_bullet(Bullet& bullet, const CollisionHit& hit)
-{
+HitResponse Snowman::collision_bullet(Bullet& bullet, const CollisionHit& hit) {
   if (bullet.get_type() == FIRE_BONUS) {
     // fire bullets destroy snowman's body
     Vector snowball_pos = get_pos();
@@ -64,22 +62,20 @@ Snowman::collision_bullet(Bullet& bullet, const CollisionHit& hit)
     /* Create a new snowball where the snowman's head was */
     Sector::get().add<SnowBall>(snowball_pos, m_dir, m_dead_script);
 
-    SoundManager::current()->play("sounds/pop.ogg", get_pos()); // this could be a different sound
+    SoundManager::current()->play(
+        "sounds/pop.ogg", get_pos());  // this could be a different sound
     bullet.remove_me();
     ignite();
 
     return ABORT_MOVE;
-  }
-  else {
+  } else {
     // in all other cases, bullets ricochet
     bullet.ricochet(*this, hit);
     return FORCE_MOVE;
   }
 }
 
-bool
-Snowman::collision_squished(GameObject& object)
-{
+bool Snowman::collision_squished(GameObject& object) {
   auto player = dynamic_cast<Player*>(&object);
   if (player && (player->m_does_buttjump || player->is_invincible())) {
     player->bounce(*this);
@@ -88,8 +84,7 @@ Snowman::collision_squished(GameObject& object)
   }
 
   // bounce
-  if (player)
-    player->bounce(*this);
+  if (player) player->bounce(*this);
 
   SoundManager::current()->play("sounds/pop.ogg", get_pos());
 

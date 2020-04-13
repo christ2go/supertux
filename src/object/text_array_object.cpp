@@ -17,46 +17,39 @@
 #include "object/text_array_object.hpp"
 #include "control/input_manager.hpp"
 
-TextArrayObject::TextArrayObject(const std::string& name) :
-  ExposedObject<TextArrayObject, scripting::TextArray>(this),
-  m_isDone(false),
-  m_isAuto(false),
-  m_keepVisible(false),
-  m_fadeTransition(true),
-  m_fadetime(1.0),
-  m_texts(),
-  m_curTextIndex(0),
-  m_lastTextIndex(0),
-  m_waiting()
-{
+TextArrayObject::TextArrayObject(const std::string& name)
+    : ExposedObject<TextArrayObject, scripting::TextArray>(this),
+      m_isDone(false),
+      m_isAuto(false),
+      m_keepVisible(false),
+      m_fadeTransition(true),
+      m_fadetime(1.0),
+      m_texts(),
+      m_curTextIndex(0),
+      m_lastTextIndex(0),
+      m_waiting() {
   m_name = name;
 }
 
-TextArrayObject::TextArrayObject(const ReaderMapping& reader) :
-  GameObject(reader),
-  ExposedObject<TextArrayObject, scripting::TextArray>(this),
-  m_isDone(false),
-  m_isAuto(false),
-  m_keepVisible(false),
-  m_fadeTransition(true),
-  m_fadetime(1.0),
-  m_texts(),
-  m_curTextIndex(0),
-  m_lastTextIndex(0),
-  m_waiting()
-{
-}
+TextArrayObject::TextArrayObject(const ReaderMapping& reader)
+    : GameObject(reader),
+      ExposedObject<TextArrayObject, scripting::TextArray>(this),
+      m_isDone(false),
+      m_isAuto(false),
+      m_keepVisible(false),
+      m_fadeTransition(true),
+      m_fadetime(1.0),
+      m_texts(),
+      m_curTextIndex(0),
+      m_lastTextIndex(0),
+      m_waiting() {}
 
-void
-TextArrayObject::clear()
-{
+void TextArrayObject::clear() {
   m_texts.clear();
   reset_automation();
 }
 
-void
-TextArrayObject::add_text(const std::string& text, float duration)
-{
+void TextArrayObject::add_text(const std::string& text, float duration) {
   auto pText = std::make_unique<TextArrayItem>();
   assert(pText);
 
@@ -66,25 +59,16 @@ TextArrayObject::add_text(const std::string& text, float duration)
   m_texts.push_back(std::move(pText));
 }
 
-void TextArrayObject::set_text_index(ta_index index)
-{
-  if (index < m_texts.size())
-    m_curTextIndex = index;
+void TextArrayObject::set_text_index(ta_index index) {
+  if (index < m_texts.size()) m_curTextIndex = index;
 }
 
-void
-TextArrayObject::set_fade_time(float fadetime)
-{
-  m_fadetime = fadetime;
-}
+void TextArrayObject::set_fade_time(float fadetime) { m_fadetime = fadetime; }
 
-void
-TextArrayObject::next_text()
-{
-  if (m_isDone)
-    return;
+void TextArrayObject::next_text() {
+  if (m_isDone) return;
 
-  if (m_curTextIndex+1 >= m_texts.size()) {
+  if (m_curTextIndex + 1 >= m_texts.size()) {
     m_isDone = true;
     return;
   }
@@ -95,14 +79,10 @@ TextArrayObject::next_text()
   reset_automation();
 }
 
-void
-TextArrayObject::prev_text()
-{
-  if (m_isDone)
-    return;
+void TextArrayObject::prev_text() {
+  if (m_isDone) return;
 
-  if (m_curTextIndex == 0)
-    return;
+  if (m_curTextIndex == 0) return;
 
   m_lastTextIndex = m_curTextIndex--;
 
@@ -110,63 +90,42 @@ TextArrayObject::prev_text()
   reset_automation();
 }
 
-void
-TextArrayObject::set_keep_visible(bool keep_visible)
-{
+void TextArrayObject::set_keep_visible(bool keep_visible) {
   m_keepVisible = keep_visible;
 }
 
-void
-TextArrayObject::set_fade_transition(bool fade_transition)
-{
+void TextArrayObject::set_fade_transition(bool fade_transition) {
   m_fadeTransition = fade_transition;
 }
 
-TextArrayItem*
-TextArrayObject::get_text_item(ta_index index)
-{
+TextArrayItem* TextArrayObject::get_text_item(ta_index index) {
   auto vecSize = m_texts.size();
 
-  if (vecSize == 0 || index >= vecSize)
-    return nullptr;
+  if (vecSize == 0 || index >= vecSize) return nullptr;
 
   return m_texts.at(index).get();
 }
 
-TextArrayItem*
-TextArrayObject::get_current_text_item()
-{
+TextArrayItem* TextArrayObject::get_current_text_item() {
   return get_text_item(m_curTextIndex);
 }
 
-TextArrayItem*
-TextArrayObject::get_last_text_item()
-{
+TextArrayItem* TextArrayObject::get_last_text_item() {
   return get_text_item(m_lastTextIndex);
 }
 
-void
-TextArrayObject::set_done(bool done)
-{
-  m_isDone = done;
-}
+void TextArrayObject::set_done(bool done) { m_isDone = done; }
 
-void
-TextArrayObject::set_auto(bool is_auto)
-{
+void TextArrayObject::set_auto(bool is_auto) {
   m_isAuto = is_auto;
   reset_automation();
 }
 
-void
-TextArrayObject::update(float dt_sec)
-{
-  if (m_isDone)
-    return;
+void TextArrayObject::update(float dt_sec) {
+  if (m_isDone) return;
 
   // make sure there's anything to update
-  if (m_texts.size() == 0)
-    return;
+  if (m_texts.size() == 0) return;
 
   // detect change request
   handle_input_requests();
@@ -178,76 +137,60 @@ TextArrayObject::update(float dt_sec)
 
   // update current
   auto* curTextItem = get_current_text_item();
-  if (curTextItem)
-    curTextItem->text_object.update(dt_sec);
+  if (curTextItem) curTextItem->text_object.update(dt_sec);
 
   // update last (if transition is enabled)
 
   if (should_fade()) {
     auto* lastTextItem = get_last_text_item();
-    if (lastTextItem)
-      lastTextItem->text_object.update(dt_sec);
+    if (lastTextItem) lastTextItem->text_object.update(dt_sec);
   }
 }
 
-void
-TextArrayObject::draw(DrawingContext& context)
-{
-  if (m_isDone)
-    return;
+void TextArrayObject::draw(DrawingContext& context) {
+  if (m_isDone) return;
 
   auto* curTextItem = get_current_text_item();
-  if (!curTextItem)
-    return;
+  if (!curTextItem) return;
 
   // draw last if transition enabled
   if (should_fade()) {
     auto* lastTextItem = get_last_text_item();
-    if (lastTextItem)
-      lastTextItem->text_object.draw(context);
+    if (lastTextItem) lastTextItem->text_object.draw(context);
   }
 
   // draw current
   curTextItem->text_object.draw(context);
 }
 
-void
-TextArrayObject::override_properties()
-{
-  if (!(should_fade() || m_keepVisible))
-    return;
+void TextArrayObject::override_properties() {
+  if (!(should_fade() || m_keepVisible)) return;
 
   auto* curTextItem = get_current_text_item();
-  if (!curTextItem)
-    return;
+  if (!curTextItem) return;
 
   // apply overrides
-  if (should_fade()) { // make fade transition
+  if (should_fade()) {  // make fade transition
     auto* lastTextItem = get_last_text_item();
     if (lastTextItem) {
       lastTextItem->text_object.fade_out(m_fadetime);
       curTextItem->text_object.fade_in(m_fadetime);
     }
-  } else if (m_keepVisible) { // keep visible
+  } else if (m_keepVisible) {  // keep visible
     curTextItem->text_object.set_visible(true);
   }
 }
 
-void
-TextArrayObject::reset_automation()
-{
+void TextArrayObject::reset_automation() {
   m_waiting.stop();
 
   if (m_isAuto) {
     auto* text = get_current_text_item();
-    if (text)
-      m_waiting.start(text->duration);
+    if (text) m_waiting.start(text->duration);
   }
 }
 
-void
-TextArrayObject::handle_input_requests()
-{
+void TextArrayObject::handle_input_requests() {
   const Controller& controller = InputManager::current()->get_controller();
 
   if (controller.pressed(Control::MENU_SELECT)) {
@@ -257,12 +200,9 @@ TextArrayObject::handle_input_requests()
     m_isAuto = false;
     prev_text();
   }
-
 }
 
-bool
-TextArrayObject::should_fade()
-{
+bool TextArrayObject::should_fade() {
   return m_fadeTransition && (m_curTextIndex != m_lastTextIndex);
 }
 

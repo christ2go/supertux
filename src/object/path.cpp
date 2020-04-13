@@ -1,7 +1,8 @@
 //  SuperTux Path
 //  Copyright (C) 2005 Philipp <balinor@pnxs.de>
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
-//  Copyright (C) 2006 Matthias Braun <matze@braunis.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de> Copyright (C) 2006
+//  Matthias Braun <matze@braunis.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,9 +25,7 @@
 #include "util/writer.hpp"
 #include "util/log.hpp"
 
-WalkMode
-string_to_walk_mode(const std::string& mode_string)
-{
+WalkMode string_to_walk_mode(const std::string& mode_string) {
   if (mode_string == "oneshot")
     return WalkMode::ONE_SHOT;
   else if (mode_string == "pingpong")
@@ -34,14 +33,13 @@ string_to_walk_mode(const std::string& mode_string)
   else if (mode_string == "circular")
     return WalkMode::CIRCULAR;
   else {
-    log_warning << "Unknown path mode '" << mode_string << "'found. Using oneshot instead.";
+    log_warning << "Unknown path mode '" << mode_string
+                << "'found. Using oneshot instead.";
     return WalkMode::ONE_SHOT;
   }
 }
 
-std::string
-walk_mode_to_string(WalkMode walk_mode)
-{
+std::string walk_mode_to_string(WalkMode walk_mode) {
   if (walk_mode == WalkMode::ONE_SHOT)
     return "oneshot";
   else if (walk_mode == WalkMode::PING_PONG)
@@ -54,25 +52,16 @@ walk_mode_to_string(WalkMode walk_mode)
   }
 }
 
-Path::Path() :
-  m_nodes(),
-  m_mode(WalkMode::CIRCULAR)
-{
-}
+Path::Path() : m_nodes(), m_mode(WalkMode::CIRCULAR) {}
 
-Path::Path(const Vector& pos) :
-  m_nodes(),
-  m_mode()
-{
+Path::Path(const Vector& pos) : m_nodes(), m_mode() {
   Node first_node;
   first_node.position = pos;
   first_node.time = 1;
   m_nodes.push_back(first_node);
 }
 
-void
-Path::read(const ReaderMapping& reader)
-{
+void Path::read(const ReaderMapping& reader) {
   auto iter = reader.get_iter();
 
   m_mode = WalkMode::CIRCULAR;
@@ -88,9 +77,10 @@ Path::read(const ReaderMapping& reader)
       // each new node will inherit all values from the last one
       Node node;
       node.time = 1;
-      if ( (!node_mapping.get("x", node.position.x) ||
+      if ((!node_mapping.get("x", node.position.x) ||
            !node_mapping.get("y", node.position.y)))
-        throw std::runtime_error("Path node without x and y coordinate specified");
+        throw std::runtime_error(
+            "Path node without x and y coordinate specified");
       node_mapping.get("time", node.time);
 
       if (node.time <= 0)
@@ -98,17 +88,15 @@ Path::read(const ReaderMapping& reader)
 
       m_nodes.push_back(node);
     } else {
-      log_warning << "unknown token '" << iter.get_key() << "' in Path nodes list. Ignored." << std::endl;
+      log_warning << "unknown token '" << iter.get_key()
+                  << "' in Path nodes list. Ignored." << std::endl;
     }
   }
 
-  if (m_nodes.empty())
-    throw std::runtime_error("Path with zero nodes");
+  if (m_nodes.empty()) throw std::runtime_error("Path with zero nodes");
 }
 
-void
-Path::save(Writer& writer)
-{
+void Path::save(Writer& writer) {
   if (!is_valid()) return;
 
   writer.start_list("path");
@@ -129,22 +117,18 @@ Path::save(Writer& writer)
   writer.end_list("path");
 }
 
-Vector
-Path::get_base() const
-{
-  if (m_nodes.empty())
-    return Vector(0, 0);
+Vector Path::get_base() const {
+  if (m_nodes.empty()) return Vector(0, 0);
 
   return m_nodes[0].position;
 }
 
-int
-Path::get_nearest_node_no(const Vector& reference_point) const
-{
+int Path::get_nearest_node_no(const Vector& reference_point) const {
   int nearest_node_id = -1;
   float nearest_node_dist = 0;
   int id = 0;
-  for (std::vector<Node>::const_iterator i = m_nodes.begin(); i != m_nodes.end(); ++i, ++id) {
+  for (std::vector<Node>::const_iterator i = m_nodes.begin();
+       i != m_nodes.end(); ++i, ++id) {
     float dist = (i->position - reference_point).norm();
     if ((nearest_node_id == -1) || (dist < nearest_node_dist)) {
       nearest_node_id = id;
@@ -154,14 +138,12 @@ Path::get_nearest_node_no(const Vector& reference_point) const
   return nearest_node_id;
 }
 
-int
-Path::get_farthest_node_no(const Vector& reference_point) const
-{
+int Path::get_farthest_node_no(const Vector& reference_point) const {
   int farthest_node_id = -1;
   float farthest_node_dist = 0;
   int id = 0;
-  for (std::vector<Node>::const_iterator i = m_nodes.begin(); i != m_nodes.end(); ++i, ++id)
-{
+  for (std::vector<Node>::const_iterator i = m_nodes.begin();
+       i != m_nodes.end(); ++i, ++id) {
     float dist = (i->position - reference_point).norm();
     if ((farthest_node_id == -1) || (dist > farthest_node_dist)) {
       farthest_node_id = id;
@@ -171,17 +153,13 @@ Path::get_farthest_node_no(const Vector& reference_point) const
   return farthest_node_id;
 }
 
-void
-Path::move_by(const Vector& shift)
-{
+void Path::move_by(const Vector& shift) {
   for (auto& nod : m_nodes) {
     nod.position += shift;
   }
 }
 
-void
-Path::edit_path()
-{
+void Path::edit_path() {
   int id = 0;
   for (auto i = m_nodes.begin(); i != m_nodes.end(); ++i) {
     Sector::get().add<NodeMarker>(this, i, id);
@@ -189,10 +167,6 @@ Path::edit_path()
   }
 }
 
-bool
-Path::is_valid() const
-{
-  return !m_nodes.empty();
-}
+bool Path::is_valid() const { return !m_nodes.empty(); }
 
 /* EOF */

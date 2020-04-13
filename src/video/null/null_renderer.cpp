@@ -19,49 +19,24 @@
 #include "util/log.hpp"
 #include "video/null/null_painter.hpp"
 
-NullRenderer::NullRenderer() :
-  m_painter(new NullPainter)
-{
-}
+NullRenderer::NullRenderer() : m_painter(new NullPainter) {}
 
-NullRenderer::~NullRenderer()
-{
-}
+NullRenderer::~NullRenderer() {}
 
-void
-NullRenderer::start_draw()
-{
+void NullRenderer::start_draw() {
   log_info << "NullRenderer::start_draw()" << std::endl;
 }
 
-void
-NullRenderer::end_draw()
-{
+void NullRenderer::end_draw() {
   log_info << "NullRenderer::end_draw()" << std::endl;
 }
 
-Painter&
-NullRenderer::get_painter()
-{
-  return *m_painter;
-}
+Painter& NullRenderer::get_painter() { return *m_painter; }
 
-Rect
-NullRenderer::get_rect() const
-{
-  return Rect();
-}
+Rect NullRenderer::get_rect() const { return Rect(); }
 
-Size
-NullRenderer::get_logical_size() const
-{
-  return Size();
-}
+Size NullRenderer::get_logical_size() const { return Size(); }
 
-TexturePtr
-NullRenderer::get_texture() const
-{
-  return {};
-}
+TexturePtr NullRenderer::get_texture() const { return {}; }
 
 /* EOF */

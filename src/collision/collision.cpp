@@ -23,8 +23,7 @@
 
 namespace collision {
 
-bool intersects(const Rectf& r1, const Rectf& r2)
-{
+bool intersects(const Rectf& r1, const Rectf& r2) {
   if (r1.get_right() < r2.get_left() || r1.get_left() > r2.get_right())
     return false;
   if (r1.get_bottom() < r2.get_top() || r1.get_top() > r2.get_bottom())
@@ -36,8 +35,7 @@ bool intersects(const Rectf& r1, const Rectf& r2)
 //---------------------------------------------------------------------------
 
 namespace {
-inline void makePlane(const Vector& p1, const Vector& p2, Vector& n, float& c)
-{
+inline void makePlane(const Vector& p1, const Vector& p2, Vector& n, float& c) {
   n = Vector(p2.y - p1.y, p1.x - p2.x);
   c = -(p2 * n);
   float nval = n.norm();
@@ -45,13 +43,12 @@ inline void makePlane(const Vector& p1, const Vector& p2, Vector& n, float& c)
   c /= nval;
 }
 
-}
+}  // namespace
 
 bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
-                          const AATriangle& triangle, const Vector& addl_ground_movement)
-{
-  if (!intersects(rect, triangle.bbox))
-    return false;
+                          const AATriangle& triangle,
+                          const Vector& addl_ground_movement) {
+  if (!intersects(rect, triangle.bbox)) return false;
 
   Vector normal;
   float c = 0.0;
@@ -63,19 +60,27 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
       area.set_p2(triangle.bbox.p2());
       break;
     case AATriangle::DEFORM_BOTTOM:
-      area.set_p1(Vector(triangle.bbox.get_left(), triangle.bbox.get_top() + triangle.bbox.get_height()/2));
+      area.set_p1(
+          Vector(triangle.bbox.get_left(),
+                 triangle.bbox.get_top() + triangle.bbox.get_height() / 2));
       area.set_p2(triangle.bbox.p2());
       break;
     case AATriangle::DEFORM_TOP:
       area.set_p1(triangle.bbox.p1());
-      area.set_p2(Vector(triangle.bbox.get_right(), triangle.bbox.get_top() + triangle.bbox.get_height()/2));
+      area.set_p2(
+          Vector(triangle.bbox.get_right(),
+                 triangle.bbox.get_top() + triangle.bbox.get_height() / 2));
       break;
     case AATriangle::DEFORM_LEFT:
       area.set_p1(triangle.bbox.p1());
-      area.set_p2(Vector(triangle.bbox.get_left() + triangle.bbox.get_width()/2, triangle.bbox.get_bottom()));
+      area.set_p2(
+          Vector(triangle.bbox.get_left() + triangle.bbox.get_width() / 2,
+                 triangle.bbox.get_bottom()));
       break;
     case AATriangle::DEFORM_RIGHT:
-      area.set_p1(Vector(triangle.bbox.get_left() + triangle.bbox.get_width()/2, triangle.bbox.get_top()));
+      area.set_p1(
+          Vector(triangle.bbox.get_left() + triangle.bbox.get_width() / 2,
+                 triangle.bbox.get_top()));
       area.set_p2(triangle.bbox.p2());
       break;
     default:
@@ -107,8 +112,7 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
 
   float n_p1 = -(normal * p1);
   float depth = n_p1 - c;
-  if (depth < 0)
-    return false;
+  if (depth < 0) return false;
 
 #if 0
   std::cout << "R: " << rect << " Tri: " << triangle << "\n";
@@ -118,24 +122,28 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
   Vector outvec = normal * (depth + 0.2f);
 
   const float RDELTA = 3;
-  if (p1.x < area.get_left() - RDELTA || p1.x > area.get_right() + RDELTA
-     || p1.y < area.get_top() - RDELTA || p1.y > area.get_bottom() + RDELTA) {
+  if (p1.x < area.get_left() - RDELTA || p1.x > area.get_right() + RDELTA ||
+      p1.y < area.get_top() - RDELTA || p1.y > area.get_bottom() + RDELTA) {
     set_rectangle_rectangle_constraints(constraints, rect, area);
   } else {
     if (outvec.x < 0) {
-      constraints->constrain_right(rect.get_right() + outvec.x, addl_ground_movement.x);
+      constraints->constrain_right(rect.get_right() + outvec.x,
+                                   addl_ground_movement.x);
       constraints->hit.right = true;
     } else {
-      constraints->constrain_left(rect.get_left() + outvec.x, addl_ground_movement.x);
+      constraints->constrain_left(rect.get_left() + outvec.x,
+                                  addl_ground_movement.x);
       constraints->hit.left = true;
     }
 
     if (outvec.y < 0) {
-      constraints->constrain_bottom(rect.get_bottom() + outvec.y, addl_ground_movement.y);
+      constraints->constrain_bottom(rect.get_bottom() + outvec.y,
+                                    addl_ground_movement.y);
       constraints->hit.bottom = true;
       constraints->ground_movement += addl_ground_movement;
     } else {
-      constraints->constrain_top(rect.get_top() + outvec.y, addl_ground_movement.y);
+      constraints->constrain_top(rect.get_top() + outvec.y,
+                                 addl_ground_movement.y);
       constraints->hit.top = true;
     }
     constraints->hit.slope_normal = normal;
@@ -145,8 +153,8 @@ bool rectangle_aatriangle(Constraints* constraints, const Rectf& rect,
 }
 
 void set_rectangle_rectangle_constraints(Constraints* constraints,
-                                         const Rectf& r1, const Rectf& r2, const Vector& addl_ground_movement)
-{
+                                         const Rectf& r1, const Rectf& r2,
+                                         const Vector& addl_ground_movement) {
   float itop = r1.get_bottom() - r2.get_top();
   float ibottom = r2.get_bottom() - r1.get_top();
   float ileft = r1.get_right() - r2.get_left();
@@ -174,16 +182,18 @@ void set_rectangle_rectangle_constraints(Constraints* constraints,
   }
 }
 
-bool line_intersects_line(const Vector& line1_start, const Vector& line1_end, const Vector& line2_start, const Vector& line2_end)
-{
+bool line_intersects_line(const Vector& line1_start, const Vector& line1_end,
+                          const Vector& line2_start, const Vector& line2_end) {
   // Adapted from Striker, (C) 1999 Joris van der Hoeven, GPL
 
-  float a1 = line1_start.x, b1 = line1_start.y, a2 = line1_end.x, b2 = line1_end.y;
-  float c1 = line2_start.x, d1 = line2_start.y, c2 = line2_end.x, d2 = line2_end.y;
+  float a1 = line1_start.x, b1 = line1_start.y, a2 = line1_end.x,
+        b2 = line1_end.y;
+  float c1 = line2_start.x, d1 = line2_start.y, c2 = line2_end.x,
+        d2 = line2_end.y;
 
-  float num = (b2-b1)*(c2-c1) - (a2-a1)*(d2-d1);
-  float den1 = (d2-b2)*(c1-c2) + (a2-c2)*(d1-d2);
-  float den2 = (d2-b2)*(a1-a2) + (a2-c2)*(b1-b2);
+  float num = (b2 - b1) * (c2 - c1) - (a2 - a1) * (d2 - d1);
+  float den1 = (d2 - b2) * (c1 - c2) + (a2 - c2) * (d1 - d2);
+  float den2 = (d2 - b2) * (a1 - a2) + (a2 - c2) * (b1 - b2);
 
   // normalize to positive numerator
   if (num < 0) {
@@ -194,7 +204,7 @@ bool line_intersects_line(const Vector& line1_start, const Vector& line1_end, co
 
   // numerator is zero -> Check for parallel or coinciding lines
   if (num == 0) {
-    if ((b1-b2)*(c1-a2) != (a1-a2)*(d1-b2)) return false;
+    if ((b1 - b2) * (c1 - a2) != (a1 - a2) * (d1 - b2)) return false;
     if (a1 == a2) {
       std::swap(a1, b1);
       std::swap(a2, b2);
@@ -207,12 +217,11 @@ bool line_intersects_line(const Vector& line1_start, const Vector& line1_end, co
   }
 
   // Standard check
-  return (den1>=0) && (den1<=num) && (den2>=0) && (den2<=num);
-
+  return (den1 >= 0) && (den1 <= num) && (den2 >= 0) && (den2 <= num);
 }
 
-bool intersects_line(const Rectf& r, const Vector& line_start, const Vector& line_end)
-{
+bool intersects_line(const Rectf& r, const Vector& line_start,
+                     const Vector& line_end) {
   Vector p1 = r.p1();
   Vector p2 = Vector(r.get_right(), r.get_top());
   Vector p3 = r.p2();
@@ -224,6 +233,6 @@ bool intersects_line(const Rectf& r, const Vector& line_start, const Vector& lin
   return false;
 }
 
-}
+}  // namespace collision
 
 /* EOF */

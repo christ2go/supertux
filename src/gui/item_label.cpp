@@ -20,26 +20,20 @@
 #include "supertux/resources.hpp"
 #include "video/drawing_context.hpp"
 
-ItemLabel::ItemLabel(const std::string& text_) :
-  MenuItem(text_)
-{
+ItemLabel::ItemLabel(const std::string& text_) : MenuItem(text_) {}
+
+void ItemLabel::draw(DrawingContext& context, const Vector& pos, int menu_width,
+                     bool active) {
+  context.color().draw_text(
+      Resources::big_font, get_text(),
+      Vector(pos.x + static_cast<float>(menu_width) / 2.0f,
+             pos.y - Resources::big_font->get_height() / 2.0f),
+      ALIGN_CENTER, LAYER_GUI, get_color());
 }
 
-void
-ItemLabel::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active) {
-  context.color().draw_text(Resources::big_font, get_text(),
-                            Vector(pos.x + static_cast<float>(menu_width) / 2.0f,
-                                   pos.y - Resources::big_font->get_height() / 2.0f ),
-                            ALIGN_CENTER, LAYER_GUI, get_color());
-}
+Color ItemLabel::get_color() const { return ColorScheme::Menu::label_color; }
 
-Color
-ItemLabel::get_color() const {
-  return ColorScheme::Menu::label_color;
-}
-
-int
-ItemLabel::get_width() const {
+int ItemLabel::get_width() const {
   return static_cast<int>(Resources::big_font->get_text_width(get_text())) + 16;
 }
 

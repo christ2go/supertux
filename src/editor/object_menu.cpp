@@ -24,15 +24,12 @@
 #include "supertux/game_object.hpp"
 #include "supertux/moving_object.hpp"
 
-ObjectMenu::ObjectMenu(Editor& editor, GameObject* go) :
-  m_editor(editor),
-  m_object(go)
-{
+ObjectMenu::ObjectMenu(Editor& editor, GameObject* go)
+    : m_editor(editor), m_object(go) {
   ObjectSettings os = m_object->get_settings();
   add_label(os.get_name());
   add_hl();
-  for (const auto& oo_ptr : os.get_options())
-  {
+  for (const auto& oo_ptr : os.get_options()) {
     const auto& oo = *oo_ptr;
 
     if (!(oo.get_flags() & OPTION_HIDDEN)) {
@@ -43,15 +40,10 @@ ObjectMenu::ObjectMenu(Editor& editor, GameObject* go) :
   add_back(_("OK"), -1);
 }
 
-ObjectMenu::~ObjectMenu()
-{
-}
+ObjectMenu::~ObjectMenu() {}
 
-void
-ObjectMenu::menu_action(MenuItem& item)
-{
-  switch (item.get_id())
-  {
+void ObjectMenu::menu_action(MenuItem& item) {
+  switch (item.get_id()) {
     case MNID_REMOVE:
       m_editor.delete_markers();
       m_editor.m_reactivate_request = true;
@@ -64,9 +56,7 @@ ObjectMenu::menu_action(MenuItem& item)
   }
 }
 
-bool
-ObjectMenu::on_back_action()
-{
+bool ObjectMenu::on_back_action() {
   // FIXME: this is a bit fishy, menus shouldn't mess with editor internals
   BIND_SECTOR(*m_editor.get_sector());
 

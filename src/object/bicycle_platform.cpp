@@ -1,5 +1,6 @@
 //  SuperTux - BicyclePlatform
-//  Copyright (C) 2007 Christoph Sommer <christoph.sommer@2007.expires.deltadevelopment.de>
+//  Copyright (C) 2007 Christoph Sommer
+//  <christoph.sommer@2007.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -27,34 +28,36 @@
 #include "util/log.hpp"
 #include "util/reader_mapping.hpp"
 
-BicyclePlatformChild::BicyclePlatformChild(const ReaderMapping& reader, float angle_offset, BicyclePlatform& parent) :
-  MovingSprite(reader, "images/objects/platforms/small.sprite", LAYER_OBJECTS, COLGROUP_STATIC),
-  m_parent(parent),
-  m_angle_offset(angle_offset),
-  m_momentum(),
-  m_contacts()
-{
-}
+BicyclePlatformChild::BicyclePlatformChild(const ReaderMapping& reader,
+                                           float angle_offset,
+                                           BicyclePlatform& parent)
+    : MovingSprite(reader, "images/objects/platforms/small.sprite",
+                   LAYER_OBJECTS, COLGROUP_STATIC),
+      m_parent(parent),
+      m_angle_offset(angle_offset),
+      m_momentum(),
+      m_contacts() {}
 
-void
-BicyclePlatformChild::update(float dt_sec)
-{
+void BicyclePlatformChild::update(float dt_sec) {
   float angle = m_parent.m_angle + m_angle_offset;
   angle = math::positive_fmodf(angle, math::TAU);
 
-  Vector dest = m_parent.m_center + Vector(cosf(angle), sinf(angle)) * m_parent.m_radius - (m_col.m_bbox.get_size().as_vector() * 0.5);
+  Vector dest = m_parent.m_center +
+                Vector(cosf(angle), sinf(angle)) * m_parent.m_radius -
+                (m_col.m_bbox.get_size().as_vector() * 0.5);
   m_col.m_movement = dest - get_pos();
 }
 
-HitResponse
-BicyclePlatformChild::collision(GameObject& other, const CollisionHit& )
-{
+HitResponse BicyclePlatformChild::collision(GameObject& other,
+                                            const CollisionHit&) {
   const float gravity = Sector::get().get_gravity();
 
-  // somehow the hit parameter does not get filled in, so to determine (hit.top == true) we do this:
+  // somehow the hit parameter does not get filled in, so to determine (hit.top
+  // == true) we do this:
   auto mo = dynamic_cast<MovingObject*>(&other);
   if (!mo) return FORCE_MOVE;
-  if ((mo->get_bbox().get_bottom()) > (m_col.m_bbox.get_top() + 2)) return FORCE_MOVE;
+  if ((mo->get_bbox().get_bottom()) > (m_col.m_bbox.get_top() + 2))
+    return FORCE_MOVE;
 
   auto pl = dynamic_cast<Player*>(mo);
   if (pl) {
@@ -73,23 +76,21 @@ BicyclePlatformChild::collision(GameObject& other, const CollisionHit& )
   return FORCE_MOVE;
 }
 
-void BicyclePlatformChild::editor_delete()
-{
+void BicyclePlatformChild::editor_delete() {
   // removing a child removes the whole platform
   m_parent.editor_delete();
 }
 
-BicyclePlatform::BicyclePlatform(const ReaderMapping& reader) :
-  GameObject(reader),
-  m_center(),
-  m_radius(128),
-  m_angle(0),
-  m_angular_speed(0.0f),
-  m_momentum_change_rate(0.1f),
-  m_children(),
-  m_walker(),
-  m_platforms(2)
-{
+BicyclePlatform::BicyclePlatform(const ReaderMapping& reader)
+    : GameObject(reader),
+      m_center(),
+      m_radius(128),
+      m_angle(0),
+      m_angular_speed(0.0f),
+      m_momentum_change_rate(0.1f),
+      m_children(),
+      m_walker(),
+      m_platforms(2) {
   reader.get("x", m_center.x);
   reader.get("y", m_center.y);
   reader.get("radius", m_radius, 128.0f);
@@ -99,41 +100,37 @@ BicyclePlatform::BicyclePlatform(const ReaderMapping& reader) :
   m_platforms = std::max(1, m_platforms);
 
   for (int i = 0; i < m_platforms; ++i) {
-    const float offset = static_cast<float>(i) * (math::TAU / static_cast<float>(m_platforms));
-    m_children.push_back(&d_sector->add<BicyclePlatformChild>(reader, offset, *this));
+    const float offset =
+        static_cast<float>(i) * (math::TAU / static_cast<float>(m_platforms));
+    m_children.push_back(
+        &d_sector->add<BicyclePlatformChild>(reader, offset, *this));
   }
 
   std::string path_ref;
-  if (reader.get("path-ref", path_ref))
-  {
-    d_sector->request_name_resolve(path_ref, [this](UID uid){
-        if (!uid) {
-          log_fatal << "no path-ref entry for BicyclePlatform" << std::endl;
-        } else {
-          m_walker.reset(new PathWalker(uid, true));
-        }
-      });
+  if (reader.get("path-ref", path_ref)) {
+    d_sector->request_name_resolve(path_ref, [this](UID uid) {
+      if (!uid) {
+        log_fatal << "no path-ref entry for BicyclePlatform" << std::endl;
+      } else {
+        m_walker.reset(new PathWalker(uid, true));
+      }
+    });
   }
 }
 
-BicyclePlatform::~BicyclePlatform()
-{
-}
+BicyclePlatform::~BicyclePlatform() {}
 
-void
-BicyclePlatform::draw(DrawingContext& context)
-{
+void BicyclePlatform::draw(DrawingContext& context) {
   if (g_debug.show_collision_rects) {
-    context.color().draw_filled_rect(Rectf::from_center(m_center, Sizef(16, 16)), Color::MAGENTA, LAYER_OBJECTS);
+    context.color().draw_filled_rect(
+        Rectf::from_center(m_center, Sizef(16, 16)), Color::MAGENTA,
+        LAYER_OBJECTS);
   }
 }
 
-void
-BicyclePlatform::update(float dt_sec)
-{
+void BicyclePlatform::update(float dt_sec) {
   float total_angular_momentum = 0.0f;
-  for (auto& child : m_children)
-  {
+  for (auto& child : m_children) {
     const float child_angle = m_angle + child->m_angle_offset;
     const float angular_momentum = cosf(child_angle) * child->m_momentum;
     total_angular_momentum += angular_momentum;
@@ -146,26 +143,21 @@ BicyclePlatform::update(float dt_sec)
   m_angle += m_angular_speed * dt_sec;
   m_angle = math::positive_fmodf(m_angle, math::TAU);
 
-  m_angular_speed = std::min(std::max(m_angular_speed, -128.0f * math::PI * dt_sec),
-                             128.0f * math::PI * dt_sec);
+  m_angular_speed =
+      std::min(std::max(m_angular_speed, -128.0f * math::PI * dt_sec),
+               128.0f * math::PI * dt_sec);
 
-  if (m_walker)
-  {
+  if (m_walker) {
     m_walker->update(std::max(0.0f, dt_sec * m_angular_speed * 0.1f));
     m_center = m_walker->get_pos();
-  }
-  else
-  {
+  } else {
     m_center += Vector(m_angular_speed, 0) * dt_sec * 32;
   }
 }
 
-void
-BicyclePlatform::editor_delete()
-{
+void BicyclePlatform::editor_delete() {
   // remove children
-  for (auto& child : m_children)
-  {
+  for (auto& child : m_children) {
     child->remove_me();
   }
 
@@ -173,15 +165,9 @@ BicyclePlatform::editor_delete()
   remove_me();
 }
 
-void
-BicyclePlatform::after_editor_set()
-{
-  GameObject::after_editor_set();
-}
+void BicyclePlatform::after_editor_set() { GameObject::after_editor_set(); }
 
-ObjectSettings
-BicyclePlatform::get_settings()
-{
+ObjectSettings BicyclePlatform::get_settings() {
   auto result = GameObject::get_settings();
 
   result.add_float(_("X"), &m_center.x, "x", 0.0f, OPTION_HIDDEN);
@@ -189,7 +175,8 @@ BicyclePlatform::get_settings()
 
   result.add_int(_("Platforms"), &m_platforms, "platforms", 2);
   result.add_float(_("Radius"), &m_radius, "radius", 128);
-  result.add_float(_("Momentum change rate"), &m_momentum_change_rate, "momentum-change-rate", 0.1f);
+  result.add_float(_("Momentum change rate"), &m_momentum_change_rate,
+                   "momentum-change-rate", 0.1f);
 
   result.reorder({"platforms", "x", "y"});
 

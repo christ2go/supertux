@@ -29,13 +29,12 @@
 #include "video/sdl_surface.hpp"
 #include "video/texture_manager.hpp"
 
-SDLVideoSystem::SDLVideoSystem() :
-  m_sdl_renderer(nullptr, &SDL_DestroyRenderer),
-  m_viewport(),
-  m_renderer(),
-  m_lightmap(),
-  m_texture_manager()
-{
+SDLVideoSystem::SDLVideoSystem()
+    : m_sdl_renderer(nullptr, &SDL_DestroyRenderer),
+      m_viewport(),
+      m_renderer(),
+      m_lightmap(),
+      m_texture_manager() {
   create_window();
 
   m_renderer.reset(new SDLScreenRenderer(*this, m_sdl_renderer.get()));
@@ -44,26 +43,19 @@ SDLVideoSystem::SDLVideoSystem() :
   apply_config();
 }
 
-SDLVideoSystem::~SDLVideoSystem()
-{
-}
+SDLVideoSystem::~SDLVideoSystem() {}
 
-std::string
-SDLVideoSystem::get_name() const
-{
+std::string SDLVideoSystem::get_name() const {
   SDL_version version;
   SDL_GetVersion(&version);
   std::ostringstream out;
-  out << "SDL "
-      << static_cast<int>(version.major)
-      << "." << static_cast<int>(version.minor)
-      << "." << static_cast<int>(version.patch);
+  out << "SDL " << static_cast<int>(version.major) << "."
+      << static_cast<int>(version.minor) << "."
+      << static_cast<int>(version.patch);
   return out.str();
 }
 
-void
-SDLVideoSystem::create_window()
-{
+void SDLVideoSystem::create_window() {
   log_info << "Creating SDLVideoSystem" << std::endl;
 
   SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
@@ -71,94 +63,68 @@ SDLVideoSystem::create_window()
   create_sdl_window(0);
 
   m_sdl_renderer.reset(SDL_CreateRenderer(m_sdl_window.get(), -1, 0));
-  if (!m_sdl_renderer)
-  {
+  if (!m_sdl_renderer) {
     std::stringstream msg;
     msg << "Couldn't create SDL_Renderer: " << SDL_GetError();
     throw std::runtime_error(msg.str());
   }
 }
 
-void
-SDLVideoSystem::apply_config()
-{
+void SDLVideoSystem::apply_config() {
   apply_video_mode();
 
-  { // apply_viewport
-    Size target_size = (g_config->use_fullscreen && g_config->fullscreen_size != Size(0, 0)) ?
-      g_config->fullscreen_size :
-      g_config->window_size;
+  {  // apply_viewport
+    Size target_size =
+        (g_config->use_fullscreen && g_config->fullscreen_size != Size(0, 0))
+            ? g_config->fullscreen_size
+            : g_config->window_size;
 
     m_viewport = Viewport::from_size(target_size, m_desktop_size);
   }
 
-  m_lightmap.reset(new SDLTextureRenderer(*this, m_sdl_renderer.get(), m_viewport.get_screen_size(), 5));
+  m_lightmap.reset(new SDLTextureRenderer(*this, m_sdl_renderer.get(),
+                                          m_viewport.get_screen_size(), 5));
 }
 
-Renderer&
-SDLVideoSystem::get_renderer() const
-{
-  return *m_renderer;
-}
+Renderer& SDLVideoSystem::get_renderer() const { return *m_renderer; }
 
-Renderer&
-SDLVideoSystem::get_lightmap() const
-{
-  return *m_lightmap;
-}
+Renderer& SDLVideoSystem::get_lightmap() const { return *m_lightmap; }
 
-TexturePtr
-SDLVideoSystem::new_texture(const SDL_Surface& image, const Sampler& sampler)
-{
+TexturePtr SDLVideoSystem::new_texture(const SDL_Surface& image,
+                                       const Sampler& sampler) {
   return TexturePtr(new SDLTexture(image, sampler));
 }
 
-void
-SDLVideoSystem::set_vsync(int mode)
-{
+void SDLVideoSystem::set_vsync(int mode) {
   log_warning << "Setting vsync not supported by SDL renderer" << std::endl;
 }
 
-int
-SDLVideoSystem::get_vsync() const
-{
-  return 0;
-}
+int SDLVideoSystem::get_vsync() const { return 0; }
 
-void
-SDLVideoSystem::flip()
-{
-  m_renderer->flip();
-}
+void SDLVideoSystem::flip() { m_renderer->flip(); }
 
-SDLSurfacePtr
-SDLVideoSystem::make_screenshot()
-{
+SDLSurfacePtr SDLVideoSystem::make_screenshot() {
   int width;
   int height;
-  if (SDL_GetRendererOutputSize(m_renderer->get_sdl_renderer(), &width, &height) != 0)
-  {
-    log_warning << "SDL_GetRenderOutputSize failed: " << SDL_GetError() << std::endl;
+  if (SDL_GetRendererOutputSize(m_renderer->get_sdl_renderer(), &width,
+                                &height) != 0) {
+    log_warning << "SDL_GetRenderOutputSize failed: " << SDL_GetError()
+                << std::endl;
     return {};
-  }
-  else
-  {
+  } else {
     SDLSurfacePtr surface = SDLSurface::create_rgba(width, height);
 
     SDL_LockSurface(surface.get());
     int ret = SDL_RenderReadPixels(m_renderer->get_sdl_renderer(), nullptr,
-                                   SDL_PIXELFORMAT_ABGR8888,
-                                   surface->pixels,
+                                   SDL_PIXELFORMAT_ABGR8888, surface->pixels,
                                    surface->pitch);
     SDL_UnlockSurface(surface.get());
 
-    if (ret != 0)
-    {
-      log_warning << "SDL_RenderReadPixels failed: " << SDL_GetError() << std::endl;
+    if (ret != 0) {
+      log_warning << "SDL_RenderReadPixels failed: " << SDL_GetError()
+                  << std::endl;
       return {};
-    }
-    else
-    {
+    } else {
       return surface;
     }
   }

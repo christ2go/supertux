@@ -1,5 +1,6 @@
 //  SuperTux - End Sequence: Tux walks right
-//  Copyright (C) 2007 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2007 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,33 +21,20 @@
 #include "supertux/screen_manager.hpp"
 #include "supertux/sector.hpp"
 
-EndSequenceWalkRight::EndSequenceWalkRight() :
-  EndSequence(),
-  last_x_pos(),
-  endsequence_timer()
-{
-}
+EndSequenceWalkRight::EndSequenceWalkRight()
+    : EndSequence(), last_x_pos(), endsequence_timer() {}
 
-EndSequenceWalkRight::~EndSequenceWalkRight()
-{
-}
+EndSequenceWalkRight::~EndSequenceWalkRight() {}
 
-void
-EndSequenceWalkRight::draw(DrawingContext& /*context*/)
-{
-}
+void EndSequenceWalkRight::draw(DrawingContext& /*context*/) {}
 
-void
-EndSequenceWalkRight::starting()
-{
+void EndSequenceWalkRight::starting() {
   EndSequence::starting();
   last_x_pos = -1;
   endsequence_timer.start(7.3f * ScreenManager::current()->get_speed());
 }
 
-void
-EndSequenceWalkRight::running(float dt_sec)
-{
+void EndSequenceWalkRight::running(float dt_sec) {
   EndSequence::running(dt_sec);
   Player& tux = Sector::get().get_player();
 
@@ -62,10 +50,6 @@ EndSequenceWalkRight::running(float dt_sec)
   if (endsequence_timer.check()) isdone = true;
 }
 
-void
-EndSequenceWalkRight::stopping()
-{
-  EndSequence::stopping();
-}
+void EndSequenceWalkRight::stopping() { EndSequence::stopping(); }
 
 /* EOF */

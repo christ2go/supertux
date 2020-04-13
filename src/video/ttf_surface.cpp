@@ -27,14 +27,10 @@
 #include "video/ttf_surface_manager.hpp"
 #include "video/video_system.hpp"
 
-TTFSurfacePtr
-TTFSurface::create(const TTFFont& font, const std::string& text)
-{
-  SDLSurfacePtr text_surface(TTF_RenderUTF8_Blended(font.get_ttf_font(),
-                                                    text.c_str(),
-                                                    SDL_Color{255, 255, 255, 255}));
-  if (!text_surface)
-  {
+TTFSurfacePtr TTFSurface::create(const TTFFont& font, const std::string& text) {
+  SDLSurfacePtr text_surface(TTF_RenderUTF8_Blended(
+      font.get_ttf_font(), text.c_str(), SDL_Color{255, 255, 255, 255}));
+  if (!text_surface) {
     log_warning << "Couldn't render text '" << text << "' :" << SDL_GetError();
     return std::make_shared<TTFSurface>(SurfacePtr(), Vector());
   }
@@ -42,60 +38,58 @@ TTFSurface::create(const TTFFont& font, const std::string& text)
   // FIXME: handle shadow offset
   int grow = std::max(font.get_border() * 2, font.get_shadow_size() * 2);
 
-  SDLSurfacePtr target = SDLSurface::create_rgba(text_surface->w + grow, text_surface->h + grow);
+  SDLSurfacePtr target =
+      SDLSurface::create_rgba(text_surface->w + grow, text_surface->h + grow);
 
-#if !SDL_VERSION_ATLEAST(2,0,5)
-  // Perform blitting in ARGB8888, instead of RGBA8888, to avoid bug in older SDL2.
-  // https://bugzilla.libsdl.org/show_bug.cgi?id=3159
-  target.reset(SDL_ConvertSurfaceFormat(target.get(), SDL_PIXELFORMAT_ARGB8888, 0));
+#if !SDL_VERSION_ATLEAST(2, 0, 5)
+  // Perform blitting in ARGB8888, instead of RGBA8888, to avoid bug in older
+  // SDL2. https://bugzilla.libsdl.org/show_bug.cgi?id=3159
+  target.reset(
+      SDL_ConvertSurfaceFormat(target.get(), SDL_PIXELFORMAT_ARGB8888, 0));
 #endif
 
-  { // shadow
+  {  // shadow
     SDL_SetSurfaceAlphaMod(text_surface.get(), 192);
     SDL_SetSurfaceColorMod(text_surface.get(), 0, 0, 0);
     SDL_SetSurfaceBlendMode(text_surface.get(), SDL_BLENDMODE_BLEND);
 
     using P = std::tuple<int, int>;
     const std::initializer_list<std::tuple<int, int> > positions[] = {
-      {},
-      {P{0, 0}},
-      {P{-1, 0}, P{1, 0}, P{0, -1}, P{0, 1}},
-      {P{-2, 0}, P{2, 0}, P{0, -2}, P{0, 2},
-       P{-1, -1}, P{1, -1}, P{-1, 1}, P{1, 1}}
-    };
+        {},
+        {P{0, 0}},
+        {P{-1, 0}, P{1, 0}, P{0, -1}, P{0, 1}},
+        {P{-2, 0}, P{2, 0}, P{0, -2}, P{0, 2}, P{-1, -1}, P{1, -1}, P{-1, 1},
+         P{1, 1}}};
 
     int shadow_size = std::min(2, font.get_shadow_size());
-    for (const auto& p : positions[shadow_size])
-    {
-      SDL_Rect dstrect{std::get<0>(p) + 2, std::get<1>(p) + 2, text_surface->w, text_surface->h};
-      SDL_BlitSurface(text_surface.get(), nullptr,
-                      target.get(), &dstrect);
+    for (const auto& p : positions[shadow_size]) {
+      SDL_Rect dstrect{std::get<0>(p) + 2, std::get<1>(p) + 2, text_surface->w,
+                       text_surface->h};
+      SDL_BlitSurface(text_surface.get(), nullptr, target.get(), &dstrect);
     }
   }
 
-  { // outline
+  {  // outline
     SDL_SetSurfaceAlphaMod(text_surface.get(), 255);
     SDL_SetSurfaceColorMod(text_surface.get(), 0, 0, 0);
     SDL_SetSurfaceBlendMode(text_surface.get(), SDL_BLENDMODE_BLEND);
 
     using P = std::tuple<int, int>;
     const std::initializer_list<std::tuple<int, int> > positions[] = {
-      {},
-      {P{-1, 0}, P{1, 0}, P{0, -1}, P{0, 1}},
-      {P{-2, 0}, P{2, 0}, P{0, -2}, P{0, 2},
-       P{-1, -1}, P{1, -1}, P{-1, 1}, P{1, 1}}
-    };
+        {},
+        {P{-1, 0}, P{1, 0}, P{0, -1}, P{0, 1}},
+        {P{-2, 0}, P{2, 0}, P{0, -2}, P{0, 2}, P{-1, -1}, P{1, -1}, P{-1, 1},
+         P{1, 1}}};
 
     int border = std::min(2, font.get_border());
-    for (const auto& p : positions[border])
-    {
-      SDL_Rect dstrect{std::get<0>(p), std::get<1>(p), text_surface->w, text_surface->h};
-      SDL_BlitSurface(text_surface.get(), nullptr,
-                      target.get(), &dstrect);
+    for (const auto& p : positions[border]) {
+      SDL_Rect dstrect{std::get<0>(p), std::get<1>(p), text_surface->w,
+                       text_surface->h};
+      SDL_BlitSurface(text_surface.get(), nullptr, target.get(), &dstrect);
     }
   }
 
-  { // white core
+  {  // white core
     SDL_SetSurfaceAlphaMod(text_surface.get(), 255);
     SDL_SetSurfaceColorMod(text_surface.get(), 255, 255, 255);
     SDL_SetSurfaceBlendMode(text_surface.get(), SDL_BLENDMODE_BLEND);
@@ -105,23 +99,20 @@ TTFSurface::create(const TTFFont& font, const std::string& text)
     SDL_BlitSurface(text_surface.get(), nullptr, target.get(), &dstrect);
   }
 
-#if !SDL_VERSION_ATLEAST(2,0,5)
-  target.reset(SDL_ConvertSurfaceFormat(target.get(), SDL_PIXELFORMAT_RGBA8888, 0));
+#if !SDL_VERSION_ATLEAST(2, 0, 5)
+  target.reset(
+      SDL_ConvertSurfaceFormat(target.get(), SDL_PIXELFORMAT_RGBA8888, 0));
 #endif
 
-  SurfacePtr result = Surface::from_texture(VideoSystem::current()->new_texture(*target));
+  SurfacePtr result =
+      Surface::from_texture(VideoSystem::current()->new_texture(*target));
   return std::make_shared<TTFSurface>(result, Vector(0, 0));
 }
 
-TTFSurface::TTFSurface(const SurfacePtr& surface, const Vector& offset) :
-  m_surface(surface),
-  m_offset(offset)
-{
-}
+TTFSurface::TTFSurface(const SurfacePtr& surface, const Vector& offset)
+    : m_surface(surface), m_offset(offset) {}
 
-int
-TTFSurface::get_width() const
-{
+int TTFSurface::get_width() const {
   if (m_surface) {
     return m_surface->get_width();
   } else {
@@ -129,9 +120,7 @@ TTFSurface::get_width() const
   }
 }
 
-int
-TTFSurface::get_height() const
-{
+int TTFSurface::get_height() const {
   if (m_surface) {
     return m_surface->get_height();
   } else {

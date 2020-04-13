@@ -27,18 +27,12 @@
 #include "video/gl/gl_video_system.hpp"
 #include "video/glutil.hpp"
 
-GLScreenRenderer::GLScreenRenderer(GLVideoSystem& video_system) :
-  GLRenderer(video_system)
-{
-}
+GLScreenRenderer::GLScreenRenderer(GLVideoSystem& video_system)
+    : GLRenderer(video_system) {}
 
-GLScreenRenderer::~GLScreenRenderer()
-{
-}
+GLScreenRenderer::~GLScreenRenderer() {}
 
-void
-GLScreenRenderer::start_draw()
-{
+void GLScreenRenderer::start_draw() {
   assert_gl();
 
   GLContext& context = m_video_system.get_context();
@@ -52,8 +46,7 @@ GLScreenRenderer::start_draw()
   glViewport(rect.left, rect.top, rect.get_width(), rect.get_height());
 
   context.ortho(static_cast<float>(viewport.get_screen_width()),
-                static_cast<float>(viewport.get_screen_height()),
-                true);
+                static_cast<float>(viewport.get_screen_height()), true);
 
   // clear the screen to get rid of lightmap remains
   glClearColor(0, 0, 0, 1);
@@ -62,24 +55,16 @@ GLScreenRenderer::start_draw()
   assert_gl();
 }
 
-void
-GLScreenRenderer::end_draw()
-{
-}
+void GLScreenRenderer::end_draw() {}
 
-Rect
-GLScreenRenderer::get_rect() const
-{
+Rect GLScreenRenderer::get_rect() const {
   const Viewport& viewport = m_video_system.get_viewport();
   return viewport.get_rect();
 }
 
-Size
-GLScreenRenderer::get_logical_size() const
-{
+Size GLScreenRenderer::get_logical_size() const {
   const Viewport& viewport = m_video_system.get_viewport();
-  return Size(viewport.get_screen_width(),
-              viewport.get_screen_height());
+  return Size(viewport.get_screen_width(), viewport.get_screen_height());
 }
 
 /* EOF */

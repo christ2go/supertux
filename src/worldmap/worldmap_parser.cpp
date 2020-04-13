@@ -45,14 +45,9 @@
 
 namespace worldmap {
 
-WorldMapParser::WorldMapParser(WorldMap& worldmap) :
-  m_worldmap(worldmap)
-{
-}
+WorldMapParser::WorldMapParser(WorldMap& worldmap) : m_worldmap(worldmap) {}
 
-void
-WorldMapParser::load_worldmap(const std::string& filename)
-{
+void WorldMapParser::load_worldmap(const std::string& filename) {
   m_worldmap.m_map_filename = physfsutil::realpath(filename);
   m_worldmap.m_levels_path = FileSystem::dirname(m_worldmap.m_map_filename);
 
@@ -73,12 +68,14 @@ WorldMapParser::load_worldmap(const std::string& filename)
       if (m_worldmap.m_tileset != nullptr) {
         log_warning << "multiple tilesets specified in level_" << std::endl;
       } else {
-        m_worldmap.m_tileset = TileManager::current()->get_tileset(tileset_name);
+        m_worldmap.m_tileset =
+            TileManager::current()->get_tileset(tileset_name);
       }
     }
     /* load default tileset */
     if (m_worldmap.m_tileset == nullptr) {
-      m_worldmap.m_tileset = TileManager::current()->get_tileset("images/worldmap.strf");
+      m_worldmap.m_tileset =
+          TileManager::current()->get_tileset("images/worldmap.strf");
     }
 
     boost::optional<ReaderMapping> sector;
@@ -93,7 +90,8 @@ WorldMapParser::load_worldmap(const std::string& filename)
           m_worldmap.add<Background>(iter.as_mapping());
         } else if (iter.get_key() == "music") {
           const auto& sx = iter.get_sexp();
-          if (sx.is_array() && sx.as_array().size() == 2 && sx.as_array()[1].is_string()) {
+          if (sx.is_array() && sx.as_array().size() == 2 &&
+              sx.as_array()[1].is_string()) {
             std::string value;
             iter.get(value);
             m_worldmap.add<MusicObject>().set_music(value);
@@ -106,7 +104,8 @@ WorldMapParser::load_worldmap(const std::string& filename)
           auto sp = std::make_unique<SpawnPoint>(iter.as_mapping());
           m_worldmap.m_spawn_points.push_back(std::move(sp));
         } else if (iter.get_key() == "level") {
-          auto& level = m_worldmap.add<LevelTile>(m_worldmap.m_levels_path, iter.as_mapping());
+          auto& level = m_worldmap.add<LevelTile>(m_worldmap.m_levels_path,
+                                                  iter.as_mapping());
           load_level_information(level);
         } else if (iter.get_key() == "special-tile") {
           m_worldmap.add<SpecialTile>(iter.as_mapping());
@@ -121,13 +120,14 @@ WorldMapParser::load_worldmap(const std::string& filename)
         } else if (iter.get_key() == "ambient-light") {
           const auto& sx = iter.get_sexp();
           if (sx.is_array() && sx.as_array().size() >= 3 &&
-              sx.as_array()[1].is_real() && sx.as_array()[2].is_real() && sx.as_array()[3].is_real())
-          {
+              sx.as_array()[1].is_real() && sx.as_array()[2].is_real() &&
+              sx.as_array()[3].is_real()) {
             // for backward compatibilty
             std::vector<float> vColor;
             bool hasColor = sector->get("ambient-light", vColor);
             if (vColor.size() < 3 || !hasColor) {
-              log_warning << "(ambient-light) requires a color as argument" << std::endl;
+              log_warning << "(ambient-light) requires a color as argument"
+                          << std::endl;
             } else {
               m_worldmap.add<AmbientLight>(Color(vColor));
             }
@@ -138,7 +138,8 @@ WorldMapParser::load_worldmap(const std::string& filename)
         } else if (iter.get_key() == "name") {
           // skip
         } else {
-          log_warning << "Unknown token '" << iter.get_key() << "' in worldmap" << std::endl;
+          log_warning << "Unknown token '" << iter.get_key() << "' in worldmap"
+                      << std::endl;
         }
       }
     }
@@ -150,37 +151,35 @@ WorldMapParser::load_worldmap(const std::string& filename)
 
     m_worldmap.move_to_spawnpoint("main");
 
-  } catch(std::exception& e) {
+  } catch (std::exception& e) {
     std::stringstream msg;
-    msg << "Problem when parsing worldmap '" << m_worldmap.m_map_filename << "': " <<
-      e.what();
+    msg << "Problem when parsing worldmap '" << m_worldmap.m_map_filename
+        << "': " << e.what();
     throw std::runtime_error(msg.str());
   }
 
   m_worldmap.finish_construction();
 }
 
-void
-WorldMapParser::load_level_information(LevelTile& level)
-{
+void WorldMapParser::load_level_information(LevelTile& level) {
   /** get special_tile's title */
   level.m_title = _("<no title>");
   level.m_target_time = 0.0f;
 
   try {
-    std::string filename = m_worldmap.m_levels_path + level.get_level_filename();
+    std::string filename =
+        m_worldmap.m_levels_path + level.get_level_filename();
 
-    if (m_worldmap.m_levels_path == "./")
-      filename = level.get_level_filename();
+    if (m_worldmap.m_levels_path == "./") filename = level.get_level_filename();
 
-    if (!PHYSFS_exists(filename.c_str()))
-    {
-      log_warning << "Level file '" << filename << "' does not exist. Skipping." << std::endl;
+    if (!PHYSFS_exists(filename.c_str())) {
+      log_warning << "Level file '" << filename << "' does not exist. Skipping."
+                  << std::endl;
       return;
     }
-    if (physfsutil::is_directory(filename))
-    {
-      log_warning << "Level file '" << filename << "' is a directory. Skipping." << std::endl;
+    if (physfsutil::is_directory(filename)) {
+      log_warning << "Level file '" << filename << "' is a directory. Skipping."
+                  << std::endl;
       return;
     }
 
@@ -194,12 +193,13 @@ WorldMapParser::load_level_information(LevelTile& level)
       level_mapping.get("name", level.m_title);
       level_mapping.get("target-time", level.m_target_time);
     }
-  } catch(std::exception& e) {
-    log_warning << "Problem when reading level information: " << e.what() << std::endl;
+  } catch (std::exception& e) {
+    log_warning << "Problem when reading level information: " << e.what()
+                << std::endl;
     return;
   }
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

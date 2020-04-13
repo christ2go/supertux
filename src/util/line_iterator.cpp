@@ -17,44 +17,26 @@
 #include "util/line_iterator.hpp"
 
 LineIterator::LineIterator(const std::string& str)
-  : first(str.begin()),
-    last(str.end()),
-    line_end(str.begin())
-{
-}
+    : first(str.begin()), last(str.end()), line_end(str.begin()) {}
 
 LineIterator::LineIterator(std::string::const_iterator first_,
                            std::string::const_iterator last_)
-  : first(first_),
-    last(last_),
-    line_end(first_)
-{
-}
+    : first(first_), last(last_), line_end(first_) {}
 
-bool
-LineIterator::next()
-{
-  if (line_end == last || (line_end+1 == last && *first == '\n'))
-  {
+bool LineIterator::next() {
+  if (line_end == last || (line_end + 1 == last && *first == '\n')) {
     return false;
-  }
-  else
-  {
-    if (first != line_end)
-      first = line_end + 1;
+  } else {
+    if (first != line_end) first = line_end + 1;
 
     do {
       ++line_end;
-    } while(line_end != last && *line_end != '\n');
+    } while (line_end != last && *line_end != '\n');
 
     return true;
   }
 }
 
-std::string
-LineIterator::get()
-{
-  return std::string(first, line_end);
-}
+std::string LineIterator::get() { return std::string(first, line_end); }
 
 /* EOF */

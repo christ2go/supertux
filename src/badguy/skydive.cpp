@@ -23,26 +23,19 @@
 #include "supertux/sector.hpp"
 #include "supertux/tile.hpp"
 
-SkyDive::SkyDive(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/skydive/skydive.sprite")
-{
-}
+SkyDive::SkyDive(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/skydive/skydive.sprite") {}
 
-void
-SkyDive::collision_solid(const CollisionHit& hit)
-{
+void SkyDive::collision_solid(const CollisionHit& hit) {
   if (hit.bottom) {
-    explode ();
+    explode();
     return;
   }
 
-  if (hit.left || hit.right)
-    m_physic.set_velocity_x (0.0);
+  if (hit.left || hit.right) m_physic.set_velocity_x(0.0);
 }
 
-HitResponse
-SkyDive::collision_badguy(BadGuy&, const CollisionHit& hit)
-{
+HitResponse SkyDive::collision_badguy(BadGuy&, const CollisionHit& hit) {
   if (hit.bottom) {
     explode();
     return ABORT_MOVE;
@@ -51,9 +44,7 @@ SkyDive::collision_badguy(BadGuy&, const CollisionHit& hit)
   return FORCE_MOVE;
 }
 
-void
-SkyDive::grab(MovingObject& object, const Vector& pos, Direction dir_)
-{
+void SkyDive::grab(MovingObject& object, const Vector& pos, Direction dir_) {
   Portable::grab(object, pos, dir_);
   m_col.m_movement = pos - get_pos();
   m_dir = dir_;
@@ -65,9 +56,7 @@ SkyDive::grab(MovingObject& object, const Vector& pos, Direction dir_)
   set_colgroup_active(COLGROUP_DISABLED);
 }
 
-void
-SkyDive::ungrab(MovingObject& object, Direction dir_)
-{
+void SkyDive::ungrab(MovingObject& object, Direction dir_) {
   m_sprite->set_action("falling", 1);
 
   m_physic.set_velocity_y(0);
@@ -77,9 +66,7 @@ SkyDive::ungrab(MovingObject& object, Direction dir_)
   Portable::ungrab(object, dir_);
 }
 
-HitResponse
-SkyDive::collision_player(Player&, const CollisionHit& hit)
-{
+HitResponse SkyDive::collision_player(Player&, const CollisionHit& hit) {
   if (hit.bottom) {
     explode();
     return ABORT_MOVE;
@@ -88,10 +75,8 @@ SkyDive::collision_player(Player&, const CollisionHit& hit)
   return FORCE_MOVE;
 }
 
-bool
-SkyDive::collision_squished(GameObject& obj)
-{
-  auto player = dynamic_cast<Player *>(&obj);
+bool SkyDive::collision_squished(GameObject& obj) {
+  auto player = dynamic_cast<Player*>(&obj);
   if (player) {
     player->bounce(*this);
     return false;
@@ -101,36 +86,23 @@ SkyDive::collision_squished(GameObject& obj)
   return false;
 }
 
-void
-SkyDive::collision_tile(uint32_t tile_attributes)
-{
-  if (tile_attributes & Tile::HURTS)
-  {
+void SkyDive::collision_tile(uint32_t tile_attributes) {
+  if (tile_attributes & Tile::HURTS) {
     explode();
   }
 }
 
-void
-SkyDive::active_update(float dt_sec)
-{
-  if (!is_grabbed())
-    m_col.m_movement = m_physic.get_movement(dt_sec);
+void SkyDive::active_update(float dt_sec) {
+  if (!is_grabbed()) m_col.m_movement = m_physic.get_movement(dt_sec);
 }
 
-void
-SkyDive::kill_fall()
-{
-  explode();
-}
+void SkyDive::kill_fall() { explode(); }
 
-void
-SkyDive::explode()
-{
-  if (!is_valid())
-    return;
+void SkyDive::explode() {
+  if (!is_valid()) return;
 
   auto& explosion = Sector::get().add<Explosion>(
-    get_anchor_pos(m_col.m_bbox, ANCHOR_BOTTOM), EXPLOSION_STRENGTH_NEAR);
+      get_anchor_pos(m_col.m_bbox, ANCHOR_BOTTOM), EXPLOSION_STRENGTH_NEAR);
 
   explosion.hurts(true);
 

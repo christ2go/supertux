@@ -28,19 +28,17 @@
 
 namespace {
 
-#define IS_REPOSITORY_MENU_ID(idx) (((idx) - MNID_ADDON_LIST_START) % 2 == 0)
-#define IS_INSTALLED_MENU_ID(idx) (((idx) - MNID_ADDON_LIST_START) % 2 == 1)
+#define IS_REPOSITORY_MENU_ID(idx) (((idx)-MNID_ADDON_LIST_START) % 2 == 0)
+#define IS_INSTALLED_MENU_ID(idx) (((idx)-MNID_ADDON_LIST_START) % 2 == 1)
 
 #define MAKE_REPOSITORY_MENU_ID(idx) (MNID_ADDON_LIST_START + 2 * (idx) + 0)
 #define MAKE_INSTALLED_MENU_ID(idx) (MNID_ADDON_LIST_START + 2 * (idx) + 1)
 
-#define UNPACK_REPOSITORY_MENU_ID(idx) ((((idx) - MNID_ADDON_LIST_START) - 0) / 2)
-#define UNPACK_INSTALLED_MENU_ID(idx) ((((idx) - MNID_ADDON_LIST_START) - 1) / 2)
+#define UNPACK_REPOSITORY_MENU_ID(idx) ((((idx)-MNID_ADDON_LIST_START) - 0) / 2)
+#define UNPACK_INSTALLED_MENU_ID(idx) ((((idx)-MNID_ADDON_LIST_START) - 1) / 2)
 
-std::string addon_type_to_translated_string(Addon::Type type)
-{
-  switch (type)
-  {
+std::string addon_type_to_translated_string(Addon::Type type) {
+  switch (type) {
     case Addon::LEVELSET:
       return _("Levelset");
 
@@ -49,8 +47,8 @@ std::string addon_type_to_translated_string(Addon::Type type)
 
     case Addon::WORLD:
       return _("World");
-	  
-	case Addon::ADDON:
+
+    case Addon::ADDON:
       return _("Add-on");
 
     case Addon::LANGUAGEPACK:
@@ -61,52 +59,41 @@ std::string addon_type_to_translated_string(Addon::Type type)
   }
 }
 
-std::string generate_menu_item_text(const Addon& addon)
-{
+std::string generate_menu_item_text(const Addon& addon) {
   std::string text;
   std::string type = addon_type_to_translated_string(addon.get_type());
 
-  if (!addon.get_author().empty())
-  {
-    text = str(boost::format(_("%s \"%s\" by \"%s\""))
-               % type % addon.get_title() % addon.get_author());
-  }
-  else
-  {
+  if (!addon.get_author().empty()) {
+    text = str(boost::format(_("%s \"%s\" by \"%s\"")) % type %
+               addon.get_title() % addon.get_author());
+  } else {
     // Only addon type and name, no need for translation.
-    text = str(boost::format("%s \"%s\"")
-               % type % addon.get_title());
+    text = str(boost::format("%s \"%s\"") % type % addon.get_title());
   }
 
   return text;
 }
 
-} // namespace
+}  // namespace
 
-AddonMenu::AddonMenu(bool auto_install_langpack) :
-  m_addon_manager(*AddonManager::current()),
-  m_installed_addons(),
-  m_repository_addons(),
-  m_addons_enabled(),
-  m_auto_install_langpack(auto_install_langpack)
-{
+AddonMenu::AddonMenu(bool auto_install_langpack)
+    : m_addon_manager(*AddonManager::current()),
+      m_installed_addons(),
+      m_repository_addons(),
+      m_addons_enabled(),
+      m_auto_install_langpack(auto_install_langpack) {
   refresh();
-  if (auto_install_langpack)
-  {
-    const std::string& language = g_dictionary_manager->get_language().get_language();
-    if (language == "en")
-      return;
+  if (auto_install_langpack) {
+    const std::string& language =
+        g_dictionary_manager->get_language().get_language();
+    if (language == "en") return;
     check_online();
   }
 }
 
-AddonMenu::~AddonMenu()
-{
-}
+AddonMenu::~AddonMenu() {}
 
-void
-AddonMenu::refresh()
-{
+void AddonMenu::refresh() {
   m_installed_addons = m_addon_manager.get_installed_addons();
   m_repository_addons = m_addon_manager.get_repository_addons();
 
@@ -115,33 +102,23 @@ AddonMenu::refresh()
   rebuild_menu();
 }
 
-void
-AddonMenu::rebuild_menu()
-{
+void AddonMenu::rebuild_menu() {
   clear();
   add_label(_("Add-ons"));
   add_hl();
 
-  if (m_installed_addons.empty())
-  {
-    if (!m_repository_addons.empty())
-    {
+  if (m_installed_addons.empty()) {
+    if (!m_repository_addons.empty()) {
       add_inactive(_("No Add-ons installed"));
-    }
-    else
-    {
+    } else {
       add_inactive(_("No Add-ons found"));
     }
-  }
-  else
-  {
+  } else {
     int idx = 0;
-    for (const auto& addon_id : m_installed_addons)
-    {
+    for (const auto& addon_id : m_installed_addons) {
       const Addon& addon = m_addon_manager.get_installed_addon(addon_id);
       m_addons_enabled[idx] = addon.is_enabled();
-      if (addon_visible(addon))
-      {
+      if (addon_visible(addon)) {
         std::string text = generate_menu_item_text(addon);
         add_toggle(MAKE_INSTALLED_MENU_ID(idx), text, &m_addons_enabled[idx]);
       }
@@ -154,58 +131,49 @@ AddonMenu::rebuild_menu()
   {
     bool have_new_stuff = false;
     int idx = 0;
-    for (const auto& addon_id : m_repository_addons)
-    {
+    for (const auto& addon_id : m_repository_addons) {
       const Addon& addon = m_addon_manager.get_repository_addon(addon_id);
 
-      try
-      {
+      try {
         // addon is already installed, so check if they are the same
         Addon& installed_addon = m_addon_manager.get_installed_addon(addon_id);
         if (installed_addon.get_md5() == addon.get_md5() ||
-            installed_addon.get_version() > addon.get_version())
-        {
-          log_debug << "ignoring already installed add-on " << installed_addon.get_id() << std::endl;
-        }
-        else
-        {
-          log_debug << installed_addon.get_id() << " is installed, but updated: '"
-                    << installed_addon.get_md5() << "' vs '" << addon.get_md5() << "'  '"
-                    << installed_addon.get_version() << "' vs '" << addon.get_version() << "'"
-                    << std::endl;
-          if (addon_visible(addon))
-          {
+            installed_addon.get_version() > addon.get_version()) {
+          log_debug << "ignoring already installed add-on "
+                    << installed_addon.get_id() << std::endl;
+        } else {
+          log_debug << installed_addon.get_id()
+                    << " is installed, but updated: '"
+                    << installed_addon.get_md5() << "' vs '" << addon.get_md5()
+                    << "'  '" << installed_addon.get_version() << "' vs '"
+                    << addon.get_version() << "'" << std::endl;
+          if (addon_visible(addon)) {
             std::string text = generate_menu_item_text(addon);
-            add_entry(MAKE_REPOSITORY_MENU_ID(idx), str(boost::format( _("Install %s *NEW*") ) % text));
+            add_entry(MAKE_REPOSITORY_MENU_ID(idx),
+                      str(boost::format(_("Install %s *NEW*")) % text));
             have_new_stuff = true;
           }
         }
-      }
-      catch(const std::exception&)
-      {
+      } catch (const std::exception&) {
         // addon is not installed
-        if (addon_visible(addon))
-        {
+        if (addon_visible(addon)) {
           std::string text = generate_menu_item_text(addon);
-          add_entry(MAKE_REPOSITORY_MENU_ID(idx), str(boost::format( _("Install %s") ) % text));
+          add_entry(MAKE_REPOSITORY_MENU_ID(idx),
+                    str(boost::format(_("Install %s")) % text));
           have_new_stuff = true;
         }
       }
       idx += 1;
     }
 
-    if (!have_new_stuff && m_addon_manager.has_been_updated())
-    {
+    if (!have_new_stuff && m_addon_manager.has_been_updated()) {
       add_inactive(_("No new Add-ons found"));
     }
   }
 
-  if (!m_addon_manager.has_online_support())
-  {
+  if (!m_addon_manager.has_online_support()) {
     add_inactive(_("Check Online (disabled)"));
-  }
-  else
-  {
+  } else {
     add_entry(MNID_CHECK_ONLINE, _("Check Online"));
   }
 
@@ -213,116 +181,83 @@ AddonMenu::rebuild_menu()
   add_back(_("Back"));
 }
 
-void
-AddonMenu::menu_action(MenuItem& item)
-{
-  if (item.get_id() == MNID_CHECK_ONLINE) // check if "Check Online" was chosen
+void AddonMenu::menu_action(MenuItem& item) {
+  if (item.get_id() == MNID_CHECK_ONLINE)  // check if "Check Online" was chosen
   {
     check_online();
-  }
-  else if (MNID_ADDON_LIST_START <= item.get_id())
-  {
-    if (IS_INSTALLED_MENU_ID(item.get_id()))
-    {
+  } else if (MNID_ADDON_LIST_START <= item.get_id()) {
+    if (IS_INSTALLED_MENU_ID(item.get_id())) {
       int idx = UNPACK_INSTALLED_MENU_ID(item.get_id());
-      if (0 <= idx && idx < static_cast<int>(m_installed_addons.size()))
-      {
-        const Addon& addon = m_addon_manager.get_installed_addon(m_installed_addons[idx]);
+      if (0 <= idx && idx < static_cast<int>(m_installed_addons.size())) {
+        const Addon& addon =
+            m_addon_manager.get_installed_addon(m_installed_addons[idx]);
         toggle_addon(addon);
       }
-    }
-    else if (IS_REPOSITORY_MENU_ID(item.get_id()))
-    {
+    } else if (IS_REPOSITORY_MENU_ID(item.get_id())) {
       int idx = UNPACK_REPOSITORY_MENU_ID(item.get_id());
-      if (0 <= idx && idx < static_cast<int>(m_repository_addons.size()))
-      {
-        const Addon& addon = m_addon_manager.get_repository_addon(m_repository_addons[idx]);
+      if (0 <= idx && idx < static_cast<int>(m_repository_addons.size())) {
+        const Addon& addon =
+            m_addon_manager.get_repository_addon(m_repository_addons[idx]);
         install_addon(addon);
       }
     }
-  }
-  else
-  {
+  } else {
     log_warning << "Unknown menu item clicked: " << item.get_id() << std::endl;
   }
 }
 
-bool
-AddonMenu::addon_visible(const Addon& addon) const
-{
-  return true;
-}
+bool AddonMenu::addon_visible(const Addon& addon) const { return true; }
 
-void
-AddonMenu::check_online()
-{
-  try
-  {
+void AddonMenu::check_online() {
+  try {
     TransferStatusPtr status = m_addon_manager.request_check_online();
-    status->then([this](bool success)
-    {
-      if (success)
-      {
-        if (m_auto_install_langpack)
-        {
+    status->then([this](bool success) {
+      if (success) {
+        if (m_auto_install_langpack) {
           const std::string& langpack_id = "language-pack";
           install_addon(m_addon_manager.get_repository_addon(langpack_id));
-        }
-        else
-        {
+        } else {
           refresh();
         }
-      }
-      else
-      {
-        if (m_auto_install_langpack)
-        {
+      } else {
+        if (m_auto_install_langpack) {
           MenuManager::instance().set_dialog({});
           MenuManager::instance().clear_menu_stack();
         }
       }
     });
-    auto dialog = std::make_unique<DownloadDialog>(status, false, m_auto_install_langpack);
+    auto dialog = std::make_unique<DownloadDialog>(status, false,
+                                                   m_auto_install_langpack);
     dialog->set_title(_("Downloading Add-On Repository Index"));
     MenuManager::instance().set_dialog(std::move(dialog));
-  }
-  catch (std::exception& e)
-  {
-    log_warning << "Check for available Add-ons failed: " << e.what() << std::endl;
+  } catch (std::exception& e) {
+    log_warning << "Check for available Add-ons failed: " << e.what()
+                << std::endl;
   }
 }
 
-void
-AddonMenu::install_addon(const Addon& addon)
-{
+void AddonMenu::install_addon(const Addon& addon) {
   auto addon_id = addon.get_id();
   TransferStatusPtr status = m_addon_manager.request_install_addon(addon_id);
-  auto dialog = std::make_unique<DownloadDialog>(status, false, m_auto_install_langpack);
-  dialog->set_title(str(boost::format( _("Downloading %s") ) % generate_menu_item_text(addon)));
-  status->then([this, addon_id](bool success)
-  {
-    if (success)
-    {
-      try
-      {
+  auto dialog =
+      std::make_unique<DownloadDialog>(status, false, m_auto_install_langpack);
+  dialog->set_title(
+      str(boost::format(_("Downloading %s")) % generate_menu_item_text(addon)));
+  status->then([this, addon_id](bool success) {
+    if (success) {
+      try {
         m_addon_manager.enable_addon(addon_id);
-        if (m_auto_install_langpack)
-        {
+        if (m_auto_install_langpack) {
           MenuManager::instance().set_dialog({});
           MenuManager::instance().clear_menu_stack();
           return;
         }
-      }
-      catch(const std::exception& err)
-      {
+      } catch (const std::exception& err) {
         log_warning << "Enabling add-on failed: " << err.what() << std::endl;
       }
       refresh();
-    }
-    else
-    {
-      if (m_auto_install_langpack)
-      {
+    } else {
+      if (m_auto_install_langpack) {
         MenuManager::instance().set_dialog({});
         MenuManager::instance().clear_menu_stack();
       }
@@ -331,25 +266,19 @@ AddonMenu::install_addon(const Addon& addon)
   MenuManager::instance().set_dialog(std::move(dialog));
 }
 
-void
-AddonMenu::toggle_addon(const Addon& addon)
-{
-  if (addon.is_enabled())
-  {
+void AddonMenu::toggle_addon(const Addon& addon) {
+  if (addon.is_enabled()) {
     m_addon_manager.disable_addon(addon.get_id());
-  }
-  else
-  {
+  } else {
     m_addon_manager.enable_addon(addon.get_id());
   }
-  if (addon.get_type() == Addon::LANGUAGEPACK)
-  {
+  if (addon.get_type() == Addon::LANGUAGEPACK) {
     auto dialog = std::make_unique<Dialog>();
-    dialog->set_text(_("Please restart SuperTux\nfor these changes to take effect."));
+    dialog->set_text(
+        _("Please restart SuperTux\nfor these changes to take effect."));
     dialog->add_cancel_button(_("OK"));
     MenuManager::instance().set_dialog(std::move(dialog));
   }
 }
-
 
 /* EOF */

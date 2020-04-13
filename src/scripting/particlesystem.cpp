@@ -20,18 +20,16 @@
 
 namespace scripting {
 
-void ParticleSystem::set_enabled(bool enable)
-{
+void ParticleSystem::set_enabled(bool enable) {
   SCRIPT_GUARD_VOID;
   object.set_enabled(enable);
 }
 
-bool ParticleSystem::get_enabled() const
-{
+bool ParticleSystem::get_enabled() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_enabled();
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

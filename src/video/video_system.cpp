@@ -31,30 +31,25 @@
 #include "video/sdl_surface_ptr.hpp"
 
 #ifdef HAVE_OPENGL
-#  include "video/gl/gl_video_system.hpp"
+#include "video/gl/gl_video_system.hpp"
 #endif
 
-std::unique_ptr<VideoSystem>
-VideoSystem::create(VideoSystem::Enum video_system)
-{
-  switch (video_system)
-  {
+std::unique_ptr<VideoSystem> VideoSystem::create(
+    VideoSystem::Enum video_system) {
+  switch (video_system) {
     case VIDEO_AUTO:
 #ifdef HAVE_OPENGL
-      try
-      {
+      try {
         return std::make_unique<GLVideoSystem>(true);
-      }
-      catch(std::exception& err)
-      {
-        try
-        {
-          log_warning << "Error creating GLVideoSystem-330core, using GLVideoSystem-20 fallback: "  << err.what() << std::endl;
+      } catch (std::exception& err) {
+        try {
+          log_warning << "Error creating GLVideoSystem-330core, using "
+                         "GLVideoSystem-20 fallback: "
+                      << err.what() << std::endl;
           return std::make_unique<GLVideoSystem>(false);
-        }
-        catch(std::exception& err2)
-        {
-          log_warning << "Error creating GLVideoSystem-20, using SDL fallback: "  << err2.what() << std::endl;
+        } catch (std::exception& err2) {
+          log_warning << "Error creating GLVideoSystem-20, using SDL fallback: "
+                      << err2.what() << std::endl;
           return std::make_unique<SDLVideoSystem>();
         }
       }
@@ -72,7 +67,8 @@ VideoSystem::create(VideoSystem::Enum video_system)
 #else
     case VIDEO_OPENGL33CORE:
     case VIDEO_OPENGL20:
-      log_warning << "OpenGL requested, but missing using SDL fallback" << std::endl;
+      log_warning << "OpenGL requested, but missing using SDL fallback"
+                  << std::endl;
       return std::make_unique<SDLVideoSystem>();
 #endif
 
@@ -90,46 +86,36 @@ VideoSystem::create(VideoSystem::Enum video_system)
   }
 }
 
-VideoSystem::Enum
-VideoSystem::get_video_system(const std::string &video)
-{
-  if (video == "auto")
-  {
+VideoSystem::Enum VideoSystem::get_video_system(const std::string& video) {
+  if (video == "auto") {
     return VIDEO_AUTO;
   }
 #ifdef HAVE_OPENGL
-  else if (video == "opengl" || video == "opengl33" || video == "opengl33core")
-  {
+  else if (video == "opengl" || video == "opengl33" ||
+           video == "opengl33core") {
     return VIDEO_OPENGL33CORE;
-  }
-  else if (video == "opengl20")
-  {
+  } else if (video == "opengl20") {
     return VIDEO_OPENGL20;
   }
 #endif
-  else if (video == "sdl")
-  {
+  else if (video == "sdl") {
     return VIDEO_SDL;
-  }
-  else if (video == "null")
-  {
+  } else if (video == "null") {
     return VIDEO_NULL;
-  }
-  else
-  {
+  } else {
 #ifdef HAVE_OPENGL
-    throw std::runtime_error("invalid VideoSystem::Enum, valid values are 'auto', 'sdl', 'opengl', 'opengl20' and 'null'");
+    throw std::runtime_error(
+        "invalid VideoSystem::Enum, valid values are 'auto', 'sdl', 'opengl', "
+        "'opengl20' and 'null'");
 #else
-    throw std::runtime_error("invalid VideoSystem::Enum, valid values are 'auto' and 'sdl'");
+    throw std::runtime_error(
+        "invalid VideoSystem::Enum, valid values are 'auto' and 'sdl'");
 #endif
   }
 }
 
-std::string
-VideoSystem::get_video_string(VideoSystem::Enum video)
-{
-  switch (video)
-  {
+std::string VideoSystem::get_video_string(VideoSystem::Enum video) {
+  switch (video) {
     case VIDEO_AUTO:
       return "auto";
     case VIDEO_OPENGL33CORE:
@@ -147,9 +133,7 @@ VideoSystem::get_video_string(VideoSystem::Enum video)
   }
 }
 
-void
-VideoSystem::do_take_screenshot()
-{
+void VideoSystem::do_take_screenshot() {
   SDLSurfacePtr surface = make_screenshot();
   if (!surface) {
     log_warning << "Creating the screenshot has failed" << std::endl;
@@ -164,27 +148,23 @@ VideoSystem::do_take_screenshot()
     }
   }
 
-  auto find_filename = [&]() -> boost::optional<std::string>
-    {
-      for (int num = 0; num < 1000000; ++num)
-      {
-        std::ostringstream oss;
-        oss << "screenshot" << std::setw(6) << std::setfill('0') << num << ".png";
-        const std::string screenshot_filename = FileSystem::join(screenshots_dir, oss.str());
-        if (!PHYSFS_exists(screenshot_filename.c_str())) {
-          return screenshot_filename;
-        }
+  auto find_filename = [&]() -> boost::optional<std::string> {
+    for (int num = 0; num < 1000000; ++num) {
+      std::ostringstream oss;
+      oss << "screenshot" << std::setw(6) << std::setfill('0') << num << ".png";
+      const std::string screenshot_filename =
+          FileSystem::join(screenshots_dir, oss.str());
+      if (!PHYSFS_exists(screenshot_filename.c_str())) {
+        return screenshot_filename;
       }
-      return boost::none;
-    };
+    }
+    return boost::none;
+  };
 
   auto filename = find_filename();
-  if (!filename)
-  {
+  if (!filename) {
     log_info << "Failed to find filename to save screenshot" << std::endl;
-  }
-  else
-  {
+  } else {
     if (SDLSurface::save_png(*surface, *filename)) {
       log_info << "Wrote screenshot to \"" << *filename << "\"" << std::endl;
     }

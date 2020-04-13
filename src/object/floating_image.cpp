@@ -20,24 +20,18 @@
 #include "sprite/sprite_manager.hpp"
 #include "supertux/globals.hpp"
 
-FloatingImage::FloatingImage(const std::string& spritefile) :
-  sprite(SpriteManager::current()->create(spritefile)),
-  layer(LAYER_FOREGROUND1 + 1),
-  visible(false),
-  anchor(ANCHOR_MIDDLE),
-  pos(),
-  fading(0),
-  fadetime(0)
-{
-}
+FloatingImage::FloatingImage(const std::string& spritefile)
+    : sprite(SpriteManager::current()->create(spritefile)),
+      layer(LAYER_FOREGROUND1 + 1),
+      visible(false),
+      anchor(ANCHOR_MIDDLE),
+      pos(),
+      fading(0),
+      fadetime(0) {}
 
-FloatingImage::~FloatingImage()
-{
-}
+FloatingImage::~FloatingImage() {}
 
-void
-FloatingImage::update(float dt_sec)
-{
+void FloatingImage::update(float dt_sec) {
   if (fading > 0) {
     fading -= dt_sec;
     if (fading <= 0) {
@@ -53,40 +47,28 @@ FloatingImage::update(float dt_sec)
   }
 }
 
-void
-FloatingImage::set_action(const std::string& action)
-{
+void FloatingImage::set_action(const std::string& action) {
   sprite->set_action(action);
 }
 
-std::string
-FloatingImage::get_action()
-{
-  return sprite->get_action();
-}
+std::string FloatingImage::get_action() { return sprite->get_action(); }
 
-void
-FloatingImage::fade_in(float fadetime_)
-{
+void FloatingImage::fade_in(float fadetime_) {
   fadetime = fadetime_;
   fading = fadetime_;
 }
 
-void
-FloatingImage::fade_out(float fadetime_)
-{
+void FloatingImage::fade_out(float fadetime_) {
   fadetime = fadetime_;
   fading = -fadetime_;
 }
 
-void
-FloatingImage::draw(DrawingContext& context)
-{
+void FloatingImage::draw(DrawingContext& context) {
   context.push_transform();
   context.set_translation(Vector(0, 0));
 
   if (fading > 0) {
-    context.set_alpha((fadetime-fading) / fadetime);
+    context.set_alpha((fadetime - fading) / fadetime);
   } else if (fading < 0) {
     context.set_alpha(-fading / fadetime);
   } else if (!visible) {
@@ -94,12 +76,11 @@ FloatingImage::draw(DrawingContext& context)
     return;
   }
 
-  Vector spos = pos + get_anchor_pos(Rectf(0, 0,
-                                           static_cast<float>(context.get_width()),
-                                           static_cast<float>(context.get_height())),
-                                     static_cast<float>(sprite->get_width()),
-                                     static_cast<float>(sprite->get_height()),
-                                     anchor);
+  Vector spos =
+      pos + get_anchor_pos(Rectf(0, 0, static_cast<float>(context.get_width()),
+                                 static_cast<float>(context.get_height())),
+                           static_cast<float>(sprite->get_width()),
+                           static_cast<float>(sprite->get_height()), anchor);
 
   sprite->draw(context.color(), spos, layer);
 

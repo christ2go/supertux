@@ -28,31 +28,26 @@
 
 static const std::string TREEWILLOSOUND = "sounds/willowisp.wav";
 
-TreeWillOWisp::TreeWillOWisp(GhostTree* tree_, const Vector& pos,
-                             float radius_, float speed_) :
-  BadGuy(tree_->get_pos() + pos, "images/creatures/willowisp/willowisp.sprite",
-         LAYER_OBJECTS - 20),
-  was_sucked(false),
-  mystate(STATE_DEFAULT),
-  color(),
-  angle(0),
-  radius(radius_),
-  speed(speed_),
-  sound_source(),
-  tree(tree_),
-  suck_target()
-{
+TreeWillOWisp::TreeWillOWisp(GhostTree* tree_, const Vector& pos, float radius_,
+                             float speed_)
+    : BadGuy(tree_->get_pos() + pos,
+             "images/creatures/willowisp/willowisp.sprite", LAYER_OBJECTS - 20),
+      was_sucked(false),
+      mystate(STATE_DEFAULT),
+      color(),
+      angle(0),
+      radius(radius_),
+      speed(speed_),
+      sound_source(),
+      tree(tree_),
+      suck_target() {
   SoundManager::current()->preload(TREEWILLOSOUND);
   set_colgroup_active(COLGROUP_MOVING);
 }
 
-TreeWillOWisp::~TreeWillOWisp()
-{
-}
+TreeWillOWisp::~TreeWillOWisp() {}
 
-void
-TreeWillOWisp::activate()
-{
+void TreeWillOWisp::activate() {
   sound_source = SoundManager::current()->create_sound_source(TREEWILLOSOUND);
   sound_source->set_position(get_pos());
   sound_source->set_looping(true);
@@ -61,51 +56,38 @@ TreeWillOWisp::activate()
   sound_source->play();
 }
 
-void
-TreeWillOWisp::vanish()
-{
+void TreeWillOWisp::vanish() {
   mystate = STATE_VANISHING;
   m_sprite->set_action("vanishing", 1);
   set_colgroup_active(COLGROUP_DISABLED);
 }
 
-void
-TreeWillOWisp::start_sucking(const Vector& suck_target_)
-{
+void TreeWillOWisp::start_sucking(const Vector& suck_target_) {
   mystate = STATE_SUCKED;
   suck_target = suck_target_;
   was_sucked = true;
 }
 
-HitResponse
-TreeWillOWisp::collision_player(Player& player, const CollisionHit& hit)
-{
-  //TODO: basically a no-op. Remove if this doesn't change.
+HitResponse TreeWillOWisp::collision_player(Player& player,
+                                            const CollisionHit& hit) {
+  // TODO: basically a no-op. Remove if this doesn't change.
   return BadGuy::collision_player(player, hit);
 }
 
-bool
-TreeWillOWisp::collides(GameObject& other, const CollisionHit& ) const
-{
+bool TreeWillOWisp::collides(GameObject& other, const CollisionHit&) const {
   auto lantern = dynamic_cast<Lantern*>(&other);
-  if (lantern && lantern->is_open())
-    return true;
-  if (dynamic_cast<Player*>(&other))
-    return true;
+  if (lantern && lantern->is_open()) return true;
+  if (dynamic_cast<Player*>(&other)) return true;
 
   return false;
 }
 
-void
-TreeWillOWisp::draw(DrawingContext& context)
-{
+void TreeWillOWisp::draw(DrawingContext& context) {
   m_sprite->draw(context.color(), get_pos(), m_layer);
   m_sprite->draw(context.light(), get_pos(), m_layer);
 }
 
-void
-TreeWillOWisp::active_update(float dt_sec)
-{
+void TreeWillOWisp::active_update(float dt_sec) {
   // remove TreeWillOWisp if it has completely vanished
   if (mystate == STATE_VANISHING) {
     if (m_sprite->animation_done()) {
@@ -141,28 +123,20 @@ TreeWillOWisp::active_update(float dt_sec)
   }
 }
 
-void
-TreeWillOWisp::set_color(const Color& color_)
-{
+void TreeWillOWisp::set_color(const Color& color_) {
   color = color_;
   m_sprite->set_color(color_);
 }
 
-Color
-TreeWillOWisp::get_color() const
-{
-  return color;
-}
+Color TreeWillOWisp::get_color() const { return color; }
 
-void TreeWillOWisp::stop_looping_sounds()
-{
+void TreeWillOWisp::stop_looping_sounds() {
   if (sound_source) {
     sound_source->stop();
   }
 }
 
-void TreeWillOWisp::play_looping_sounds()
-{
+void TreeWillOWisp::play_looping_sounds() {
   if (sound_source) {
     sound_source->play();
   }

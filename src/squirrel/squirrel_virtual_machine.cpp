@@ -35,10 +35,10 @@
 #include "util/log.hpp"
 
 #ifdef ENABLE_SQDBG
-#  include "../../external/squirrel/sqdbg/sqrdbg.h"
+#include "../../external/squirrel/sqdbg/sqrdbg.h"
 namespace {
 HSQREMOTEDBG debugger = nullptr;
-} // namespace
+}  // namespace
 #endif
 
 namespace {
@@ -54,21 +54,17 @@ void printfunc(HSQUIRRELVM, const char* fmt, ...)
   va_start(arglist, fmt);
   vsnprintf(buf, sizeof(buf), fmt, arglist);
   char* ptr = strtok(buf, separator);
-  while (ptr != nullptr)
-  {
+  while (ptr != nullptr) {
     ConsoleBuffer::output << "[SCRIPTING] " << ptr << std::endl;
     ptr = strtok(nullptr, separator);
   }
   va_end(arglist);
 }
 
-} // namespace
+}  // namespace
 
-SquirrelVirtualMachine::SquirrelVirtualMachine(bool enable_debugger) :
-  m_vm(),
-  m_screenswitch_queue(),
-  m_scheduler()
-{
+SquirrelVirtualMachine::SquirrelVirtualMachine(bool enable_debugger)
+    : m_vm(), m_screenswitch_queue(), m_scheduler() {
   sq_setsharedforeignptr(m_vm.get_vm(), this);
 
   m_screenswitch_queue = std::make_unique<SquirrelThreadQueue>(m_vm);
@@ -79,7 +75,8 @@ SquirrelVirtualMachine::SquirrelVirtualMachine(bool enable_debugger) :
     sq_enabledebuginfo(m_vm.get_vm(), SQTrue);
     debugger = sq_rdbg_init(m_vm.get_vm(), 1234, SQFalse);
     if (debugger == nullptr)
-      throw SquirrelError(m_vm.get_vm(), "Couldn't initialize squirrel debugger");
+      throw SquirrelError(m_vm.get_vm(),
+                          "Couldn't initialize squirrel debugger");
 
     sq_enabledebuginfo(m_vm.get_vm(), SQTrue);
     log_info << "Waiting for debug client..." << std::endl;
@@ -116,13 +113,12 @@ SquirrelVirtualMachine::SquirrelVirtualMachine(bool enable_debugger) :
     std::string filename = "scripts/default.nut";
     IFileStream stream(filename);
     compile_and_run(m_vm.get_vm(), stream, filename);
-  } catch(std::exception& e) {
+  } catch (std::exception& e) {
     log_warning << "Couldn't load default.nut: " << e.what() << std::endl;
   }
 }
 
-SquirrelVirtualMachine::~SquirrelVirtualMachine()
-{
+SquirrelVirtualMachine::~SquirrelVirtualMachine() {
 #ifdef ENABLE_SQDBG
   if (debugger != nullptr) {
     sq_rdbg_shutdown(debugger);
@@ -131,37 +127,26 @@ SquirrelVirtualMachine::~SquirrelVirtualMachine()
 #endif
 }
 
-void
-SquirrelVirtualMachine::update(float dt_sec)
-{
+void SquirrelVirtualMachine::update(float dt_sec) {
   update_debugger();
   m_scheduler->update(g_game_time);
 }
 
-void
-SquirrelVirtualMachine::update_debugger()
-{
+void SquirrelVirtualMachine::update_debugger() {
 #ifdef ENABLE_SQDBG
-  if (debugger != nullptr)
-    sq_rdbg_update(debugger);
+  if (debugger != nullptr) sq_rdbg_update(debugger);
 #endif
 }
 
-void
-SquirrelVirtualMachine::wait_for_seconds(HSQUIRRELVM vm, float seconds)
-{
+void SquirrelVirtualMachine::wait_for_seconds(HSQUIRRELVM vm, float seconds) {
   m_scheduler->schedule_thread(vm, g_game_time + seconds);
 }
 
-void
-SquirrelVirtualMachine::wait_for_screenswitch(HSQUIRRELVM vm)
-{
+void SquirrelVirtualMachine::wait_for_screenswitch(HSQUIRRELVM vm) {
   m_screenswitch_queue->add(vm);
 }
 
-void
-SquirrelVirtualMachine::wakeup_screenswitch()
-{
+void SquirrelVirtualMachine::wakeup_screenswitch() {
   m_screenswitch_queue->wakeup();
 }
 

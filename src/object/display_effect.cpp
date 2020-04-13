@@ -21,28 +21,22 @@
 
 static const float BORDER_SIZE = 75;
 
-DisplayEffect::DisplayEffect(const std::string& name) :
-  GameObject(name),
-  ExposedObject<DisplayEffect, scripting::DisplayEffect>(this),
-  screen_fade(NO_FADE),
-  screen_fadetime(0),
-  screen_fading(0),
-  border_fade(NO_FADE),
-  border_fadetime(0),
-  border_fading(),
-  border_size(0),
-  black(false),
-  borders(false)
-{
-}
+DisplayEffect::DisplayEffect(const std::string& name)
+    : GameObject(name),
+      ExposedObject<DisplayEffect, scripting::DisplayEffect>(this),
+      screen_fade(NO_FADE),
+      screen_fadetime(0),
+      screen_fading(0),
+      border_fade(NO_FADE),
+      border_fadetime(0),
+      border_fading(),
+      border_size(0),
+      black(false),
+      borders(false) {}
 
-DisplayEffect::~DisplayEffect()
-{
-}
+DisplayEffect::~DisplayEffect() {}
 
-void
-DisplayEffect::update(float dt_sec)
-{
+void DisplayEffect::update(float dt_sec) {
   switch (screen_fade) {
     case NO_FADE:
       break;
@@ -71,8 +65,8 @@ DisplayEffect::update(float dt_sec)
       if (border_fading < 0) {
         border_fade = NO_FADE;
       }
-      border_size = (border_fadetime - border_fading)
-        / border_fadetime * BORDER_SIZE;
+      border_size =
+          (border_fadetime - border_fading) / border_fadetime * BORDER_SIZE;
       break;
     case FADE_OUT:
       border_fading -= dt_sec;
@@ -87,9 +81,7 @@ DisplayEffect::update(float dt_sec)
   }
 }
 
-void
-DisplayEffect::draw(DrawingContext& context)
-{
+void DisplayEffect::draw(DrawingContext& context) {
   context.push_transform();
   context.set_translation(Vector(0, 0));
 
@@ -106,67 +98,53 @@ DisplayEffect::draw(DrawingContext& context)
           alpha = (screen_fadetime - screen_fading) / screen_fadetime;
           break;
         default:
-          alpha = 0.0f; // NOLINT
+          alpha = 0.0f;  // NOLINT
           assert(false);
       }
 
       // Same as in fadetoblack.cpp
       alpha = Color::remove_gamma(alpha);
     }
-    context.color().draw_filled_rect(Rectf(0, 0,
-                                           static_cast<float>(context.get_width()),
-                                           static_cast<float>(context.get_height())),
-                                     Color(0, 0, 0, alpha), LAYER_GUI - 10);
+    context.color().draw_filled_rect(
+        Rectf(0, 0, static_cast<float>(context.get_width()),
+              static_cast<float>(context.get_height())),
+        Color(0, 0, 0, alpha), LAYER_GUI - 10);
   }
 
   if (borders) {
-    context.color().draw_filled_rect(Rectf(0, 0,
-                                           static_cast<float>(context.get_width()),
-                                           static_cast<float>(border_size)),
-                                       Color(0, 0, 0, 1.0f), LAYER_GUI-10);
-    context.color().draw_filled_rect(Rectf(Vector(0,
-                                                  static_cast<float>(context.get_height()) - border_size),
-                                           Sizef(static_cast<float>(context.get_width()),
-                                                 static_cast<float>(border_size))),
-                                       Color(0, 0, 0, 1.0f), LAYER_GUI-10);
+    context.color().draw_filled_rect(
+        Rectf(0, 0, static_cast<float>(context.get_width()),
+              static_cast<float>(border_size)),
+        Color(0, 0, 0, 1.0f), LAYER_GUI - 10);
+    context.color().draw_filled_rect(
+        Rectf(Vector(0, static_cast<float>(context.get_height()) - border_size),
+              Sizef(static_cast<float>(context.get_width()),
+                    static_cast<float>(border_size))),
+        Color(0, 0, 0, 1.0f), LAYER_GUI - 10);
   }
 
   context.pop_transform();
 }
 
-void
-DisplayEffect::fade_out(float fadetime)
-{
+void DisplayEffect::fade_out(float fadetime) {
   black = false;
   screen_fadetime = fadetime;
   screen_fading = fadetime;
   screen_fade = FADE_OUT;
 }
 
-void
-DisplayEffect::fade_in(float fadetime)
-{
+void DisplayEffect::fade_in(float fadetime) {
   black = false;
   screen_fadetime = fadetime;
   screen_fading = fadetime;
   screen_fade = FADE_IN;
 }
 
-void
-DisplayEffect::set_black(bool enabled)
-{
-  black = enabled;
-}
+void DisplayEffect::set_black(bool enabled) { black = enabled; }
 
-bool
-DisplayEffect::is_black() const
-{
-  return black;
-}
+bool DisplayEffect::is_black() const { return black; }
 
-void
-DisplayEffect::sixteen_to_nine(float fadetime)
-{
+void DisplayEffect::sixteen_to_nine(float fadetime) {
   if (fadetime == 0) {
     borders = true;
     border_size = BORDER_SIZE;
@@ -179,9 +157,7 @@ DisplayEffect::sixteen_to_nine(float fadetime)
   }
 }
 
-void
-DisplayEffect::four_to_three(float fadetime)
-{
+void DisplayEffect::four_to_three(float fadetime) {
   if (fadetime == 0) {
     borders = false;
   } else {

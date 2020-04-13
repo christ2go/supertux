@@ -23,31 +23,22 @@
 
 #ifndef USE_OPENGLES2
 
-GLPixelRequest::GLPixelRequest(int width, int height) :
-  m_buffer(),
-  m_width(width),
-  m_height(height),
-  m_offset(0),
-  m_sync()
-{
+GLPixelRequest::GLPixelRequest(int width, int height)
+    : m_buffer(), m_width(width), m_height(height), m_offset(0), m_sync() {
   assert_gl();
 
   glGenBuffers(1, &m_buffer);
   glBindBuffer(GL_PIXEL_PACK_BUFFER, m_buffer);
-  glBufferData(GL_PIXEL_PACK_BUFFER, m_width * m_height * 4, nullptr, GL_DYNAMIC_READ);
+  glBufferData(GL_PIXEL_PACK_BUFFER, m_width * m_height * 4, nullptr,
+               GL_DYNAMIC_READ);
   glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 
   assert_gl();
 }
 
-GLPixelRequest::~GLPixelRequest()
-{
-  glDeleteBuffers(1, &m_buffer);
-}
+GLPixelRequest::~GLPixelRequest() { glDeleteBuffers(1, &m_buffer); }
 
-void
-GLPixelRequest::request(int x, int y)
-{
+void GLPixelRequest::request(int x, int y) {
   assert_gl();
 
   glBindBuffer(GL_PIXEL_PACK_BUFFER, m_buffer);
@@ -59,41 +50,32 @@ GLPixelRequest::request(int x, int y)
   assert_gl();
 }
 
-bool
-GLPixelRequest::is_ready() const
-{
+bool GLPixelRequest::is_ready() const {
   assert_gl();
 
   GLenum ret = glClientWaitSync(m_sync, GL_NONE_BIT, 0);
 
-  if (ret == GL_CONDITION_SATISFIED ||
-      ret == GL_ALREADY_SIGNALED)
-  {
-    //std::cout << "fence ready: " << static_cast<int>(ret) << " " << GL_ALREADY_SIGNALED << std::endl;
+  if (ret == GL_CONDITION_SATISFIED || ret == GL_ALREADY_SIGNALED) {
+    // std::cout << "fence ready: " << static_cast<int>(ret) << " " <<
+    // GL_ALREADY_SIGNALED << std::endl;
     return true;
-  }
-  else if (ret == GL_TIMEOUT_EXPIRED)
+  } else if (ret == GL_TIMEOUT_EXPIRED)
 
   {
-    //std::cout << "timeout: " << static_cast<int>(ret) << std::endl;
+    // std::cout << "timeout: " << static_cast<int>(ret) << std::endl;
     return false;
-  }
-  else if (ret == GL_WAIT_FAILED)
-  {
+  } else if (ret == GL_WAIT_FAILED) {
     return true;
-  }
-  else
-  {
-    log_warning << "unknown glClientWaitSync() return value: " << static_cast<int>(ret) << std::endl;
+  } else {
+    log_warning << "unknown glClientWaitSync() return value: "
+                << static_cast<int>(ret) << std::endl;
     return true;
   }
 
   assert_gl();
 }
 
-void
-GLPixelRequest::get(void* buffer, size_t length) const
-{
+void GLPixelRequest::get(void* buffer, size_t length) const {
   assert_gl();
 
   glBindBuffer(GL_PIXEL_PACK_BUFFER, m_buffer);
@@ -103,9 +85,7 @@ GLPixelRequest::get(void* buffer, size_t length) const
   assert_gl();
 }
 
-Color
-GLPixelRequest::get_color() const
-{
+Color GLPixelRequest::get_color() const {
   uint8_t data[3];
   get(data, sizeof(data));
   return Color::from_rgb888(data[0], data[1], data[2]);

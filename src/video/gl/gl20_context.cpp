@@ -23,18 +23,11 @@
 
 #ifndef USE_OPENGLES2
 
-GL20Context::GL20Context()
-{
-  assert_gl();
-}
+GL20Context::GL20Context() { assert_gl(); }
 
-GL20Context::~GL20Context()
-{
-}
+GL20Context::~GL20Context() {}
 
-void
-GL20Context::bind()
-{
+void GL20Context::bind() {
   assert_gl();
 
   glDisable(GL_DEPTH_TEST);
@@ -44,25 +37,18 @@ GL20Context::bind()
   assert_gl();
 }
 
-void
-GL20Context::ortho(float width, float height, bool vflip)
-{
+void GL20Context::ortho(float width, float height, bool vflip) {
   assert_gl();
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
-  if (vflip)
-  {
-    glOrtho(0, static_cast<double>(width),
-            static_cast<double>(height), 0,
-            -1, 1);
-  }
-  else
-  {
-    glOrtho(0, static_cast<double>(width),
-            0, static_cast<double>(height),
-            -1, 1);
+  if (vflip) {
+    glOrtho(0, static_cast<double>(width), static_cast<double>(height), 0, -1,
+            1);
+  } else {
+    glOrtho(0, static_cast<double>(width), 0, static_cast<double>(height), -1,
+            1);
   }
 
   glMatrixMode(GL_MODELVIEW);
@@ -71,9 +57,7 @@ GL20Context::ortho(float width, float height, bool vflip)
   assert_gl();
 }
 
-void
-GL20Context::blend_func(GLenum src, GLenum dst)
-{
+void GL20Context::blend_func(GLenum src, GLenum dst) {
   assert_gl();
 
   glBlendFunc(src, dst);
@@ -81,9 +65,7 @@ GL20Context::blend_func(GLenum src, GLenum dst)
   assert_gl();
 }
 
-void
-GL20Context::set_positions(const float* data, size_t size)
-{
+void GL20Context::set_positions(const float* data, size_t size) {
   assert_gl();
 
   glEnableClientState(GL_VERTEX_ARRAY);
@@ -92,9 +74,7 @@ GL20Context::set_positions(const float* data, size_t size)
   assert_gl();
 }
 
-void
-GL20Context::set_texcoords(const float* data, size_t size)
-{
+void GL20Context::set_texcoords(const float* data, size_t size) {
   assert_gl();
 
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -103,9 +83,7 @@ GL20Context::set_texcoords(const float* data, size_t size)
   assert_gl();
 }
 
-void
-GL20Context::set_texcoord(float u, float v)
-{
+void GL20Context::set_texcoord(float u, float v) {
   assert_gl();
 
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -113,9 +91,7 @@ GL20Context::set_texcoord(float u, float v)
   assert_gl();
 }
 
-void
-GL20Context::set_colors(const float* data, size_t size)
-{
+void GL20Context::set_colors(const float* data, size_t size) {
   assert_gl();
 
   glEnableClientState(GL_COLOR_ARRAY);
@@ -124,9 +100,7 @@ GL20Context::set_colors(const float* data, size_t size)
   assert_gl();
 }
 
-void
-GL20Context::set_color(const Color& color)
-{
+void GL20Context::set_color(const Color& color) {
   assert_gl();
 
   glDisableClientState(GL_COLOR_ARRAY);
@@ -135,25 +109,23 @@ GL20Context::set_color(const Color& color)
   assert_gl();
 }
 
-void
-GL20Context::bind_texture(const Texture& texture, const Texture* displacement_texture)
-{
+void GL20Context::bind_texture(const Texture& texture,
+                               const Texture* displacement_texture) {
   assert_gl();
 
   glEnable(GL_TEXTURE_2D);
-  glBindTexture(GL_TEXTURE_2D, static_cast<const GLTexture&>(texture).get_handle());
+  glBindTexture(GL_TEXTURE_2D,
+                static_cast<const GLTexture&>(texture).get_handle());
 
   assert_gl();
 
-  Vector animate = static_cast<const GLTexture&>(texture).get_sampler().get_animate();
-  if (animate.x == 0.0f && animate.y == 0.0f)
-  {
+  Vector animate =
+      static_cast<const GLTexture&>(texture).get_sampler().get_animate();
+  if (animate.x == 0.0f && animate.y == 0.0f) {
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
-  }
-  else
-  {
+  } else {
     animate.x /= static_cast<float>(texture.get_image_width());
     animate.y /= static_cast<float>(texture.get_image_height());
 
@@ -168,9 +140,7 @@ GL20Context::bind_texture(const Texture& texture, const Texture* displacement_te
   assert_gl();
 }
 
-void
-GL20Context::bind_no_texture()
-{
+void GL20Context::bind_no_texture() {
   assert_gl();
 
   glDisable(GL_TEXTURE_2D);
@@ -178,9 +148,7 @@ GL20Context::bind_no_texture()
   assert_gl();
 }
 
-void
-GL20Context::draw_arrays(GLenum type, GLint first, GLsizei count)
-{
+void GL20Context::draw_arrays(GLenum type, GLint first, GLsizei count) {
   assert_gl();
 
   glDrawArrays(type, first, count);

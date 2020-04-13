@@ -21,9 +21,9 @@
 #include "util/reader_mapping.hpp"
 
 WalkingCandle::WalkingCandle(const ReaderMapping& reader)
-  : WalkingBadguy(reader, "images/creatures/mr_candle/mr-candle.sprite", "left", "right"),
-    lightcolor(1, 1, 1)
-{
+    : WalkingBadguy(reader, "images/creatures/mr_candle/mr-candle.sprite",
+                    "left", "right"),
+      lightcolor(1, 1, 1) {
   walk_speed = 80;
   max_drop_height = 64;
 
@@ -38,45 +38,34 @@ WalkingCandle::WalkingCandle(const ReaderMapping& reader)
   m_glowing = true;
 }
 
-bool
-WalkingCandle::is_freezable() const
-{
-  return true;
-}
+bool WalkingCandle::is_freezable() const { return true; }
 
-bool
-WalkingCandle::is_flammable() const
-{
-  return m_frozen;
-}
+bool WalkingCandle::is_flammable() const { return m_frozen; }
 
-void
-WalkingCandle::freeze() {
+void WalkingCandle::freeze() {
   BadGuy::freeze();
   m_glowing = false;
 }
 
-void
-WalkingCandle::unfreeze() {
+void WalkingCandle::unfreeze() {
   BadGuy::unfreeze();
   m_glowing = true;
 }
 
-HitResponse
-WalkingCandle::collision(GameObject& other, const CollisionHit& hit) {
+HitResponse WalkingCandle::collision(GameObject& other,
+                                     const CollisionHit& hit) {
   auto l = dynamic_cast<Lantern*>(&other);
-  if (l && !m_frozen) if (l->get_bbox().get_bottom() < m_col.m_bbox.get_top()) {
-    l->add_color(lightcolor);
-    run_dead_script();
-    remove_me();
-    return FORCE_MOVE;
-  }
+  if (l && !m_frozen)
+    if (l->get_bbox().get_bottom() < m_col.m_bbox.get_top()) {
+      l->add_color(lightcolor);
+      run_dead_script();
+      remove_me();
+      return FORCE_MOVE;
+    }
   return WalkingBadguy::collision(other, hit);
 }
 
-ObjectSettings
-WalkingCandle::get_settings()
-{
+ObjectSettings WalkingCandle::get_settings() {
   ObjectSettings result = BadGuy::get_settings();
 
   result.add_color(_("Color"), &lightcolor, "color", Color::WHITE);
@@ -86,9 +75,7 @@ WalkingCandle::get_settings()
   return result;
 }
 
-void
-WalkingCandle::after_editor_set()
-{
+void WalkingCandle::after_editor_set() {
   m_sprite->set_color(lightcolor);
   m_lightsprite->set_color(lightcolor);
 }

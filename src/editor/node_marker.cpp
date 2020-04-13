@@ -18,17 +18,14 @@
 
 #include "editor/editor.hpp"
 
-NodeMarker::NodeMarker (Path* path_, std::vector<Path::Node>::iterator node_iterator, size_t id_) :
-  m_path(path_),
-  m_node(node_iterator),
-  m_id(id_)
-{
+NodeMarker::NodeMarker(Path* path_,
+                       std::vector<Path::Node>::iterator node_iterator,
+                       size_t id_)
+    : m_path(path_), m_node(node_iterator), m_id(id_) {
   set_pos(m_node->position - Vector(8, 8));
 }
 
-void
-NodeMarker::update_iterator()
-{
+void NodeMarker::update_iterator() {
   if (m_id >= m_path->m_nodes.size()) {
     remove_me();
   } else {
@@ -36,55 +33,39 @@ NodeMarker::update_iterator()
   }
 }
 
-Vector
-NodeMarker::get_point_vector() const
-{
+Vector NodeMarker::get_point_vector() const {
   std::vector<Path::Node>::iterator next_node = m_node + 1;
   if (next_node == m_path->m_nodes.end()) {
     if (m_path->m_mode == WalkMode::CIRCULAR) {
-      //loop to the first node
+      // loop to the first node
       return m_path->m_nodes.begin()->position - m_node->position;
     } else {
-      return Vector(0,0);
+      return Vector(0, 0);
     }
   } else {
-    //point to the next node
+    // point to the next node
     return next_node->position - m_node->position;
   }
 }
 
-Vector
-NodeMarker::get_offset() const
-{
-  return Vector(8, 8);
-}
+Vector NodeMarker::get_offset() const { return Vector(8, 8); }
 
-void
-NodeMarker::move_to(const Vector& pos)
-{
+void NodeMarker::move_to(const Vector& pos) {
   MovingObject::move_to(pos);
   m_node->position = m_col.m_bbox.get_middle();
 }
 
-void
-NodeMarker::editor_delete()
-{
+void NodeMarker::editor_delete() {
   m_path->m_nodes.erase(m_node);
   Editor::current()->update_node_iterators();
 }
 
-ObjectSettings
-NodeMarker::get_settings()
-{
+ObjectSettings NodeMarker::get_settings() {
   ObjectSettings result(_("Path Node"));
   result.add_float(_("Time"), &(m_node->time));
   return result;
 }
 
-void
-NodeMarker::editor_update()
-{
-  set_pos(m_node->position - Vector(8, 8));
-}
+void NodeMarker::editor_update() { set_pos(m_node->position - Vector(8, 8)); }
 
 /* EOF */

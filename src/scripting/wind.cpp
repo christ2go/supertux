@@ -19,18 +19,16 @@
 
 namespace scripting {
 
-void Wind::start()
-{
+void Wind::start() {
   SCRIPT_GUARD_VOID;
   object.start();
 }
 
-void Wind::stop()
-{
+void Wind::stop() {
   SCRIPT_GUARD_VOID;
   object.stop();
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

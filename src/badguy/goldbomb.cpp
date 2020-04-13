@@ -27,37 +27,35 @@
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
-GoldBomb::GoldBomb(const ReaderMapping& reader) :
-  WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite", "left", "right"),
-  tstate(STATE_NORMAL),
-  ticking()
-{
+GoldBomb::GoldBomb(const ReaderMapping& reader)
+    : WalkingBadguy(reader, "images/creatures/gold_bomb/gold_bomb.sprite",
+                    "left", "right"),
+      tstate(STATE_NORMAL),
+      ticking() {
   walk_speed = 80;
   max_drop_height = 16;
 
-  //Prevent stutter when Tux jumps on Gold Bomb
+  // Prevent stutter when Tux jumps on Gold Bomb
   SoundManager::current()->preload("sounds/explosion.wav");
 
-  //Check if we need another sprite
-  if ( !reader.get( "sprite", m_sprite_name ) ){
+  // Check if we need another sprite
+  if (!reader.get("sprite", m_sprite_name)) {
     return;
   }
   if (m_sprite_name.empty()) {
     m_sprite_name = "images/creatures/gold_bomb/gold_bomb.sprite";
     return;
   }
-  //Replace sprite
-  m_sprite = SpriteManager::current()->create( m_sprite_name );
+  // Replace sprite
+  m_sprite = SpriteManager::current()->create(m_sprite_name);
 }
 
-void
-GoldBomb::collision_solid(const CollisionHit& hit)
-{
+void GoldBomb::collision_solid(const CollisionHit& hit) {
   if (tstate == STATE_TICKING) {
     if (hit.bottom) {
       m_physic.set_velocity_y(0);
       m_physic.set_velocity_x(0);
-    }else if (hit.left || hit.right)
+    } else if (hit.left || hit.right)
       m_physic.set_velocity_x(-m_physic.get_velocity_x());
     else if (hit.top)
       m_physic.set_velocity_y(0);
@@ -67,43 +65,33 @@ GoldBomb::collision_solid(const CollisionHit& hit)
   WalkingBadguy::collision_solid(hit);
 }
 
-HitResponse
-GoldBomb::collision(GameObject& object, const CollisionHit& hit)
-{
+HitResponse GoldBomb::collision(GameObject& object, const CollisionHit& hit) {
   if (tstate == STATE_TICKING) {
-    if ( dynamic_cast<Player*>(&object) ) {
+    if (dynamic_cast<Player*>(&object)) {
       return ABORT_MOVE;
     }
-    if ( dynamic_cast<BadGuy*>(&object) ) {
+    if (dynamic_cast<BadGuy*>(&object)) {
       return ABORT_MOVE;
     }
   }
-  if (is_grabbed())
-    return FORCE_MOVE;
+  if (is_grabbed()) return FORCE_MOVE;
   return WalkingBadguy::collision(object, hit);
 }
 
-HitResponse
-GoldBomb::collision_player(Player& player, const CollisionHit& hit)
-{
-  if (tstate == STATE_TICKING)
-    return FORCE_MOVE;
-  if (is_grabbed())
-    return FORCE_MOVE;
+HitResponse GoldBomb::collision_player(Player& player,
+                                       const CollisionHit& hit) {
+  if (tstate == STATE_TICKING) return FORCE_MOVE;
+  if (is_grabbed()) return FORCE_MOVE;
   return WalkingBadguy::collision_player(player, hit);
 }
 
-HitResponse
-GoldBomb::collision_badguy(BadGuy& badguy, const CollisionHit& hit)
-{
-  if (tstate == STATE_TICKING)
-    return FORCE_MOVE;
+HitResponse GoldBomb::collision_badguy(BadGuy& badguy,
+                                       const CollisionHit& hit) {
+  if (tstate == STATE_TICKING) return FORCE_MOVE;
   return WalkingBadguy::collision_badguy(badguy, hit);
 }
 
-bool
-GoldBomb::collision_squished(GameObject& object)
-{
+bool GoldBomb::collision_squished(GameObject& object) {
   Player* player = dynamic_cast<Player*>(&object);
   if (player && player->is_invincible()) {
     player->bounce(*this);
@@ -116,8 +104,7 @@ GoldBomb::collision_squished(GameObject& object)
     set_action(m_dir == Direction::LEFT ? "ticking-left" : "ticking-right", 1);
     m_physic.set_velocity_x(0);
 
-    if (player)
-      player->bounce(*this);
+    if (player) player->bounce(*this);
 
     ticking = SoundManager::current()->create_sound_source("sounds/fizz.wav");
     ticking->set_position(get_pos());
@@ -129,30 +116,23 @@ GoldBomb::collision_squished(GameObject& object)
   return true;
 }
 
-void
-GoldBomb::active_update(float dt_sec)
-{
+void GoldBomb::active_update(float dt_sec) {
   if (tstate == STATE_TICKING) {
     if (on_ground()) m_physic.set_velocity_x(0);
     ticking->set_position(get_pos());
     if (m_sprite->animation_done()) {
       kill_fall();
-    }
-    else if (!is_grabbed()) {
+    } else if (!is_grabbed()) {
       m_col.m_movement = m_physic.get_movement(dt_sec);
     }
     return;
   }
-  if (is_grabbed())
-    return;
+  if (is_grabbed()) return;
   WalkingBadguy::active_update(dt_sec);
 }
 
-void
-GoldBomb::kill_fall()
-{
-  if (tstate == STATE_TICKING)
-    ticking->stop();
+void GoldBomb::kill_fall() {
+  if (tstate == STATE_TICKING) ticking->stop();
 
   // Make the player let go before we explode, otherwise the player is holding
   // an invalid object. There's probably a better way to do this than in the
@@ -160,40 +140,33 @@ GoldBomb::kill_fall()
   if (is_grabbed()) {
     Player* player = dynamic_cast<Player*>(m_owner);
 
-    if (player)
-      player->stop_grabbing();
+    if (player) player->stop_grabbing();
   }
 
   if (is_valid()) {
     remove_me();
     Sector::get().add<Explosion>(m_col.m_bbox.get_middle(),
-      EXPLOSION_STRENGTH_DEFAULT);
-    Sector::get().add<CoinExplode>(get_pos() + Vector (0, -40));
+                                 EXPLOSION_STRENGTH_DEFAULT);
+    Sector::get().add<CoinExplode>(get_pos() + Vector(0, -40));
   }
 
   run_dead_script();
 }
 
-void
-GoldBomb::ignite()
-{
-  kill_fall();
-}
+void GoldBomb::ignite() { kill_fall(); }
 
-void
-GoldBomb::grab(MovingObject& object, const Vector& pos, Direction dir_)
-{
-  Portable::grab(object,pos,dir_);
-  if (tstate == STATE_TICKING){
+void GoldBomb::grab(MovingObject& object, const Vector& pos, Direction dir_) {
+  Portable::grab(object, pos, dir_);
+  if (tstate == STATE_TICKING) {
     m_col.m_movement = pos - get_pos();
     m_dir = dir_;
 
     // We actually face the opposite direction of Tux here to make the fuse more
     // visible instead of hiding it behind Tux
-    m_sprite->set_action_continued(m_dir == Direction::LEFT ? "ticking-right" : "ticking-left");
+    m_sprite->set_action_continued(m_dir == Direction::LEFT ? "ticking-right"
+                                                            : "ticking-left");
     set_colgroup_active(COLGROUP_DISABLED);
-  }
-  else if (m_frozen){
+  } else if (m_frozen) {
     m_col.m_movement = pos - get_pos();
     m_dir = dir_;
     m_sprite->set_action(dir_ == Direction::LEFT ? "iced-left" : "iced-right");
@@ -201,63 +174,57 @@ GoldBomb::grab(MovingObject& object, const Vector& pos, Direction dir_)
   }
 }
 
-void
-GoldBomb::ungrab(MovingObject& object, Direction dir_)
-{
+void GoldBomb::ungrab(MovingObject& object, Direction dir_) {
   int toss_velocity_x = 0;
   int toss_velocity_y = 0;
-  auto player = dynamic_cast<Player*> (&object);
+  auto player = dynamic_cast<Player*>(&object);
 
   // toss upwards
-  if (dir_ == Direction::UP)
-    toss_velocity_y += -500;
+  if (dir_ == Direction::UP) toss_velocity_y += -500;
 
   // toss to the side when moving sideways
-  if (player && player->get_physic().get_velocity_x()*(dir_ == Direction::LEFT ? -1 : 1) > 1) {
+  if (player && player->get_physic().get_velocity_x() *
+                        (dir_ == Direction::LEFT ? -1 : 1) >
+                    1) {
     toss_velocity_x += (dir_ == Direction::LEFT) ? -200 : 200;
     toss_velocity_y = (toss_velocity_y < -200) ? toss_velocity_y : -200;
     // toss farther when running
-    if (player && player->get_physic().get_velocity_x()*(dir_ == Direction::LEFT ? -1 : 1) > 200)
-      toss_velocity_x += static_cast<int>(player->get_physic().get_velocity_x() - (190*(dir_ == Direction::LEFT ? -1 : 1)));
+    if (player && player->get_physic().get_velocity_x() *
+                          (dir_ == Direction::LEFT ? -1 : 1) >
+                      200)
+      toss_velocity_x +=
+          static_cast<int>(player->get_physic().get_velocity_x() -
+                           (190 * (dir_ == Direction::LEFT ? -1 : 1)));
   }
-  log_warning << toss_velocity_x << toss_velocity_y << std::endl;////
+  log_warning << toss_velocity_x << toss_velocity_y << std::endl;  ////
 
-  //set_pos(object.get_pos() + Vector((dir_ == LEFT ? -33 : 33), get_bbox().get_height()*0.66666 - 32));
+  // set_pos(object.get_pos() + Vector((dir_ == LEFT ? -33 : 33),
+  // get_bbox().get_height()*0.66666 - 32));
   m_physic.set_velocity(static_cast<float>(toss_velocity_x),
-                      static_cast<float>(toss_velocity_y));
+                        static_cast<float>(toss_velocity_y));
   set_colgroup_active(COLGROUP_MOVING);
   Portable::ungrab(object, dir_);
 }
 
-void
-GoldBomb::freeze()
-{
+void GoldBomb::freeze() {
   if (tstate == STATE_NORMAL) {
     WalkingBadguy::freeze();
   }
 }
 
-bool
-GoldBomb::is_freezable() const
-{
-  return true;
-}
+bool GoldBomb::is_freezable() const { return true; }
 
-bool
-GoldBomb::is_portable() const
-{
+bool GoldBomb::is_portable() const {
   return (m_frozen || (tstate == STATE_TICKING));
 }
 
-void GoldBomb::stop_looping_sounds()
-{
+void GoldBomb::stop_looping_sounds() {
   if (ticking) {
     ticking->stop();
   }
 }
 
-void GoldBomb::play_looping_sounds()
-{
+void GoldBomb::play_looping_sounds() {
   if (tstate == STATE_TICKING && ticking) {
     ticking->play();
   }

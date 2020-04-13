@@ -25,35 +25,34 @@
 #include "supertux/resources.hpp"
 #include "video/drawing_context.hpp"
 
-ItemScriptLine::ItemScriptLine(std::string* input_, int id_) :
-  ItemTextField("", input_, id_)
-{
-}
+ItemScriptLine::ItemScriptLine(std::string* input_, int id_)
+    : ItemTextField("", input_, id_) {}
 
-void
-ItemScriptLine::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active) {
+void ItemScriptLine::draw(DrawingContext& context, const Vector& pos,
+                          int menu_width, bool active) {
   std::string r_input = *input;
-  bool fl = active && (int(g_real_time*2)%2);
-  if ( fl ) {
+  bool fl = active && (int(g_real_time * 2) % 2);
+  if (fl) {
     r_input += "_";
   }
-  context.color().draw_text(Resources::console_font, r_input,
-                            Vector(pos.x + 16.0f,
-                                   pos.y - Resources::console_font->get_height() / 2.0f),
-                            ALIGN_LEFT, LAYER_GUI, ColorScheme::Menu::field_color);
+  context.color().draw_text(
+      Resources::console_font, r_input,
+      Vector(pos.x + 16.0f,
+             pos.y - Resources::console_font->get_height() / 2.0f),
+      ALIGN_LEFT, LAYER_GUI, ColorScheme::Menu::field_color);
 }
 
-int
-ItemScriptLine::get_width() const {
-  return static_cast<int>(Resources::console_font->get_text_width(*input)) + 16 + flickw;
+int ItemScriptLine::get_width() const {
+  return static_cast<int>(Resources::console_font->get_text_width(*input)) +
+         16 + flickw;
 }
 
-void
-ItemScriptLine::process_action(const MenuAction& action) {
+void ItemScriptLine::process_action(const MenuAction& action) {
   ItemTextField::process_action(action);
   const Controller& controller = InputManager::current()->get_controller();
   if (action == MenuAction::HIT && controller.pressed(Control::MENU_SELECT)) {
-    auto menu = dynamic_cast<ScriptMenu*>(MenuManager::instance().current_menu());
+    auto menu =
+        dynamic_cast<ScriptMenu*>(MenuManager::instance().current_menu());
     if (!menu) {
       return;
     }
@@ -61,8 +60,7 @@ ItemScriptLine::process_action(const MenuAction& action) {
   }
 }
 
-void
-ItemScriptLine::invalid_remove() {
+void ItemScriptLine::invalid_remove() {
   auto menu = dynamic_cast<ScriptMenu*>(MenuManager::instance().current_menu());
   if (!menu) {
     return;

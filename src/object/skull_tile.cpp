@@ -24,28 +24,22 @@
 static const float CRACKTIME = 0.3f;
 static const float FALLTIME = 0.8f;
 
-SkullTile::SkullTile(const ReaderMapping& mapping) :
-  MovingSprite(mapping, "images/objects/skull_tile/skull_tile.sprite", LAYER_TILES, COLGROUP_STATIC),
-  physic(),
-  timer(),
-  hit(false),
-  falling(false)
-{
-}
+SkullTile::SkullTile(const ReaderMapping& mapping)
+    : MovingSprite(mapping, "images/objects/skull_tile/skull_tile.sprite",
+                   LAYER_TILES, COLGROUP_STATIC),
+      physic(),
+      timer(),
+      hit(false),
+      falling(false) {}
 
-HitResponse
-SkullTile::collision(GameObject& other, const CollisionHit& )
-{
-  auto player = dynamic_cast<Player*> (&other);
-  if (player)
-    hit = true;
+HitResponse SkullTile::collision(GameObject& other, const CollisionHit&) {
+  auto player = dynamic_cast<Player*>(&other);
+  if (player) hit = true;
 
   return FORCE_MOVE;
 }
 
-void
-SkullTile::draw(DrawingContext& context)
-{
+void SkullTile::draw(DrawingContext& context) {
   Vector pos = get_pos();
   // shaking
   if (timer.get_timegone() > CRACKTIME) {
@@ -55,9 +49,7 @@ SkullTile::draw(DrawingContext& context)
   m_sprite->draw(context.color(), pos, m_layer);
 }
 
-void
-SkullTile::update(float dt_sec)
-{
+void SkullTile::update(float dt_sec) {
   if (falling) {
     m_col.m_movement = physic.get_movement(dt_sec);
     if (!Sector::get().inside(m_col.m_bbox)) {
@@ -65,7 +57,7 @@ SkullTile::update(float dt_sec)
       return;
     }
   } else if (hit) {
-	  m_sprite->set_action("mad", -1);
+    m_sprite->set_action("mad", -1);
     if (timer.check()) {
       falling = true;
       physic.enable_gravity(true);
@@ -74,7 +66,7 @@ SkullTile::update(float dt_sec)
       timer.start(FALLTIME);
     }
   } else {
-	m_sprite->set_action("normal", -1);
+    m_sprite->set_action("normal", -1);
     timer.stop();
   }
   hit = false;

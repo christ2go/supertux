@@ -35,27 +35,25 @@
 #include "video/surface.hpp"
 #include "video/video_system.hpp"
 
-TitleScreen::TitleScreen(Savegame& savegame) :
-  m_frame(Surface::from_file("images/engine/menu/frame.png")),
-  m_controller(new CodeController()),
-  m_titlesession(new GameSession("levels/misc/menu.stl", savegame)),
-  m_copyright_text("SuperTux " PACKAGE_VERSION "\n" +
-    _("Copyright") + " (c) 2003-2020 SuperTux Devel Team\n" +
-    _("This game comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to\n"
-      "redistribute it under certain conditions; see the license file for details.\n"
-      )),
-  m_videosystem_name(VideoSystem::current()->get_name())
-{
+TitleScreen::TitleScreen(Savegame& savegame)
+    : m_frame(Surface::from_file("images/engine/menu/frame.png")),
+      m_controller(new CodeController()),
+      m_titlesession(new GameSession("levels/misc/menu.stl", savegame)),
+      m_copyright_text("SuperTux " PACKAGE_VERSION "\n" + _("Copyright") +
+                       " (c) 2003-2020 SuperTux Devel Team\n" +
+                       _("This game comes with ABSOLUTELY NO WARRANTY. This is "
+                         "free software, and you are welcome to\n"
+                         "redistribute it under certain conditions; see the "
+                         "license file for details.\n")),
+      m_videosystem_name(VideoSystem::current()->get_name()) {
   Player& player = m_titlesession->get_current_sector().get_player();
   player.set_controller(m_controller.get());
-  player.set_speedlimit(230); //MAX_WALK_XM
+  player.set_speedlimit(230);  // MAX_WALK_XM
 }
 
-void
-TitleScreen::make_tux_jump()
-{
+void TitleScreen::make_tux_jump() {
   static bool jumpWasReleased = true;
-  Sector& sector  = m_titlesession->get_current_sector();
+  Sector& sector = m_titlesession->get_current_sector();
   Player& tux = sector.get_player();
 
   m_controller->update();
@@ -79,13 +77,9 @@ TitleScreen::make_tux_jump()
   }
 }
 
-TitleScreen::~TitleScreen()
-{
-}
+TitleScreen::~TitleScreen() {}
 
-void
-TitleScreen::setup()
-{
+void TitleScreen::setup() {
   Sector& sector = m_titlesession->get_current_sector();
   if (Sector::current() != &sector) {
     auto& music = sector.get_singleton_by_type<MusicObject>();
@@ -94,46 +88,43 @@ TitleScreen::setup()
   }
 
   MenuManager::instance().set_menu(MenuStorage::MAIN_MENU);
-  ScreenManager::current()->set_screen_fade(std::make_unique<FadeToBlack>(FadeToBlack::FADEIN, 0.25));
+  ScreenManager::current()->set_screen_fade(
+      std::make_unique<FadeToBlack>(FadeToBlack::FADEIN, 0.25));
 }
 
-void
-TitleScreen::leave()
-{
+void TitleScreen::leave() {
   Sector& sector = m_titlesession->get_current_sector();
   sector.deactivate();
   MenuManager::instance().clear_menu_stack();
 }
 
-void
-TitleScreen::draw(Compositor& compositor)
-{
+void TitleScreen::draw(Compositor& compositor) {
   auto& context = compositor.make_context();
 
-  Sector& sector  = m_titlesession->get_current_sector();
+  Sector& sector = m_titlesession->get_current_sector();
   sector.draw(context);
 
-  context.color().draw_surface_scaled(m_frame,
-                                      Rectf(0, 0, static_cast<float>(context.get_width()), static_cast<float>(context.get_height())),
-                                      LAYER_FOREGROUND1);
+  context.color().draw_surface_scaled(
+      m_frame,
+      Rectf(0, 0, static_cast<float>(context.get_width()),
+            static_cast<float>(context.get_height())),
+      LAYER_FOREGROUND1);
 
-  context.color().draw_text(Resources::small_font,
-                            m_copyright_text,
-                            Vector(5.0f, static_cast<float>(context.get_height()) - 50.0f),
-                            ALIGN_LEFT, LAYER_FOREGROUND1);
+  context.color().draw_text(
+      Resources::small_font, m_copyright_text,
+      Vector(5.0f, static_cast<float>(context.get_height()) - 50.0f),
+      ALIGN_LEFT, LAYER_FOREGROUND1);
 
-  context.color().draw_text(Resources::small_font,
-                            m_videosystem_name,
-                            Vector(static_cast<float>(context.get_width()) - 5.0f,
-                                   static_cast<float>(context.get_height()) - 14.0f),
-                            ALIGN_RIGHT, LAYER_FOREGROUND1);
+  context.color().draw_text(
+      Resources::small_font, m_videosystem_name,
+      Vector(static_cast<float>(context.get_width()) - 5.0f,
+             static_cast<float>(context.get_height()) - 14.0f),
+      ALIGN_RIGHT, LAYER_FOREGROUND1);
 }
 
-void
-TitleScreen::update(float dt_sec, const Controller& controller)
-{
+void TitleScreen::update(float dt_sec, const Controller& controller) {
   ScreenManager::current()->set_speed(0.6f);
-  Sector& sector  = m_titlesession->get_current_sector();
+  Sector& sector = m_titlesession->get_current_sector();
   sector.update(dt_sec);
 
   BIND_SECTOR(sector);
@@ -141,8 +132,8 @@ TitleScreen::update(float dt_sec, const Controller& controller)
 
   // reopen menu if user closed it (so that the app doesn't close when user
   // accidently hit ESC)
-  if (!MenuManager::instance().is_active() && !ScreenManager::current()->has_pending_fadeout())
-  {
+  if (!MenuManager::instance().is_active() &&
+      !ScreenManager::current()->has_pending_fadeout()) {
     MenuManager::instance().set_menu(MenuStorage::MAIN_MENU);
   }
 }

@@ -19,16 +19,15 @@
 #include "sprite/sprite.hpp"
 
 SmartBall::SmartBall(const ReaderMapping& reader)
-  : WalkingBadguy(reader, "images/creatures/snowball/smart-snowball.sprite", "left", "right")
-{
+    : WalkingBadguy(reader, "images/creatures/snowball/smart-snowball.sprite",
+                    "left", "right") {
   walk_speed = 80;
   max_drop_height = 16;
 }
 
-bool
-SmartBall::collision_squished(GameObject& object)
-{
-  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
+bool SmartBall::collision_squished(GameObject& object) {
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left"
+                                                : "squished-right");
   kill_squished(object);
   return true;
 }

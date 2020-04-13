@@ -22,10 +22,8 @@
 
 namespace worldmap {
 
-Direction reverse_dir(Direction direction)
-{
-  switch (direction)
-  {
+Direction reverse_dir(Direction direction) {
+  switch (direction) {
     case Direction::WEST:
       return Direction::EAST;
     case Direction::EAST:
@@ -40,11 +38,8 @@ Direction reverse_dir(Direction direction)
   return Direction::NONE;
 }
 
-std::string
-direction_to_string(Direction direction)
-{
-  switch (direction)
-  {
+std::string direction_to_string(Direction direction) {
+  switch (direction) {
     case Direction::WEST:
       return "west";
     case Direction::EAST:
@@ -58,9 +53,7 @@ direction_to_string(Direction direction)
   }
 }
 
-Direction
-string_to_direction(const std::string& directory)
-{
+Direction string_to_direction(const std::string& directory) {
   if (directory == "west")
     return Direction::WEST;
   else if (directory == "east")
@@ -77,6 +70,6 @@ string_to_direction(const std::string& directory)
   }
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

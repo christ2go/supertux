@@ -31,12 +31,11 @@ extern "C" {
 
 enum {
   MNID_LANGUAGE_AUTO_DETECT = 0,
-  MNID_LANGUAGE_ENGLISH     = 1,
-  MNID_LANGUAGE_NEXT        = 10
+  MNID_LANGUAGE_ENGLISH = 1,
+  MNID_LANGUAGE_NEXT = 10
 };
 
-LanguageMenu::LanguageMenu()
-{
+LanguageMenu::LanguageMenu() {
   add_label(_("Language"));
   add_hl();
   add_entry(MNID_LANGUAGE_AUTO_DETECT, _("<auto-detect>"));
@@ -44,8 +43,7 @@ LanguageMenu::LanguageMenu()
 
   int mnid = MNID_LANGUAGE_NEXT;
   auto languages = g_dictionary_manager->get_languages();
-  for (auto& lang : languages)
-  {
+  for (auto& lang : languages) {
     // TODO: Currently, the fonts used in SuperTux don't contain the glyphs to
     // display the language names in the respective language. Thus reverting for
     // 0.5.0.
@@ -56,37 +54,36 @@ LanguageMenu::LanguageMenu()
   add_back(_("Back"));
 }
 
-void
-LanguageMenu::menu_action(MenuItem& item)
-{
-  if (item.get_id() == MNID_LANGUAGE_AUTO_DETECT) // auto detect
+void LanguageMenu::menu_action(MenuItem& item) {
+  if (item.get_id() == MNID_LANGUAGE_AUTO_DETECT)  // auto detect
   {
-    FL_Locale *locale;
+    FL_Locale* locale;
     FL_FindLocale(&locale);
-    tinygettext::Language language = tinygettext::Language::from_spec( locale->lang?locale->lang:"", locale->country?locale->country:"", locale->variant?locale->variant:"");
+    tinygettext::Language language = tinygettext::Language::from_spec(
+        locale->lang ? locale->lang : "",
+        locale->country ? locale->country : "",
+        locale->variant ? locale->variant : "");
     FL_FreeLocale(&locale);
 
-    g_dictionary_manager->set_language(language); // set currently detected language
-    g_config->locale = ""; // do auto detect every time on startup
+    g_dictionary_manager->set_language(
+        language);          // set currently detected language
+    g_config->locale = "";  // do auto detect every time on startup
     g_config->save();
     MenuManager::instance().clear_menu_stack();
-  }
-  else if (item.get_id() == MNID_LANGUAGE_ENGLISH) // english
+  } else if (item.get_id() == MNID_LANGUAGE_ENGLISH)  // english
   {
     g_config->locale = "en";
-    g_dictionary_manager->set_language(tinygettext::Language::from_name(g_config->locale));
+    g_dictionary_manager->set_language(
+        tinygettext::Language::from_name(g_config->locale));
     g_config->save();
     MenuManager::instance().clear_menu_stack();
-  }
-  else
-  {
+  } else {
     int mnid = MNID_LANGUAGE_NEXT;
-    std::set<tinygettext::Language> languages = g_dictionary_manager->get_languages();
+    std::set<tinygettext::Language> languages =
+        g_dictionary_manager->get_languages();
 
-    for (auto& lang : languages)
-    {
-      if (item.get_id() == mnid++)
-      {
+    for (auto& lang : languages) {
+      if (item.get_id() == mnid++) {
         g_config->locale = lang.str();
         g_dictionary_manager->set_language(lang);
         g_config->save();
@@ -99,12 +96,9 @@ LanguageMenu::menu_action(MenuItem& item)
   Resources::load();
 
   if (g_dictionary_manager->get_language().get_language() != "en" &&
-      !AddonManager::current()->is_addon_installed("language-pack"))
-  {
+      !AddonManager::current()->is_addon_installed("language-pack")) {
     MenuManager::instance().push_menu(MenuStorage::LANGPACK_AUTO_UPDATE_MENU);
-  }
-  else
-  {
+  } else {
     MenuManager::instance().clear_menu_stack();
   }
 }

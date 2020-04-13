@@ -21,46 +21,33 @@
 
 namespace scripting {
 
-void
-Level_finish(bool win)
-{
-  if (GameSession::current() == nullptr)
-    return;
+void Level_finish(bool win) {
+  if (GameSession::current() == nullptr) return;
 
   GameSession::current()->finish(win);
 }
 
-void
-Level_spawn(const std::string& sector, const std::string& spawnpoint)
-{
-  if (GameSession::current() == nullptr)
-    return;
+void Level_spawn(const std::string& sector, const std::string& spawnpoint) {
+  if (GameSession::current() == nullptr) return;
 
   GameSession::current()->respawn(sector, spawnpoint);
 }
 
-void
-Level_flip_vertically()
-{
+void Level_flip_vertically() {
   FlipLevelTransformer flip_transformer;
   flip_transformer.transform(GameSession::current()->get_current_level());
 }
 
-void
-Level_toggle_pause()
-{
-  if (GameSession::current() == nullptr)
-    return;
+void Level_toggle_pause() {
+  if (GameSession::current() == nullptr) return;
   GameSession::current()->toggle_pause();
 }
 
-void
-Level_edit(bool edit_mode)
-{
+void Level_edit(bool edit_mode) {
   if (GameSession::current() == nullptr) return;
   GameSession::current()->set_editmode(edit_mode);
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

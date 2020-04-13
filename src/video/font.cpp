@@ -17,20 +17,20 @@
 
 #include "video/font.hpp"
 
-std::string
-Font::wrap_to_chars(const std::string& s, int line_length, std::string* overflow)
-{
+std::string Font::wrap_to_chars(const std::string& s, int line_length,
+                                std::string* overflow) {
   // if text is already smaller, return full text
   if (static_cast<int>(s.length()) <= line_length) {
     if (overflow) *overflow = "";
     return s;
   }
 
-  // if we can find a whitespace character to break at, return text up to this character
+  // if we can find a whitespace character to break at, return text up to this
+  // character
   int i = line_length;
   while ((i > 0) && (s[i] != ' ')) i--;
   if (i > 0) {
-    if (overflow) *overflow = s.substr(i+1);
+    if (overflow) *overflow = s.substr(i + 1);
     return s.substr(0, i);
   }
 

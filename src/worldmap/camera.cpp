@@ -27,22 +27,18 @@ namespace {
 
 const float CAMERA_PAN_TIME_MAX = 0.52213f;
 
-} // namespace
+}  // namespace
 
 namespace worldmap {
 
-Camera::Camera() :
-  m_camera_offset(),
-  m_pan_startpos(),
-  m_pan_time_full(0),
-  m_pan_time_remaining(0),
-  m_panning(false)
-{
-}
+Camera::Camera()
+    : m_camera_offset(),
+      m_pan_startpos(),
+      m_pan_time_full(0),
+      m_pan_time_remaining(0),
+      m_panning(false) {}
 
-void
-Camera::update(float dt_sec)
-{
+void Camera::update(float dt_sec) {
   // position "camera"
   Vector target_pos = get_camera_pos_for_tux();
   clamp_camera_position(target_pos);
@@ -65,9 +61,7 @@ Camera::update(float dt_sec)
   m_panning = false;
 }
 
-void
-Camera::pan()
-{
+void Camera::pan() {
   m_panning = true;
   m_pan_startpos = m_camera_offset;
   Vector target_pos = get_camera_pos_for_tux();
@@ -79,9 +73,7 @@ Camera::pan()
   m_pan_time_remaining = m_pan_time_full;
 }
 
-Vector
-Camera::get_camera_pos_for_tux() const
-{
+Vector Camera::get_camera_pos_for_tux() const {
   auto& worldmap = *WorldMap::current();
   auto& tux = worldmap.get_singleton_by_type<Tux>();
 
@@ -92,9 +84,7 @@ Camera::get_camera_pos_for_tux() const
   return camera_offset_;
 }
 
-void
-Camera::clamp_camera_position(Vector& c) const
-{
+void Camera::clamp_camera_position(Vector& c) const {
   auto& worldmap = *WorldMap::current();
 
   if (c.x < 0) {
@@ -122,6 +112,6 @@ Camera::clamp_camera_position(Vector& c) const
   }
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

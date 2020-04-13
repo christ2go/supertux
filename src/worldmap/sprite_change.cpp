@@ -25,15 +25,14 @@ namespace worldmap {
 
 std::list<SpriteChange*> SpriteChange::s_all_sprite_changes;
 
-SpriteChange::SpriteChange(const ReaderMapping& mapping) :
-  m_pos(),
-  m_change_on_touch(false),
-  m_sprite(),
-  m_sprite_name(),
-  m_stay_action(),
-  m_stay_group(),
-  m_in_stay_action(false)
-{
+SpriteChange::SpriteChange(const ReaderMapping& mapping)
+    : m_pos(),
+      m_change_on_touch(false),
+      m_sprite(),
+      m_sprite_name(),
+      m_stay_action(),
+      m_stay_group(),
+      m_in_stay_action(false) {
   mapping.get("x", m_pos.x);
   mapping.get("y", m_pos.y);
   mapping.get("change-on-touch", m_change_on_touch);
@@ -49,40 +48,22 @@ SpriteChange::SpriteChange(const ReaderMapping& mapping) :
   s_all_sprite_changes.push_back(this);
 }
 
-SpriteChange::~SpriteChange()
-{
-  s_all_sprite_changes.remove(this);
-}
+SpriteChange::~SpriteChange() { s_all_sprite_changes.remove(this); }
 
-void
-SpriteChange::draw(DrawingContext& context)
-{
+void SpriteChange::draw(DrawingContext& context) {
   if (m_in_stay_action && !m_stay_action.empty()) {
     m_sprite->set_action(m_stay_action);
-    m_sprite->draw(context.color(), m_pos * 32, LAYER_OBJECTS-1);
+    m_sprite->draw(context.color(), m_pos * 32, LAYER_OBJECTS - 1);
   }
 }
 
-void
-SpriteChange::update(float )
-{
-}
+void SpriteChange::update(float) {}
 
-bool
-SpriteChange::show_stay_action() const
-{
-  return m_in_stay_action;
-}
+bool SpriteChange::show_stay_action() const { return m_in_stay_action; }
 
-void
-SpriteChange::set_stay_action()
-{
-  m_in_stay_action = true;
-}
+void SpriteChange::set_stay_action() { m_in_stay_action = true; }
 
-void
-SpriteChange::clear_stay_action(bool propagate)
-{
+void SpriteChange::clear_stay_action(bool propagate) {
   m_in_stay_action = false;
 
   // if we are in a stay_group, also clear all stay actions in this group
@@ -94,6 +75,6 @@ SpriteChange::clear_stay_action(bool propagate)
   }
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

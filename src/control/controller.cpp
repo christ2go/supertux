@@ -21,43 +21,23 @@
 namespace {
 
 const char* g_control_names[] = {
-  "left",
-  "right",
-  "up",
-  "down",
-  "jump",
-  "action",
-  "start",
-  "escape",
-  "menu-select",
-  "menu-select-space",
-  "menu-back",
-  "remove",
-  "cheat-menu",
-  "debug-menu",
-  "console",
-  "peek-left",
-  "peek-right",
-  "peek-up",
-  "peek-down",
-  nullptr
-};
+    "left",      "right",      "up",         "down",        "jump",
+    "action",    "start",      "escape",     "menu-select", "menu-select-space",
+    "menu-back", "remove",     "cheat-menu", "debug-menu",  "console",
+    "peek-left", "peek-right", "peek-up",    "peek-down",   nullptr};
 
-} // namespace
+}  // namespace
 
-std::ostream& operator<<(std::ostream& os, Control control)
-{
+std::ostream& operator<<(std::ostream& os, Control control) {
   return os << g_control_names[static_cast<int>(control)];
 }
 
-std::string Control_to_string(Control control)
-{
+std::string Control_to_string(Control control) {
   return g_control_names[static_cast<int>(control)];
 }
 
-boost::optional<Control> Control_from_string(const std::string& text)
-{
-  for(int i = 0; g_control_names[i] != nullptr; ++i) {
+boost::optional<Control> Control_from_string(const std::string& text) {
+  for (int i = 0; g_control_names[i] != nullptr; ++i) {
     if (text == g_control_names[i]) {
       return static_cast<Control>(i);
     }
@@ -66,50 +46,36 @@ boost::optional<Control> Control_from_string(const std::string& text)
   return boost::none;
 }
 
-Controller::Controller()
-{
-  reset();
-}
+Controller::Controller() { reset(); }
 
-Controller::~Controller()
-{}
+Controller::~Controller() {}
 
-void
-Controller::reset()
-{
+void Controller::reset() {
   for (int i = 0; i < static_cast<int>(Control::CONTROLCOUNT); ++i) {
     m_controls[i] = false;
     m_old_controls[i] = false;
   }
 }
 
-void
-Controller::set_control(Control control, bool value)
-{
+void Controller::set_control(Control control, bool value) {
   m_controls[static_cast<int>(control)] = value;
 }
 
-bool
-Controller::hold(Control control) const
-{
+bool Controller::hold(Control control) const {
   return m_controls[static_cast<int>(control)];
 }
 
-bool
-Controller::pressed(Control control) const
-{
-  return !m_old_controls[static_cast<int>(control)] && m_controls[static_cast<int>(control)];
+bool Controller::pressed(Control control) const {
+  return !m_old_controls[static_cast<int>(control)] &&
+         m_controls[static_cast<int>(control)];
 }
 
-bool
-Controller::released(Control control) const
-{
-  return m_old_controls[static_cast<int>(control)] && !m_controls[static_cast<int>(control)];
+bool Controller::released(Control control) const {
+  return m_old_controls[static_cast<int>(control)] &&
+         !m_controls[static_cast<int>(control)];
 }
 
-void
-Controller::update()
-{
+void Controller::update() {
   for (int i = 0; i < static_cast<int>(Control::CONTROLCOUNT); ++i) {
     m_old_controls[i] = m_controls[i];
   }

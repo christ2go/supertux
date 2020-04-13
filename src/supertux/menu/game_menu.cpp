@@ -30,23 +30,22 @@
 
 static const std::string CONFIRMATION_PROMPT = _("Are you sure?");
 
-GameMenu::GameMenu() :
-  reset_callback ( [] {
-    MenuManager::instance().clear_menu_stack();
-    GameSession::current()->toggle_pause();
-    GameSession::current()->reset_button = true;
-  }),
-  reset_checkpoint_callback( [] {
-    MenuManager::instance().clear_menu_stack();
-    GameSession::current()->toggle_pause();
+GameMenu::GameMenu()
+    : reset_callback([] {
+        MenuManager::instance().clear_menu_stack();
+        GameSession::current()->toggle_pause();
+        GameSession::current()->reset_button = true;
+      }),
+      reset_checkpoint_callback([] {
+        MenuManager::instance().clear_menu_stack();
+        GameSession::current()->toggle_pause();
 
-    GameSession::current()->reset_checkpoint_button = true;
-  }),
-  abort_callback ( [] {
-    MenuManager::instance().clear_menu_stack();
-    GameSession::current()->abort_level();
-  })
-{
+        GameSession::current()->reset_checkpoint_button = true;
+      }),
+      abort_callback([] {
+        MenuManager::instance().clear_menu_stack();
+        GameSession::current()->abort_level();
+      }) {
   Level& level = GameSession::current()->get_current_level();
 
   add_label(level.m_name);
@@ -63,46 +62,34 @@ GameMenu::GameMenu() :
   add_entry(MNID_ABORTLEVEL, _("Abort Level"));
 }
 
-void
-GameMenu::menu_action(MenuItem& item)
-{
-  switch (item.get_id())
-  {
+void GameMenu::menu_action(MenuItem& item) {
+  switch (item.get_id()) {
     case MNID_CONTINUE:
       MenuManager::instance().clear_menu_stack();
       GameSession::current()->toggle_pause();
       break;
 
     case MNID_RESETLEVEL:
-      if (g_config->confirmation_dialog)
-      {
+      if (g_config->confirmation_dialog) {
         Dialog::show_confirmation(CONFIRMATION_PROMPT, reset_callback);
-      }
-      else
-      {
+      } else {
         reset_callback();
       }
       break;
 
     case MNID_RESETLEVELCHECKPOINT:
-      if (g_config->confirmation_dialog)
-      {
+      if (g_config->confirmation_dialog) {
         Dialog::show_confirmation(CONFIRMATION_PROMPT,
                                   reset_checkpoint_callback);
-      }
-      else
-      {
+      } else {
         reset_checkpoint_callback();
       }
       break;
 
     case MNID_ABORTLEVEL:
-      if (g_config->confirmation_dialog)
-      {
+      if (g_config->confirmation_dialog) {
         Dialog::show_confirmation(CONFIRMATION_PROMPT, abort_callback);
-      }
-      else
-      {
+      } else {
         abort_callback();
       }
       break;

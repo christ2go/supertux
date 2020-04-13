@@ -22,19 +22,19 @@
 #include "util/gettext.hpp"
 #include "util/log.hpp"
 
-EditorLevelMenu::EditorLevelMenu() :
-  old_tileset(Editor::current()->get_level()->m_tileset)
-{
+EditorLevelMenu::EditorLevelMenu()
+    : old_tileset(Editor::current()->get_level()->m_tileset) {
   bool worldmap = Editor::current()->get_level()->is_worldmap();
   auto level = Editor::current()->get_level();
 
-  add_label(worldmap ? _("Worldmap Settings") :_("Level Settings"));
+  add_label(worldmap ? _("Worldmap Settings") : _("Level Settings"));
   add_hl();
   add_textfield(_("Name"), &(level->m_name));
   add_textfield(_("Author"), &(level->m_author));
   add_textfield(_("Contact"), &(level->m_contact));
   add_textfield(_("License"), &(level->m_license));
-  add_file(_("Tileset"), &(level->m_tileset), std::vector<std::string>(1, ".strf"), {});
+  add_file(_("Tileset"), &(level->m_tileset),
+           std::vector<std::string>(1, ".strf"), {});
 
   if (!worldmap) {
     add_floatfield(_("Target Time"), &(level->m_target_time));
@@ -44,49 +44,35 @@ EditorLevelMenu::EditorLevelMenu() :
   add_back(_("OK"));
 }
 
-EditorLevelMenu::~EditorLevelMenu()
-{
+EditorLevelMenu::~EditorLevelMenu() {
   auto editor = Editor::current();
   if (editor == nullptr) {
     return;
   }
   if (editor->get_level()->m_tileset != old_tileset) {
-    try
-    {
+    try {
       editor->change_tileset();
-    }
-    catch(std::exception& e)
-    {
+    } catch (std::exception& e) {
       // Lisp Type error might occur.
       log_warning << e.what() << std::endl;
     }
   }
 }
 
-void
-EditorLevelMenu::menu_action(MenuItem& item)
-{
-}
+void EditorLevelMenu::menu_action(MenuItem& item) {}
 
-bool
-EditorLevelMenu::on_back_action()
-{
+bool EditorLevelMenu::on_back_action() {
   auto level = Editor::current()->get_level();
-  if (!level->m_name.empty() && !level->m_author.empty() && !level->m_license.empty())
-  {
+  if (!level->m_name.empty() && !level->m_author.empty() &&
+      !level->m_license.empty()) {
     return true;
   }
 
-  if (level->m_name.empty())
-  {
+  if (level->m_name.empty()) {
     Dialog::show_message(_("Please enter a name for this level."));
-  }
-  else if (level->m_author.empty())
-  {
+  } else if (level->m_author.empty()) {
     Dialog::show_message(_("Please enter a level author for this level."));
-  }
-  else if (level->m_license.empty())
-  {
+  } else if (level->m_license.empty()) {
     Dialog::show_message(_("Please enter a license for this level."));
   }
   return false;

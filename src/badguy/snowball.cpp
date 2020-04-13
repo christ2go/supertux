@@ -19,22 +19,21 @@
 #include "sprite/sprite.hpp"
 
 SnowBall::SnowBall(const ReaderMapping& reader)
-  : WalkingBadguy(reader, "images/creatures/snowball/snowball.sprite", "left", "right")
-{
+    : WalkingBadguy(reader, "images/creatures/snowball/snowball.sprite", "left",
+                    "right") {
   walk_speed = 80;
 }
 
 SnowBall::SnowBall(const Vector& pos, Direction d, const std::string& script)
-  : WalkingBadguy(pos, d, "images/creatures/snowball/snowball.sprite", "left", "right")
-{
+    : WalkingBadguy(pos, d, "images/creatures/snowball/snowball.sprite", "left",
+                    "right") {
   walk_speed = 80;
   m_dead_script = script;
 }
 
-bool
-SnowBall::collision_squished(GameObject& object)
-{
-  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
+bool SnowBall::collision_squished(GameObject& object) {
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left"
+                                                : "squished-right");
   kill_squished(object);
   return true;
 }

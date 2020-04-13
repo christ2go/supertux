@@ -22,12 +22,9 @@
 
 std::vector<std::string> BadguySelectMenu::all_badguys;
 
-BadguySelectMenu::BadguySelectMenu(std::vector<std::string>* badguys_) :
-  badguys(badguys_),
-  selected(),
-  remove_item()
-{
-  //initialize badguy list
+BadguySelectMenu::BadguySelectMenu(std::vector<std::string>* badguys_)
+    : badguys(badguys_), selected(), remove_item() {
+  // initialize badguy list
   if (all_badguys.empty()) {
     all_badguys.push_back("angrystone");
     all_badguys.push_back("bouncingsnowball");
@@ -85,9 +82,7 @@ BadguySelectMenu::BadguySelectMenu(std::vector<std::string>* badguys_) :
   refresh_menu();
 }
 
-void
-BadguySelectMenu::refresh_menu()
-{
+void BadguySelectMenu::refresh_menu() {
   m_items.clear();
 
   add_label(_("List of enemies"));
@@ -106,36 +101,28 @@ BadguySelectMenu::refresh_menu()
   add_back(_("OK"));
 }
 
-void
-BadguySelectMenu::remove_badguy()
-{
+void BadguySelectMenu::remove_badguy() {
   badguys->erase(badguys->begin() + remove_item);
   refresh_menu();
   if (m_items[m_active_item]->skippable()) {
-    //We are on the bottom headline.
+    // We are on the bottom headline.
     m_active_item++;
   }
 }
 
-void
-BadguySelectMenu::add_badguy()
-{
+void BadguySelectMenu::add_badguy() {
   badguys->push_back(all_badguys[selected]);
   refresh_menu();
 }
 
-void
-BadguySelectMenu::menu_action(MenuItem& item)
-{
+void BadguySelectMenu::menu_action(MenuItem& item) {
   if (item.get_id() >= 0) {
     remove_item = item.get_id();
-    auto self  = this;
+    auto self = this;
     // confirmation dialog
     auto dialog = std::make_unique<Dialog>();
     dialog->set_text(_("Do you want to delete this badguy from the list?"));
-    dialog->add_default_button(_("Yes"), [self] {
-      self->remove_badguy();
-    });
+    dialog->add_default_button(_("Yes"), [self] { self->remove_badguy(); });
     dialog->add_cancel_button(_("No"));
     MenuManager::instance().set_dialog(std::move(dialog));
   } else if (item.get_id() == -3) {

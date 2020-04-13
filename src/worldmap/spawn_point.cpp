@@ -22,11 +22,8 @@
 
 namespace worldmap {
 
-SpawnPoint::SpawnPoint(const ReaderMapping& mapping) :
-  m_name(),
-  m_pos(),
-  m_auto_dir(Direction::NONE)
-{
+SpawnPoint::SpawnPoint(const ReaderMapping& mapping)
+    : m_name(), m_pos(), m_auto_dir(Direction::NONE) {
   m_pos.x = -1;
   m_pos.y = -1;
 
@@ -46,6 +43,6 @@ SpawnPoint::SpawnPoint(const ReaderMapping& mapping) :
     throw std::runtime_error("Invalid coordinates for spawnpoint");
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

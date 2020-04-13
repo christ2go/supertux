@@ -19,54 +19,33 @@
 #include "util/log.hpp"
 #include "video/blend.hpp"
 
-Blend
-Blend_from_string(const std::string& text)
-{
-  if (text == "none")
-  {
+Blend Blend_from_string(const std::string& text) {
+  if (text == "none") {
     return Blend::NONE;
-  }
-  else if (text == "blend")
-  {
+  } else if (text == "blend") {
     return Blend::BLEND;
-  }
-  else if (text == "add")
-  {
+  } else if (text == "add") {
     return Blend::ADD;
-  }
-  else if (text == "mod")
-  {
+  } else if (text == "mod") {
     return Blend::MOD;
-  }
-  else
-  {
+  } else {
     log_warning << "unknown blend mode: '" << text << "'" << std::endl;
     return Blend::BLEND;
   }
 }
 
-std::string
-Blend_to_string(Blend blend)
-{
-  if (blend == Blend::NONE)
-  {
+std::string Blend_to_string(Blend blend) {
+  if (blend == Blend::NONE) {
     return "none";
-  }
-  else if (blend == Blend::BLEND)
-  {
+  } else if (blend == Blend::BLEND) {
     return "blend";
-  }
-  else if (blend == Blend::ADD)
-  {
+  } else if (blend == Blend::ADD) {
     return "add";
-  }
-  else if (blend == Blend::MOD)
-  {
+  } else if (blend == Blend::MOD) {
     return "mod";
-  }
-  else
-  {
-    log_warning << "unknown blend mode: " << static_cast<int>(blend) << std::endl;
+  } else {
+    log_warning << "unknown blend mode: " << static_cast<int>(blend)
+                << std::endl;
     return "blend";
   }
 }

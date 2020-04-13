@@ -26,30 +26,19 @@
 
 static const int DISPLAYED_COINS_UNSET = -1;
 
-PlayerStatusHUD::PlayerStatusHUD(PlayerStatus& player_status) :
-  m_player_status(player_status),
-  displayed_coins(DISPLAYED_COINS_UNSET),
-  displayed_coins_frame(0),
-  coin_surface(Surface::from_file("images/engine/hud/coins-0.png")),
-  fire_surface(Surface::from_file("images/objects/bullets/fire-hud.png")),
-  ice_surface(Surface::from_file("images/objects/bullets/ice-hud.png"))
-{
-}
+PlayerStatusHUD::PlayerStatusHUD(PlayerStatus& player_status)
+    : m_player_status(player_status),
+      displayed_coins(DISPLAYED_COINS_UNSET),
+      displayed_coins_frame(0),
+      coin_surface(Surface::from_file("images/engine/hud/coins-0.png")),
+      fire_surface(Surface::from_file("images/objects/bullets/fire-hud.png")),
+      ice_surface(Surface::from_file("images/objects/bullets/ice-hud.png")) {}
 
-void
-PlayerStatusHUD::reset()
-{
-  displayed_coins = DISPLAYED_COINS_UNSET;
-}
+void PlayerStatusHUD::reset() { displayed_coins = DISPLAYED_COINS_UNSET; }
 
-void
-PlayerStatusHUD::update(float dt_sec)
-{
-}
+void PlayerStatusHUD::update(float dt_sec) {}
 
-void
-PlayerStatusHUD::draw(DrawingContext& context)
-{
+void PlayerStatusHUD::draw(DrawingContext& context) {
   int player_id = 0;
 
   if ((displayed_coins == DISPLAYED_COINS_UNSET) ||
@@ -62,7 +51,8 @@ PlayerStatusHUD::draw(DrawingContext& context)
     if (displayed_coins < m_player_status.coins) displayed_coins++;
     if (displayed_coins > m_player_status.coins) displayed_coins--;
   }
-  displayed_coins = std::min(std::max(displayed_coins, 0), m_player_status.get_max_coins());
+  displayed_coins =
+      std::min(std::max(displayed_coins, 0), m_player_status.get_max_coins());
 
   std::ostringstream ss;
   ss << displayed_coins;
@@ -71,88 +61,82 @@ PlayerStatusHUD::draw(DrawingContext& context)
   context.push_transform();
   context.set_translation(Vector(0, 0));
 
-  if (coin_surface)
-  {
-    context.color().draw_surface(coin_surface,
-                                 Vector(static_cast<float>(context.get_width()) - BORDER_X - static_cast<float>(coin_surface->get_width()) - Resources::fixed_font->get_text_width(coins_text),
-                                        BORDER_Y + 1.0f + (Resources::fixed_font->get_text_height(coins_text) + 5) * static_cast<float>(player_id)),
-                                 LAYER_HUD);
+  if (coin_surface) {
+    context.color().draw_surface(
+        coin_surface,
+        Vector(static_cast<float>(context.get_width()) - BORDER_X -
+                   static_cast<float>(coin_surface->get_width()) -
+                   Resources::fixed_font->get_text_width(coins_text),
+               BORDER_Y + 1.0f +
+                   (Resources::fixed_font->get_text_height(coins_text) + 5) *
+                       static_cast<float>(player_id)),
+        LAYER_HUD);
   }
 
-  context.color().draw_text(Resources::fixed_font,
-                            coins_text,
-                            Vector(static_cast<float>(context.get_width()) - BORDER_X - Resources::fixed_font->get_text_width(coins_text),
-                                   BORDER_Y + (Resources::fixed_font->get_text_height(coins_text) + 5.0f) * static_cast<float>(player_id)),
-                            ALIGN_LEFT,
-                            LAYER_HUD,
-                            PlayerStatusHUD::text_color);
+  context.color().draw_text(
+      Resources::fixed_font, coins_text,
+      Vector(static_cast<float>(context.get_width()) - BORDER_X -
+                 Resources::fixed_font->get_text_width(coins_text),
+             BORDER_Y +
+                 (Resources::fixed_font->get_text_height(coins_text) + 5.0f) *
+                     static_cast<float>(player_id)),
+      ALIGN_LEFT, LAYER_HUD, PlayerStatusHUD::text_color);
 
   std::string ammo_text;
 
   if (m_player_status.bonus == FIRE_BONUS) {
-
     ammo_text = std::to_string(m_player_status.max_fire_bullets);
 
     if (fire_surface) {
-      context.color().draw_surface(fire_surface,
-                                   Vector(static_cast<float>(context.get_width())
-                                              - BORDER_X
-                                              - static_cast<float>(fire_surface->get_width())
-                                              - Resources::fixed_font->get_text_width(ammo_text),
-                                          BORDER_Y
-                                              + 1.0f
-                                              + (Resources::fixed_font->get_text_height(coins_text) + 5)
-                                              + (Resources::fixed_font->get_text_height(ammo_text) + 5)
-                                              * static_cast<float>(player_id)),
-                                   LAYER_HUD);
+      context.color().draw_surface(
+          fire_surface,
+          Vector(static_cast<float>(context.get_width()) - BORDER_X -
+                     static_cast<float>(fire_surface->get_width()) -
+                     Resources::fixed_font->get_text_width(ammo_text),
+                 BORDER_Y + 1.0f +
+                     (Resources::fixed_font->get_text_height(coins_text) + 5) +
+                     (Resources::fixed_font->get_text_height(ammo_text) + 5) *
+                         static_cast<float>(player_id)),
+          LAYER_HUD);
     }
 
-    context.color().draw_text(Resources::fixed_font,
-                              ammo_text,
-                              Vector(static_cast<float>(context.get_width())
-                                         - BORDER_X
-                                         - Resources::fixed_font->get_text_width(ammo_text),
-                                     BORDER_Y
-                                         + (Resources::fixed_font->get_text_height(coins_text) + 5.0f)
-                                         + (Resources::fixed_font->get_text_height(ammo_text) + 5.0f)
-                                         * static_cast<float>(player_id)),
-                              ALIGN_LEFT,
-                              LAYER_HUD,
-                              PlayerStatusHUD::text_color);
+    context.color().draw_text(
+        Resources::fixed_font, ammo_text,
+        Vector(static_cast<float>(context.get_width()) - BORDER_X -
+                   Resources::fixed_font->get_text_width(ammo_text),
+               BORDER_Y +
+                   (Resources::fixed_font->get_text_height(coins_text) + 5.0f) +
+                   (Resources::fixed_font->get_text_height(ammo_text) + 5.0f) *
+                       static_cast<float>(player_id)),
+        ALIGN_LEFT, LAYER_HUD, PlayerStatusHUD::text_color);
   }
 
   if (m_player_status.bonus == ICE_BONUS) {
-
     ammo_text = std::to_string(m_player_status.max_ice_bullets);
 
     if (ice_surface) {
-      context.color().draw_surface(ice_surface,
-                                   Vector(static_cast<float>(context.get_width())
-                                              - BORDER_X
-                                              - static_cast<float>(ice_surface->get_width())
-                                              - Resources::fixed_font->get_text_width(ammo_text),
-                                          BORDER_Y
-                                              + 1.0f
-                                              + (Resources::fixed_font->get_text_height(coins_text) + 5)
-                                              + (Resources::fixed_font->get_text_height(ammo_text) + 5)
-                                              * static_cast<float>(player_id)),
-                                   LAYER_HUD);
+      context.color().draw_surface(
+          ice_surface,
+          Vector(static_cast<float>(context.get_width()) - BORDER_X -
+                     static_cast<float>(ice_surface->get_width()) -
+                     Resources::fixed_font->get_text_width(ammo_text),
+                 BORDER_Y + 1.0f +
+                     (Resources::fixed_font->get_text_height(coins_text) + 5) +
+                     (Resources::fixed_font->get_text_height(ammo_text) + 5) *
+                         static_cast<float>(player_id)),
+          LAYER_HUD);
     }
 
-    context.color().draw_text(Resources::fixed_font,
-                              ammo_text,
-                              Vector(static_cast<float>(context.get_width())
-                                         - BORDER_X
-                                         - Resources::fixed_font->get_text_width(ammo_text),
-                                     BORDER_Y
-                                         + (Resources::fixed_font->get_text_height(coins_text) + 5.0f)
-                                         + (Resources::fixed_font->get_text_height(ammo_text) + 5.0f)
-                                         * static_cast<float>(player_id)),
-                              ALIGN_LEFT,
-                              LAYER_HUD,
-                              PlayerStatusHUD::text_color);
+    context.color().draw_text(
+        Resources::fixed_font, ammo_text,
+        Vector(static_cast<float>(context.get_width()) - BORDER_X -
+                   Resources::fixed_font->get_text_width(ammo_text),
+               BORDER_Y +
+                   (Resources::fixed_font->get_text_height(coins_text) + 5.0f) +
+                   (Resources::fixed_font->get_text_height(ammo_text) + 5.0f) *
+                       static_cast<float>(player_id)),
+        ALIGN_LEFT, LAYER_HUD, PlayerStatusHUD::text_color);
   }
-
 
   context.pop_transform();
 }

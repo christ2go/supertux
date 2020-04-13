@@ -28,27 +28,22 @@
 #include "supertux/resources.hpp"
 #include "video/surface.hpp"
 
-LayerIcon::LayerIcon(GameObject* layer) :
-  ObjectIcon("", layer->get_icon_path()),
-  m_layer(layer),
-  m_selection()
-{
+LayerIcon::LayerIcon(GameObject* layer)
+    : ObjectIcon("", layer->get_icon_path()), m_layer(layer), m_selection() {
   if (dynamic_cast<TileMap*>(layer)) {
     m_selection = Surface::from_file("images/engine/editor/selection.png");
   }
 }
 
-void
-LayerIcon::draw(DrawingContext& context, const Vector& pos)
-{
+void LayerIcon::draw(DrawingContext& context, const Vector& pos) {
   if (!is_valid()) return;
 
   ObjectIcon::draw(context, pos);
   int l = get_zpos();
   if (l != std::numeric_limits<int>::min()) {
     context.color().draw_text(Resources::small_font, std::to_string(l),
-                                pos + Vector(16,16),
-                                ALIGN_CENTER, LAYER_GUI, ColorScheme::Menu::default_color);
+                              pos + Vector(16, 16), ALIGN_CENTER, LAYER_GUI,
+                              ColorScheme::Menu::default_color);
     if (TileMap* tilemap = dynamic_cast<TileMap*>(m_layer)) {
       if (tilemap->m_editor_active) {
         context.color().draw_surface(m_selection, pos, LAYER_GUI - 1);
@@ -57,9 +52,7 @@ LayerIcon::draw(DrawingContext& context, const Vector& pos)
   }
 }
 
-int
-LayerIcon::get_zpos() const
-{
+int LayerIcon::get_zpos() const {
   if (!is_valid()) {
     return std::numeric_limits<int>::min();
   }
@@ -79,16 +72,10 @@ LayerIcon::get_zpos() const
   }
 }
 
-bool
-LayerIcon::is_tilemap() const
-{
+bool LayerIcon::is_tilemap() const {
   return dynamic_cast<TileMap*>(m_layer) != nullptr;
 }
 
-bool
-LayerIcon::is_valid() const
-{
-  return m_layer && m_layer->is_valid();
-}
+bool LayerIcon::is_valid() const { return m_layer && m_layer->is_valid(); }
 
 /* EOF */

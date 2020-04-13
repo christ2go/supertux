@@ -26,17 +26,16 @@
 #include "util/file_system.hpp"
 #include "util/log.hpp"
 
-LevelsetScreen::LevelsetScreen(const std::string& basedir, const std::string& level_filename,
-                               Savegame& savegame) :
-  m_basedir(basedir),
-  m_level_filename(level_filename),
-  m_savegame(savegame),
-  m_level_started(false),
-  m_solved(false)
-{
+LevelsetScreen::LevelsetScreen(const std::string& basedir,
+                               const std::string& level_filename,
+                               Savegame& savegame)
+    : m_basedir(basedir),
+      m_level_filename(level_filename),
+      m_savegame(savegame),
+      m_level_started(false),
+      m_solved(false) {
   Levelset levelset(basedir);
-  for (int i = 0; i < levelset.get_num_levels(); ++i)
-  {
+  for (int i = 0; i < levelset.get_num_levels(); ++i) {
     std::string lev = levelset.get_level_filename(i);
     m_savegame.set_levelset_state(m_basedir, lev, false);
   }
@@ -46,51 +45,34 @@ LevelsetScreen::LevelsetScreen(const std::string& basedir, const std::string& le
   m_solved = level_state.solved;
 }
 
-void
-LevelsetScreen::draw(Compositor& compositor)
-{
-}
+void LevelsetScreen::draw(Compositor& compositor) {}
 
-void
-LevelsetScreen::update(float dt_sec, const Controller& controller)
-{
-}
+void LevelsetScreen::update(float dt_sec, const Controller& controller) {}
 
-void
-LevelsetScreen::finished_level(bool win)
-{
-  m_solved = m_solved || win;
-}
+void LevelsetScreen::finished_level(bool win) { m_solved = m_solved || win; }
 
-void
-LevelsetScreen::setup()
-{
-  if (m_level_started)
-  {
+void LevelsetScreen::setup() {
+  if (m_level_started) {
     log_info << "Saving Levelset state" << std::endl;
     // this gets called when the GameSession is done and we return back to the
     m_savegame.set_levelset_state(m_basedir, m_level_filename, m_solved);
     m_savegame.save();
     ScreenManager::current()->pop_screen();
-  }
-  else
-  {
+  } else {
     m_level_started = true;
 
     if (Editor::is_active()) {
-      log_warning << "Editor is still active, quiting Levelset screen" << std::endl;
+      log_warning << "Editor is still active, quiting Levelset screen"
+                  << std::endl;
       ScreenManager::current()->pop_screen();
     } else {
-      auto screen = std::make_unique<GameSession>(FileSystem::join(m_basedir, m_level_filename),
-                                                  m_savegame);
+      auto screen = std::make_unique<GameSession>(
+          FileSystem::join(m_basedir, m_level_filename), m_savegame);
       ScreenManager::current()->push_screen(std::move(screen));
     }
   }
 }
 
-void
-LevelsetScreen::leave()
-{
-}
+void LevelsetScreen::leave() {}
 
 /* EOF */

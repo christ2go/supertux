@@ -23,8 +23,7 @@
 #include "supertux/level.hpp"
 #include "util/gettext.hpp"
 
-EditorObjectgroupMenu::EditorObjectgroupMenu()
-{
+EditorObjectgroupMenu::EditorObjectgroupMenu() {
   bool worldmap = Editor::current()->get_level()->is_worldmap();
 
   add_label(_("Objects"));
@@ -39,11 +38,10 @@ EditorObjectgroupMenu::EditorObjectgroupMenu()
   }
 
   add_hl();
-  add_entry(-1,_("Cancel"));
+  add_entry(-1, _("Cancel"));
 }
 
-EditorObjectgroupMenu::~EditorObjectgroupMenu()
-{
+EditorObjectgroupMenu::~EditorObjectgroupMenu() {
   auto editor = Editor::current();
   if (editor == nullptr) {
     return;
@@ -51,11 +49,8 @@ EditorObjectgroupMenu::~EditorObjectgroupMenu()
   editor->m_reactivate_request = true;
 }
 
-void
-EditorObjectgroupMenu::menu_action(MenuItem& item)
-{
-  if (item.get_id() >= 0)
-  {
+void EditorObjectgroupMenu::menu_action(MenuItem& item) {
+  if (item.get_id() >= 0) {
     Editor::current()->select_objectgroup(item.get_id());
   }
   MenuManager::instance().clear_menu_stack();

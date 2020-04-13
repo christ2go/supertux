@@ -24,8 +24,7 @@
 #include "math/rectf.hpp"
 #include "util/log.hpp"
 
-std::string anchor_point_to_string(AnchorPoint point)
-{
+std::string anchor_point_to_string(AnchorPoint point) {
   switch (point) {
     case ANCHOR_TOP_LEFT:
       return "topleft";
@@ -50,8 +49,7 @@ std::string anchor_point_to_string(AnchorPoint point)
   }
 }
 
-AnchorPoint string_to_anchor_point(const std::string& str)
-{
+AnchorPoint string_to_anchor_point(const std::string& str) {
   if (str == "topleft")
     return ANCHOR_TOP_LEFT;
   else if (str == "top")
@@ -76,8 +74,7 @@ AnchorPoint string_to_anchor_point(const std::string& str)
   throw std::runtime_error(msg.str());
 }
 
-Vector get_anchor_pos(const Rectf& rect, AnchorPoint point)
-{
+Vector get_anchor_pos(const Rectf& rect, AnchorPoint point) {
   Vector result;
 
   switch (point & ANCHOR_V_MASK) {
@@ -116,8 +113,7 @@ Vector get_anchor_pos(const Rectf& rect, AnchorPoint point)
 }
 
 Vector get_anchor_pos(const Rectf& destrect, float width, float height,
-                      AnchorPoint point)
-{
+                      AnchorPoint point) {
   Vector result;
 
   switch (point & ANCHOR_V_MASK) {

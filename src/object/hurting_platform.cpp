@@ -1,5 +1,6 @@
 //  SuperTux - Hurting Platform
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,14 +21,11 @@
 #include "object/player.hpp"
 
 HurtingPlatform::HurtingPlatform(const ReaderMapping& reader)
-  : Platform(reader, "images/objects/sawblade/sawblade.sprite")
-{
+    : Platform(reader, "images/objects/sawblade/sawblade.sprite") {
   set_group(COLGROUP_TOUCHABLE);
 }
 
-HitResponse
-HurtingPlatform::collision(GameObject& other, const CollisionHit& )
-{
+HitResponse HurtingPlatform::collision(GameObject& other, const CollisionHit&) {
   auto player = dynamic_cast<Player*>(&other);
   if (player) {
     if (player->is_invincible()) {

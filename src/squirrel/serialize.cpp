@@ -25,20 +25,18 @@
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 
-void load_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, const ReaderMapping& mapping)
-{
-  if (table_idx < 0)
-    table_idx -= 2;
+void load_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx,
+                         const ReaderMapping& mapping) {
+  if (table_idx < 0) table_idx -= 2;
 
   auto const& arr = mapping.get_sexp().as_array();
-  for (size_t i = 1; i < arr.size(); ++i)
-  {
+  for (size_t i = 1; i < arr.size(); ++i) {
     auto const& pair = arr[i].as_array();
 
     // Ignore key value pairs with invalid length
-    if (pair.size() < 2)
-    {
-      log_debug << "Found key/value pair with invalid length. Ignoring." << std::endl;
+    if (pair.size() < 2) {
+      log_debug << "Found key/value pair with invalid length. Ignoring."
+                << std::endl;
       continue;
     }
 
@@ -46,9 +44,9 @@ void load_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, const ReaderMappin
     auto const& value = pair[1];
 
     // ignore empty / null values
-    if (value.is_nil())
-    {
-      log_debug << "Found null value for key " << key << ". Ignoring." << std::endl;
+    if (value.is_nil()) {
+      log_debug << "Found null value for key " << key << ". Ignoring."
+                << std::endl;
       continue;
     }
     // push the key
@@ -58,7 +56,8 @@ void load_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, const ReaderMappin
     switch (value.get_type()) {
       case sexp::Value::Type::ARRAY:
         sq_newtable(vm);
-        load_squirrel_table(vm, sq_gettop(vm), ReaderMapping(mapping.get_doc(), arr[i]));
+        load_squirrel_table(vm, sq_gettop(vm),
+                            ReaderMapping(mapping.get_doc(), arr[i]));
         break;
       case sexp::Value::Type::INTEGER:
         sq_pushinteger(vm, value.as_int());
@@ -73,7 +72,8 @@ void load_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, const ReaderMappin
         sq_pushbool(vm, value.as_bool() ? SQTrue : SQFalse);
         break;
       case sexp::Value::Type::SYMBOL:
-        log_fatal << "Unexpected symbol in file: " << value.as_string() << std::endl;
+        log_fatal << "Unexpected symbol in file: " << value.as_string()
+                  << std::endl;
         sq_pushnull(vm);
         break;
       default:
@@ -86,13 +86,11 @@ void load_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, const ReaderMappin
   }
 }
 
-void save_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, Writer& writer)
-{
+void save_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, Writer& writer) {
   // offset because of sq_pushnull
-  if (table_idx < 0)
-    table_idx -= 1;
+  if (table_idx < 0) table_idx -= 1;
 
-  //iterator table
+  // iterator table
   sq_pushnull(vm);
   while (SQ_SUCCEEDED(sq_next(vm, table_idx))) {
     if (sq_gettype(vm, -2) != OT_STRING) {
@@ -106,13 +104,13 @@ void save_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, Writer& writer)
       case OT_INTEGER: {
         SQInteger val;
         sq_getinteger(vm, -1, &val);
-        writer.write(key, static_cast<int> (val));
+        writer.write(key, static_cast<int>(val));
         break;
       }
       case OT_FLOAT: {
         SQFloat val;
         sq_getfloat(vm, -1, &val);
-        writer.write(key, static_cast<float> (val));
+        writer.write(key, static_cast<float>(val));
         break;
       }
       case OT_BOOL: {
@@ -124,7 +122,7 @@ void save_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, Writer& writer)
       case OT_STRING: {
         const SQChar* str;
         sq_getstring(vm, -1, &str);
-        writer.write(key, reinterpret_cast<const char*> (str));
+        writer.write(key, reinterpret_cast<const char*>(str));
         break;
       }
       case OT_TABLE: {
@@ -134,7 +132,7 @@ void save_squirrel_table(HSQUIRRELVM vm, SQInteger table_idx, Writer& writer)
         break;
       }
       case OT_CLOSURE:
-        break; // ignore
+        break;  // ignore
       case OT_NATIVECLOSURE:
         break;
       default:

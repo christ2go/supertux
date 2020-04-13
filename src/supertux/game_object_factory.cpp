@@ -124,21 +124,14 @@
 #include "util/reader_document.hpp"
 #include "util/reader_mapping.hpp"
 
-GameObjectFactory&
-GameObjectFactory::instance()
-{
+GameObjectFactory& GameObjectFactory::instance() {
   static GameObjectFactory instance_;
   return instance_;
 }
 
-GameObjectFactory::GameObjectFactory()
-{
-  init_factories();
-}
+GameObjectFactory::GameObjectFactory() { init_factories(); }
 
-void
-GameObjectFactory::init_factories()
-{
+void GameObjectFactory::init_factories() {
   // badguys
   add_factory<AngryStone>("angrystone");
   add_factory<BouncingSnowball>("bouncingsnowball");
@@ -196,7 +189,7 @@ GameObjectFactory::init_factories()
 
   // other objects
   add_factory<AmbientLight>("ambient-light");
-  add_factory<AmbientSound>("ambient_sound"); // backward compatibilty
+  add_factory<AmbientSound>("ambient_sound");  // backward compatibilty
   add_factory<AmbientSound>("ambient-sound");
   add_factory<Background>("background");
   add_factory<PathGameObject>("path");
@@ -261,14 +254,15 @@ GameObjectFactory::init_factories()
   add_factory<worldmap_editor::WorldmapSpawnPoint>("worldmap-spawnpoint");
 
   add_factory("tilemap", [](const ReaderMapping& reader) {
-      auto tileset = TileManager::current()->get_tileset(Level::current()->get_tileset());
-      return std::make_unique<TileMap>(tileset, reader);
-    });
+    auto tileset =
+        TileManager::current()->get_tileset(Level::current()->get_tileset());
+    return std::make_unique<TileMap>(tileset, reader);
+  });
 }
 
-std::unique_ptr<GameObject>
-GameObjectFactory::create(const std::string& name, const Vector& pos, const Direction& dir, const std::string& data) const
-{
+std::unique_ptr<GameObject> GameObjectFactory::create(
+    const std::string& name, const Vector& pos, const Direction& dir,
+    const std::string& data) const {
   std::stringstream lisptext;
   lisptext << "(" << name << "\n"
            << " (x " << pos.x << ")"

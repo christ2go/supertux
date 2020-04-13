@@ -18,40 +18,31 @@
 
 #include "supertux/sector.hpp"
 
-Electrifier::Electrifier(TileChangeMap replacements, float seconds) :
-  change_map(std::move(replacements)),
-  duration()
-{
+Electrifier::Electrifier(TileChangeMap replacements, float seconds)
+    : change_map(std::move(replacements)), duration() {
   duration.start(seconds);
   for (auto& tile : change_map) {
     Sector::get().change_solid_tiles(tile.first, tile.second);
   }
 }
 
-Electrifier::Electrifier(uint32_t oldtile, uint32_t newtile, float seconds) :
-  change_map({{oldtile, newtile}}),
-  duration()
-{
+Electrifier::Electrifier(uint32_t oldtile, uint32_t newtile, float seconds)
+    : change_map({{oldtile, newtile}}), duration() {
   duration.start(seconds);
   for (auto& tile : change_map) {
     Sector::get().change_solid_tiles(tile.first, tile.second);
   }
 }
 
-void
-Electrifier::update(float )
-{
+void Electrifier::update(float) {
   if (duration.check()) {
-    for (const auto& tile : change_map){
+    for (const auto& tile : change_map) {
       Sector::get().change_solid_tiles(tile.second, tile.first);
     }
     remove_me();
   }
 }
 
-void
-Electrifier::draw(DrawingContext& )
-{
-}
+void Electrifier::draw(DrawingContext&) {}
 
 /* EOF */

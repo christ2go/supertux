@@ -22,35 +22,20 @@
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 
-MusicObject::MusicObject() :
-  m_currentmusic(LEVEL_MUSIC),
-  m_music()
-{
-}
+MusicObject::MusicObject() : m_currentmusic(LEVEL_MUSIC), m_music() {}
 
-MusicObject::MusicObject(const ReaderMapping& mapping) :
-  m_currentmusic(LEVEL_MUSIC),
-  m_music()
-{
+MusicObject::MusicObject(const ReaderMapping& mapping)
+    : m_currentmusic(LEVEL_MUSIC), m_music() {
   mapping.get("file", m_music);
 }
 
-void
-MusicObject::update(float dt_sec)
-{
-}
+void MusicObject::update(float dt_sec) {}
 
-void
-MusicObject::draw(DrawingContext& context)
-{
-}
+void MusicObject::draw(DrawingContext& context) {}
 
-void
-MusicObject::play_music(MusicType type)
-{
+void MusicObject::play_music(MusicType type) {
   m_currentmusic = type;
-  switch (m_currentmusic)
-  {
+  switch (m_currentmusic) {
     case LEVEL_MUSIC:
       SoundManager::current()->play_music(m_music);
       break;
@@ -69,41 +54,22 @@ MusicObject::play_music(MusicType type)
   }
 }
 
-void
-MusicObject::resume_music()
-{
-  if (SoundManager::current()->get_current_music() == m_music)
-  {
+void MusicObject::resume_music() {
+  if (SoundManager::current()->get_current_music() == m_music) {
     SoundManager::current()->resume_music(3.2f);
-  }
-  else
-  {
+  } else {
     SoundManager::current()->stop_music();
     SoundManager::current()->play_music(m_music, true);
   }
 }
 
-MusicType
-MusicObject::get_music_type() const
-{
-  return m_currentmusic;
-}
+MusicType MusicObject::get_music_type() const { return m_currentmusic; }
 
-void
-MusicObject::set_music(const std::string& music)
-{
-  m_music = music;
-}
+void MusicObject::set_music(const std::string& music) { m_music = music; }
 
-std::string
-MusicObject::get_music() const
-{
-  return m_music;
-}
+std::string MusicObject::get_music() const { return m_music; }
 
-ObjectSettings
-MusicObject::get_settings()
-{
+ObjectSettings MusicObject::get_settings() {
   auto settings = GameObject::get_settings();
 
   settings.add_music(_("File"), &m_music, "file");

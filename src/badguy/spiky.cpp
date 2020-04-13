@@ -16,23 +16,15 @@
 
 #include "badguy/spiky.hpp"
 
-Spiky::Spiky(const ReaderMapping& reader) :
-  WalkingBadguy(reader, "images/creatures/spiky/spiky.sprite", "left", "right")
-{
+Spiky::Spiky(const ReaderMapping& reader)
+    : WalkingBadguy(reader, "images/creatures/spiky/spiky.sprite", "left",
+                    "right") {
   walk_speed = 80;
   max_drop_height = 600;
 }
 
-bool
-Spiky::is_freezable() const
-{
-  return true;
-}
+bool Spiky::is_freezable() const { return true; }
 
-bool
-Spiky::is_flammable() const
-{
-  return true;
-}
+bool Spiky::is_flammable() const { return true; }
 
 /* EOF */

@@ -21,88 +21,64 @@
 
 namespace scripting {
 
-void
-TextArray::add_text_duration(const std::string& text, float duration)
-{
+void TextArray::add_text_duration(const std::string& text, float duration) {
   SCRIPT_GUARD_VOID;
   object.add_text(text, duration);
 }
 
-void
-TextArray::add_text(const std::string& text)
-{
+void TextArray::add_text(const std::string& text) {
   SCRIPT_GUARD_VOID;
   object.add_text(text);
 }
 
-void
-TextArray::clear()
-{
+void TextArray::clear() {
   SCRIPT_GUARD_VOID;
   object.clear();
 }
 
-void
-TextArray::set_fade_transition(bool fade_transition)
-{
+void TextArray::set_fade_transition(bool fade_transition) {
   SCRIPT_GUARD_VOID;
   object.set_fade_transition(fade_transition);
 }
 
-void
-TextArray::set_fade_time(float fadetime)
-{
+void TextArray::set_fade_time(float fadetime) {
   SCRIPT_GUARD_VOID;
   object.set_fade_time(fadetime);
 }
 
-void
-TextArray::set_text_index(int index_)
-{
+void TextArray::set_text_index(int index_) {
   SCRIPT_GUARD_VOID;
   object.set_text_index(index_);
 }
 
-void
-TextArray::next_text()
-{
+void TextArray::next_text() {
   SCRIPT_GUARD_VOID;
   object.next_text();
 }
 
-void
-TextArray::prev_text()
-{
+void TextArray::prev_text() {
   SCRIPT_GUARD_VOID;
   object.prev_text();
 }
 
-void
-TextArray::set_keep_visible(bool keep_visible_)
-{
+void TextArray::set_keep_visible(bool keep_visible_) {
   SCRIPT_GUARD_VOID;
   object.set_keep_visible(keep_visible_);
 }
 
-void
-TextArray::set_done(bool done)
-{
+void TextArray::set_done(bool done) {
   SCRIPT_GUARD_VOID;
   object.set_done(done);
 }
 
-void
-TextArray::set_auto(bool is_auto)
-{
+void TextArray::set_auto(bool is_auto) {
   SCRIPT_GUARD_VOID;
   object.set_auto(is_auto);
 }
 
 /////////// text api
 
-void
-TextArray::set_text(const std::string& text)
-{
+void TextArray::set_text(const std::string& text) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -110,9 +86,7 @@ TextArray::set_text(const std::string& text)
   }
 }
 
-void
-TextArray::set_font(const std::string& fontname)
-{
+void TextArray::set_font(const std::string& fontname) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -120,9 +94,7 @@ TextArray::set_font(const std::string& fontname)
   }
 }
 
-void
-TextArray::fade_in(float fadetime)
-{
+void TextArray::fade_in(float fadetime) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -130,9 +102,7 @@ TextArray::fade_in(float fadetime)
   }
 }
 
-void
-TextArray::fade_out(float fadetime)
-{
+void TextArray::fade_out(float fadetime) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -140,9 +110,7 @@ TextArray::fade_out(float fadetime)
   }
 }
 
-void
-TextArray::set_visible(bool visible)
-{
+void TextArray::set_visible(bool visible) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -150,9 +118,7 @@ TextArray::set_visible(bool visible)
   }
 }
 
-void
-TextArray::set_centered(bool centered)
-{
+void TextArray::set_centered(bool centered) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -160,9 +126,7 @@ TextArray::set_centered(bool centered)
   }
 }
 
-void
-TextArray::set_pos(float x, float y)
-{
+void TextArray::set_pos(float x, float y) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -170,9 +134,7 @@ TextArray::set_pos(float x, float y)
   }
 }
 
-float
-TextArray::get_pos_x() const
-{
+float TextArray::get_pos_x() const {
   SCRIPT_GUARD_DEFAULT;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -183,9 +145,7 @@ TextArray::get_pos_x() const
   }
 }
 
-float
-TextArray::get_pos_y() const
-{
+float TextArray::get_pos_y() const {
   SCRIPT_GUARD_DEFAULT;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -196,9 +156,7 @@ TextArray::get_pos_y() const
   }
 }
 
-void
-TextArray::set_anchor_point(int anchor)
-{
+void TextArray::set_anchor_point(int anchor) {
   SCRIPT_GUARD_VOID;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -206,9 +164,7 @@ TextArray::set_anchor_point(int anchor)
   }
 }
 
-int
-TextArray::get_anchor_point() const
-{
+int TextArray::get_anchor_point() const {
   SCRIPT_GUARD_DEFAULT;
 
   if (auto* textItem = object.get_current_text_item()) {
@@ -218,6 +174,6 @@ TextArray::get_anchor_point() const
   }
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

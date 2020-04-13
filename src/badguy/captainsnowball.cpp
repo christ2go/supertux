@@ -19,22 +19,20 @@
 #include "sprite/sprite.hpp"
 #include "supertux/sector.hpp"
 
-namespace{
-  static const float CAPTAIN_WALK_SPEED = 100;
-  static const float BOARDING_SPEED = 200;
-}
+namespace {
+static const float CAPTAIN_WALK_SPEED = 100;
+static const float BOARDING_SPEED = 200;
+}  // namespace
 
 CaptainSnowball::CaptainSnowball(const ReaderMapping& reader)
-  : WalkingBadguy(reader, "images/creatures/snowball/cpt-snowball.sprite", "left", "right")
-{
+    : WalkingBadguy(reader, "images/creatures/snowball/cpt-snowball.sprite",
+                    "left", "right") {
   walk_speed = BOARDING_SPEED;
   max_drop_height = -1;
   m_physic.set_velocity_y(-400);
 }
 
-bool
-CaptainSnowball::might_climb(int width, int height) const
-{
+bool CaptainSnowball::might_climb(int width, int height) const {
   // make sure we check for at least a 1-pixel climb
   assert(height > 0);
 
@@ -55,33 +53,30 @@ CaptainSnowball::might_climb(int width, int height) const
           (Sector::get().is_free_of_statics(Rectf(x1, y1b, x2, y2b))));
 }
 
-void
-CaptainSnowball::active_update(float dt_sec)
-{
+void CaptainSnowball::active_update(float dt_sec) {
   if (on_ground() && might_climb(8, 64)) {
     m_physic.set_velocity_y(-400);
   } else if (on_ground() && might_fall(16)) {
     m_physic.set_velocity_y(-400);
     walk_speed = BOARDING_SPEED;
-    m_physic.set_velocity_x(m_dir == Direction::LEFT ? -walk_speed : walk_speed);
+    m_physic.set_velocity_x(m_dir == Direction::LEFT ? -walk_speed
+                                                     : walk_speed);
   }
   WalkingBadguy::active_update(dt_sec);
 }
 
-void
-CaptainSnowball::collision_solid(const CollisionHit& hit)
-{
+void CaptainSnowball::collision_solid(const CollisionHit& hit) {
   if (is_active() && (walk_speed == BOARDING_SPEED)) {
     walk_speed = CAPTAIN_WALK_SPEED;
-    m_physic.set_velocity_x(m_dir == Direction::LEFT ? -walk_speed : walk_speed);
+    m_physic.set_velocity_x(m_dir == Direction::LEFT ? -walk_speed
+                                                     : walk_speed);
   }
   WalkingBadguy::collision_solid(hit);
 }
 
-bool
-CaptainSnowball::collision_squished(GameObject& object)
-{
-  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
+bool CaptainSnowball::collision_squished(GameObject& object) {
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left"
+                                                : "squished-right");
   kill_squished(object);
   return true;
 }

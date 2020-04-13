@@ -29,8 +29,7 @@
 #include "util/reader_mapping.hpp"
 #include "video/drawing_context.hpp"
 
-int reader_get_layer(const ReaderMapping& reader, int def)
-{
+int reader_get_layer(const ReaderMapping& reader, int def) {
   int tmp = 0;
   bool status;
 
@@ -38,15 +37,12 @@ int reader_get_layer(const ReaderMapping& reader, int def)
   status = reader.get("z-pos", tmp);
 
   // 'layer' is the old name kept for backward compatibility
-  if (!status)
-    status = reader.get("layer", tmp);
+  if (!status) status = reader.get("layer", tmp);
 
-  if (!status)
-    tmp = def;
+  if (!status) tmp = def;
 
   if (!Editor::is_active()) {
-    if (tmp > (LAYER_GUI - 100))
-      tmp = LAYER_GUI - 100;
+    if (tmp > (LAYER_GUI - 100)) tmp = LAYER_GUI - 100;
   }
 
   return (tmp);
@@ -54,8 +50,7 @@ int reader_get_layer(const ReaderMapping& reader, int def)
 
 namespace {
 
-std::string dirname(const std::string& filename)
-{
+std::string dirname(const std::string& filename) {
   std::string::size_type p = filename.find_last_of('/');
   if (p == std::string::npos) {
     return {};
@@ -64,10 +59,9 @@ std::string dirname(const std::string& filename)
   }
 }
 
-} // namespace
+}  // namespace
 
-void register_translation_directory(const std::string& filename)
-{
+void register_translation_directory(const std::string& filename) {
   if (g_dictionary_manager) {
     std::string rel_dir = dirname(filename);
     if (rel_dir.empty()) {

@@ -28,8 +28,7 @@ static const float ITEMS_SPACE = 4;
 namespace {
 
 FontPtr get_font_by_format_char(char format_char) {
-  switch (format_char)
-  {
+  switch (format_char) {
     case ' ':
       return Resources::small_font;
     case '-':
@@ -41,13 +40,13 @@ FontPtr get_font_by_format_char(char format_char) {
       return Resources::normal_font;
     default:
       return Resources::normal_font;
-      //log_warning << "Unknown format_char: '" << format_char << "'" << std::endl;
+      // log_warning << "Unknown format_char: '" << format_char << "'" <<
+      // std::endl;
   }
 }
 
 Color get_color_by_format_char(char format_char) {
-  switch (format_char)
-  {
+  switch (format_char) {
     case ' ':
       return ColorScheme::Text::small_color;
     case '-':
@@ -60,13 +59,13 @@ Color get_color_by_format_char(char format_char) {
       return ColorScheme::Text::normal_color;
     default:
       return ColorScheme::Text::normal_color;
-      //log_warning << "Unknown format_char: '" << format_char << "'" << std::endl;
+      // log_warning << "Unknown format_char: '" << format_char << "'" <<
+      // std::endl;
   }
 }
 
 InfoBoxLine::LineType get_linetype_by_format_char(char format_char) {
-  switch (format_char)
-  {
+  switch (format_char) {
     case ' ':
       return InfoBoxLine::SMALL;
 
@@ -82,28 +81,26 @@ InfoBoxLine::LineType get_linetype_by_format_char(char format_char) {
       return InfoBoxLine::IMAGE;
     default:
       return InfoBoxLine::SMALL;
-      //log_warning << "Unknown format_char: '" << format_char << "'" << std::endl;
+      // log_warning << "Unknown format_char: '" << format_char << "'" <<
+      // std::endl;
   }
 }
 
-} // namespace
+}  // namespace
 
-InfoBoxLine::InfoBoxLine(char format_char, const std::string& text_) :
-  lineType(get_linetype_by_format_char(format_char)),
-  font(get_font_by_format_char(format_char)),
-  color(get_color_by_format_char(format_char)),
-  text(text_),
-  image()
-{
-  if (lineType == IMAGE)
-  {
+InfoBoxLine::InfoBoxLine(char format_char, const std::string& text_)
+    : lineType(get_linetype_by_format_char(format_char)),
+      font(get_font_by_format_char(format_char)),
+      color(get_color_by_format_char(format_char)),
+      text(text_),
+      image() {
+  if (lineType == IMAGE) {
     image = Surface::from_file(text);
   }
 }
 
-std::vector<std::unique_ptr<InfoBoxLine> >
-InfoBoxLine::split(const std::string& text, float width)
-{
+std::vector<std::unique_ptr<InfoBoxLine> > InfoBoxLine::split(
+    const std::string& text, float width) {
   std::vector<std::unique_ptr<InfoBoxLine> > lines;
 
   std::string::size_type i = 0;
@@ -118,22 +115,19 @@ InfoBoxLine::split(const std::string& text, float width)
     }
 
     // extract the format_char
-    if (is_valid_format_char(text[i]))
-    {
+    if (is_valid_format_char(text[i])) {
       format_char = text[i];
       i++;
-    }
-    else
-    {
+    } else {
       format_char = '#';
     }
     if (i >= text.size()) break;
 
     // extract one line
     l = text.find('\n', i);
-    if (l == std::string::npos) l=text.size();
-    std::string s = text.substr(i, l-i);
-    i = l+1;
+    if (l == std::string::npos) l = text.size();
+    std::string s = text.substr(i, l - i);
+    i = l + 1;
 
     // if we are dealing with an image, just store the line
     if (format_char == '!') {
@@ -155,26 +149,32 @@ InfoBoxLine::split(const std::string& text, float width)
   return lines;
 }
 
-void
-InfoBoxLine::draw(DrawingContext& context, const Rectf& bbox, int layer)
-{
+void InfoBoxLine::draw(DrawingContext& context, const Rectf& bbox, int layer) {
   Vector position = bbox.p1();
   switch (lineType) {
     case IMAGE:
-      context.color().draw_surface(image, Vector( (bbox.get_left() + bbox.get_right() - static_cast<float>(image->get_width())) / 2.0f, position.y), layer);
+      context.color().draw_surface(
+          image,
+          Vector((bbox.get_left() + bbox.get_right() -
+                  static_cast<float>(image->get_width())) /
+                     2.0f,
+                 position.y),
+          layer);
       break;
     case NORMAL_LEFT:
-      context.color().draw_text(font, text, Vector(position.x, position.y), ALIGN_LEFT, layer, color);
+      context.color().draw_text(font, text, Vector(position.x, position.y),
+                                ALIGN_LEFT, layer, color);
       break;
     default:
-      context.color().draw_text(font, text, Vector((bbox.get_left() + bbox.get_right()) / 2, position.y), ALIGN_CENTER, layer, color);
+      context.color().draw_text(
+          font, text,
+          Vector((bbox.get_left() + bbox.get_right()) / 2, position.y),
+          ALIGN_CENTER, layer, color);
       break;
   }
 }
 
-float
-InfoBoxLine::get_height() const
-{
+float InfoBoxLine::get_height() const {
   switch (lineType) {
     case IMAGE:
       return static_cast<float>(image->get_height()) + ITEMS_SPACE;

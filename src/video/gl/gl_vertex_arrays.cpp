@@ -22,13 +22,12 @@
 #include "video/gl/gl_video_system.hpp"
 #include "video/glutil.hpp"
 
-GLVertexArrays::GLVertexArrays(GL33CoreContext& context) :
-  m_context(context),
-  m_vao(),
-  m_positions_buffer(),
-  m_texcoords_buffer(),
-  m_color_buffer()
-{
+GLVertexArrays::GLVertexArrays(GL33CoreContext& context)
+    : m_context(context),
+      m_vao(),
+      m_positions_buffer(),
+      m_texcoords_buffer(),
+      m_color_buffer() {
   assert_gl();
 
   glGenVertexArrays(1, &m_vao);
@@ -39,17 +38,14 @@ GLVertexArrays::GLVertexArrays(GL33CoreContext& context) :
   assert_gl();
 }
 
-GLVertexArrays::~GLVertexArrays()
-{
+GLVertexArrays::~GLVertexArrays() {
   glDeleteBuffers(1, &m_positions_buffer);
   glDeleteBuffers(1, &m_texcoords_buffer);
   glDeleteBuffers(1, &m_color_buffer);
   glDeleteVertexArrays(1, &m_vao);
 }
 
-void
-GLVertexArrays::bind()
-{
+void GLVertexArrays::bind() {
   assert_gl();
 
   glBindVertexArray(m_vao);
@@ -57,9 +53,7 @@ GLVertexArrays::bind()
   assert_gl();
 }
 
-void
-GLVertexArrays::set_positions(const float* data, size_t size)
-{
+void GLVertexArrays::set_positions(const float* data, size_t size) {
   assert_gl();
 
   glBindBuffer(GL_ARRAY_BUFFER, m_positions_buffer);
@@ -72,9 +66,7 @@ GLVertexArrays::set_positions(const float* data, size_t size)
   assert_gl();
 }
 
-void
-GLVertexArrays::set_texcoords(const float* data, size_t size)
-{
+void GLVertexArrays::set_texcoords(const float* data, size_t size) {
   assert_gl();
 
   glBindBuffer(GL_ARRAY_BUFFER, m_texcoords_buffer);
@@ -87,9 +79,7 @@ GLVertexArrays::set_texcoords(const float* data, size_t size)
   assert_gl();
 }
 
-void
-GLVertexArrays::set_texcoord(float u, float v)
-{
+void GLVertexArrays::set_texcoord(float u, float v) {
   assert_gl();
 
   int loc = m_context.get_program().get_attrib_location("texcoord");
@@ -99,9 +89,7 @@ GLVertexArrays::set_texcoord(float u, float v)
   assert_gl();
 }
 
-void
-GLVertexArrays::set_colors(const float* data, size_t size)
-{
+void GLVertexArrays::set_colors(const float* data, size_t size) {
   assert_gl();
 
   glBindBuffer(GL_ARRAY_BUFFER, m_texcoords_buffer);
@@ -114,9 +102,7 @@ GLVertexArrays::set_colors(const float* data, size_t size)
   assert_gl();
 }
 
-void
-GLVertexArrays::set_color(const Color& color)
-{
+void GLVertexArrays::set_color(const Color& color) {
   assert_gl();
 
   int loc = m_context.get_program().get_attrib_location("diffuse");

@@ -21,35 +21,25 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-ShrinkFade::ShrinkFade(const Vector& dest_, float fade_time_) :
-  m_dest(dest_),
-  m_fade_time(fade_time_),
-  m_accum_time(0),
-  m_initial_size(static_cast<float>(SCREEN_HEIGHT > SCREEN_WIDTH ? SCREEN_HEIGHT : SCREEN_WIDTH))
-{
-}
+ShrinkFade::ShrinkFade(const Vector& dest_, float fade_time_)
+    : m_dest(dest_),
+      m_fade_time(fade_time_),
+      m_accum_time(0),
+      m_initial_size(static_cast<float>(
+          SCREEN_HEIGHT > SCREEN_WIDTH ? SCREEN_HEIGHT : SCREEN_WIDTH)) {}
 
-void
-ShrinkFade::update(float dt_sec)
-{
+void ShrinkFade::update(float dt_sec) {
   m_accum_time += dt_sec;
-  if (m_accum_time > m_fade_time)
-    m_accum_time = m_fade_time;
+  if (m_accum_time > m_fade_time) m_accum_time = m_fade_time;
 }
 
-void
-ShrinkFade::draw(DrawingContext& context)
-{
+void ShrinkFade::draw(DrawingContext& context) {
   float progress = m_accum_time / m_fade_time;
   float diameter = 2 * m_initial_size * (1.0f - progress);
-  context.color().draw_inverse_ellipse(m_dest, Vector(1.1f * diameter, diameter),
-                                         Color(0, 0, 0), LAYER_GUI + 1);
+  context.color().draw_inverse_ellipse(
+      m_dest, Vector(1.1f * diameter, diameter), Color(0, 0, 0), LAYER_GUI + 1);
 }
 
-bool
-ShrinkFade::done() const
-{
-  return m_accum_time >= m_fade_time;
-}
+bool ShrinkFade::done() const { return m_accum_time >= m_fade_time; }
 
 /* EOF */

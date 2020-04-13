@@ -21,52 +21,48 @@
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
 
-ItemToggle::ItemToggle(const std::string& text_, bool* toggled, int id_) :
-  MenuItem(text_, id_),
-  m_get_func([toggled]{ return *toggled; }),
-  m_set_func([toggled](bool value){ *toggled = value; })
-{
-}
+ItemToggle::ItemToggle(const std::string& text_, bool* toggled, int id_)
+    : MenuItem(text_, id_),
+      m_get_func([toggled] { return *toggled; }),
+      m_set_func([toggled](bool value) { *toggled = value; }) {}
 
-ItemToggle::ItemToggle(const std::string& text_,
-                       std::function<bool()> get_func,
-                       std::function<void(bool)> set_func,
-                       int id_) :
-  MenuItem(text_, id_),
-  m_get_func(std::move(get_func)),
-  m_set_func(std::move(set_func))
-{
-}
+ItemToggle::ItemToggle(const std::string& text_, std::function<bool()> get_func,
+                       std::function<void(bool)> set_func, int id_)
+    : MenuItem(text_, id_),
+      m_get_func(std::move(get_func)),
+      m_set_func(std::move(set_func)) {}
 
-void
-ItemToggle::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active)
-{
-  context.color().draw_text(Resources::normal_font, get_text(),
-                            Vector(pos.x + 16, pos.y - (Resources::normal_font->get_height()/2)),
-                            ALIGN_LEFT, LAYER_GUI, active ? ColorScheme::Menu::active_color : get_color());
+void ItemToggle::draw(DrawingContext& context, const Vector& pos,
+                      int menu_width, bool active) {
+  context.color().draw_text(
+      Resources::normal_font, get_text(),
+      Vector(pos.x + 16, pos.y - (Resources::normal_font->get_height() / 2)),
+      ALIGN_LEFT, LAYER_GUI,
+      active ? ColorScheme::Menu::active_color : get_color());
 
   if (m_get_func()) {
-    context.color().draw_surface(Resources::checkbox_checked,
-                                 Vector(pos.x + static_cast<float>(menu_width) - 16.0f - static_cast<float>(Resources::checkbox->get_width()),
-                                        pos.y - 8.0f),
-                                 LAYER_GUI);
+    context.color().draw_surface(
+        Resources::checkbox_checked,
+        Vector(pos.x + static_cast<float>(menu_width) - 16.0f -
+                   static_cast<float>(Resources::checkbox->get_width()),
+               pos.y - 8.0f),
+        LAYER_GUI);
   } else {
-    context.color().draw_surface(Resources::checkbox,
-                                 Vector(pos.x + static_cast<float>(menu_width) - 16.0f - static_cast<float>(Resources::checkbox->get_width()),
-                                        pos.y - 8.0f),
-                                 LAYER_GUI);
+    context.color().draw_surface(
+        Resources::checkbox,
+        Vector(pos.x + static_cast<float>(menu_width) - 16.0f -
+                   static_cast<float>(Resources::checkbox->get_width()),
+               pos.y - 8.0f),
+        LAYER_GUI);
   }
 }
 
-int
-ItemToggle::get_width() const
-{
-  return static_cast<int>(Resources::normal_font->get_text_width(get_text())) + 16 + Resources::checkbox->get_width();
+int ItemToggle::get_width() const {
+  return static_cast<int>(Resources::normal_font->get_text_width(get_text())) +
+         16 + Resources::checkbox->get_width();
 }
 
-void
-ItemToggle::process_action(const MenuAction& action)
-{
+void ItemToggle::process_action(const MenuAction& action) {
   if (action == MenuAction::HIT) {
     m_set_func(!m_get_func());
   }

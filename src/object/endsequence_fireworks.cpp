@@ -1,5 +1,6 @@
 //  SuperTux - End Sequence: Tux walks right
-//  Copyright (C) 2007 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2007 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -20,34 +21,22 @@
 #include "supertux/screen_manager.hpp"
 #include "supertux/sector.hpp"
 
-EndSequenceFireworks::EndSequenceFireworks() :
-  EndSequence(),
-  endsequence_timer()
-{
-}
+EndSequenceFireworks::EndSequenceFireworks()
+    : EndSequence(), endsequence_timer() {}
 
-EndSequenceFireworks::~EndSequenceFireworks()
-{
-}
+EndSequenceFireworks::~EndSequenceFireworks() {}
 
-void
-EndSequenceFireworks::draw(DrawingContext& /*context*/)
-{
-}
+void EndSequenceFireworks::draw(DrawingContext& /*context*/) {}
 
-void
-EndSequenceFireworks::starting()
-{
+void EndSequenceFireworks::starting() {
   EndSequence::starting();
   endsequence_timer.start(7.3f * ScreenManager::current()->get_speed());
   Sector::get().add<Fireworks>();
 }
 
-void
-EndSequenceFireworks::running(float dt_sec)
-{
+void EndSequenceFireworks::running(float dt_sec) {
   EndSequence::running(dt_sec);
-  //Player& tux = *Sector::get().player;
+  // Player& tux = *Sector::get().player;
 
   if (tux_may_walk) {
     end_sequence_controller->press(Control::JUMP);
@@ -56,10 +45,6 @@ EndSequenceFireworks::running(float dt_sec)
   if (endsequence_timer.check()) isdone = true;
 }
 
-void
-EndSequenceFireworks::stopping()
-{
-  EndSequence::stopping();
-}
+void EndSequenceFireworks::stopping() { EndSequence::stopping(); }
 
 /* EOF */

@@ -1,5 +1,6 @@
 //  SuperTux
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -23,29 +24,31 @@
 #include "supertux/sector.hpp"
 #include "util/reader_mapping.hpp"
 
-Candle::Candle(const ReaderMapping& mapping) :
-  MovingSprite(mapping, "images/objects/candle/candle.sprite", LAYER_BACKGROUNDTILES+1, COLGROUP_DISABLED),
-  ExposedObject<Candle, scripting::Candle>(this),
-  burning(true),
-  flicker(true),
-  lightcolor(1.0f, 1.0f, 1.0f),
-  candle_light_1(SpriteManager::current()->create("images/objects/candle/candle-light-1.sprite")),
-  candle_light_2(SpriteManager::current()->create("images/objects/candle/candle-light-2.sprite"))
-{
+Candle::Candle(const ReaderMapping& mapping)
+    : MovingSprite(mapping, "images/objects/candle/candle.sprite",
+                   LAYER_BACKGROUNDTILES + 1, COLGROUP_DISABLED),
+      ExposedObject<Candle, scripting::Candle>(this),
+      burning(true),
+      flicker(true),
+      lightcolor(1.0f, 1.0f, 1.0f),
+      candle_light_1(SpriteManager::current()->create(
+          "images/objects/candle/candle-light-1.sprite")),
+      candle_light_2(SpriteManager::current()->create(
+          "images/objects/candle/candle-light-2.sprite")) {
   mapping.get("burning", burning, true);
   mapping.get("flicker", flicker, true);
   std::vector<float> vColor;
   if (!mapping.get("color", vColor)) vColor = {1.0f, 1.0f, 1.0f};
   mapping.get("layer", m_layer, 0);
 
-  //change the light color if defined
+  // change the light color if defined
   if (vColor.size() >= 3) {
     lightcolor = Color(vColor);
     candle_light_1->set_blend(Blend::ADD);
     candle_light_2->set_blend(Blend::ADD);
     candle_light_1->set_color(lightcolor);
     candle_light_2->set_color(lightcolor);
-    //the following allows the original candle appearance to be preserved
+    // the following allows the original candle appearance to be preserved
     candle_light_1->set_action("white");
     candle_light_2->set_action("white");
   }
@@ -55,21 +58,16 @@ Candle::Candle(const ReaderMapping& mapping) :
   } else {
     m_sprite->set_action("off");
   }
-
 }
 
-void
-Candle::after_editor_set()
-{
+void Candle::after_editor_set() {
   candle_light_1->set_color(lightcolor);
   candle_light_2->set_color(lightcolor);
 
   m_sprite->set_action(burning ? "on" : "off");
 }
 
-ObjectSettings
-Candle::get_settings()
-{
+ObjectSettings Candle::get_settings() {
   ObjectSettings result = MovingSprite::get_settings();
 
   result.add_bool(_("Burning"), &burning, "burning", true);
@@ -77,59 +75,47 @@ Candle::get_settings()
   result.add_color(_("Color"), &lightcolor, "color", Color::WHITE);
   result.add_int(_("Layer"), &m_layer, "layer", 0);
 
-  result.reorder({"burning", "flicker", "name", "sprite", "color", "layer", "x", "y"});
+  result.reorder(
+      {"burning", "flicker", "name", "sprite", "color", "layer", "x", "y"});
 
   return result;
 }
 
-void
-Candle::draw(DrawingContext& context)
-{
+void Candle::draw(DrawingContext& context) {
   // draw regular sprite
   m_sprite->draw(context.color(), get_pos(), m_layer);
 
   // draw on lightmap
   if (burning) {
-    //Vector pos = get_pos() + (bbox.get_size() - candle_light_1->get_size()) / 2;
+    // Vector pos = get_pos() + (bbox.get_size() - candle_light_1->get_size()) /
+    // 2;
     // draw approx. 1 in 10 frames darker. Makes the candle flicker
     if (gameRandom.rand(10) != 0 || !flicker) {
-      //context.color().draw_surface(candle_light_1, pos, layer);
+      // context.color().draw_surface(candle_light_1, pos, layer);
       candle_light_1->draw(context.light(), m_col.m_bbox.get_middle(), m_layer);
     } else {
-      //context.color().draw_surface(candle_light_2, pos, layer);
+      // context.color().draw_surface(candle_light_2, pos, layer);
       candle_light_2->draw(context.light(), m_col.m_bbox.get_middle(), m_layer);
     }
   }
 }
 
-HitResponse
-Candle::collision(GameObject&, const CollisionHit& )
-{
+HitResponse Candle::collision(GameObject&, const CollisionHit&) {
   return FORCE_MOVE;
 }
 
-void
-Candle::puff_smoke()
-{
+void Candle::puff_smoke() {
   Vector ppos = m_col.m_bbox.get_middle();
   Vector pspeed = Vector(0, -150);
-  Vector paccel = Vector(0,0);
+  Vector paccel = Vector(0, 0);
   Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
-                                         "default",
-                                         ppos, ANCHOR_MIDDLE,
-                                         pspeed, paccel,
-                                         LAYER_BACKGROUNDTILES+2);
+                                    "default", ppos, ANCHOR_MIDDLE, pspeed,
+                                    paccel, LAYER_BACKGROUNDTILES + 2);
 }
 
-bool
-Candle::get_burning() const
-{
-  return burning;
-}
+bool Candle::get_burning() const { return burning; }
 
-void
-Candle::set_burning(bool burning_)
-{
+void Candle::set_burning(bool burning_) {
   if (burning == burning_) return;
   burning = burning_;
   if (burning_) {
@@ -137,7 +123,7 @@ Candle::set_burning(bool burning_)
   } else {
     m_sprite->set_action("off");
   }
-  //puff smoke for flickering light sources only
+  // puff smoke for flickering light sources only
   if (flicker) puff_smoke();
 }
 

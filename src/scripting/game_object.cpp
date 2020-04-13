@@ -21,8 +21,7 @@
 
 namespace scripting {
 
-GameObjectManager& get_game_object_manager()
-{
+GameObjectManager& get_game_object_manager() {
   using namespace worldmap;
 
   if (::Sector::current() != nullptr) {
@@ -34,6 +33,6 @@ GameObjectManager& get_game_object_manager()
   }
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

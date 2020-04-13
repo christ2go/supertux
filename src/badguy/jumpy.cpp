@@ -21,45 +21,36 @@
 #include "object/player.hpp"
 #include "sprite/sprite.hpp"
 
-static const float JUMPYSPEED=-600;
-static const float JUMPY_MID_TOLERANCE=4;
-static const float JUMPY_LOW_TOLERANCE=2;
+static const float JUMPYSPEED = -600;
+static const float JUMPY_MID_TOLERANCE = 4;
+static const float JUMPY_LOW_TOLERANCE = 2;
 
-Jumpy::Jumpy(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/snowjumpy/snowjumpy.sprite"),
-  pos_groundhit(),
-  groundhit_pos_set(false)
-{
+Jumpy::Jumpy(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/snowjumpy/snowjumpy.sprite"),
+      pos_groundhit(),
+      groundhit_pos_set(false) {
   m_sprite->set_action("left-middle");
   // TODO create a nice sound for this...
-  //SoundManager::current()->preload("sounds/skid.wav");
+  // SoundManager::current()->preload("sounds/skid.wav");
 }
 
-void
-Jumpy::collision_solid(const CollisionHit& chit)
-{
-  hit(chit);
-}
+void Jumpy::collision_solid(const CollisionHit& chit) { hit(chit); }
 
-HitResponse
-Jumpy::collision_badguy(BadGuy& , const CollisionHit& chit)
-{
+HitResponse Jumpy::collision_badguy(BadGuy&, const CollisionHit& chit) {
   return hit(chit);
 }
 
-HitResponse
-Jumpy::hit(const CollisionHit& chit)
-{
+HitResponse Jumpy::hit(const CollisionHit& chit) {
   if (chit.bottom) {
-    if (!groundhit_pos_set)
-    {
+    if (!groundhit_pos_set) {
       pos_groundhit = get_pos();
       groundhit_pos_set = true;
     }
 
-    m_physic.set_velocity_y((m_frozen || get_state() != STATE_ACTIVE) ? 0 : JUMPYSPEED);
+    m_physic.set_velocity_y(
+        (m_frozen || get_state() != STATE_ACTIVE) ? 0 : JUMPYSPEED);
     // TODO create a nice sound for this...
-    //SoundManager::current()->play("sounds/skid.wav");
+    // SoundManager::current()->play("sounds/skid.wav");
     update_on_ground_flag(chit);
   } else if (chit.top) {
     m_physic.set_velocity_y(0);
@@ -68,52 +59,40 @@ Jumpy::hit(const CollisionHit& chit)
   return CONTINUE;
 }
 
-void
-Jumpy::active_update(float dt_sec)
-{
+void Jumpy::active_update(float dt_sec) {
   BadGuy::active_update(dt_sec);
 
-  if (m_frozen)
-    return;
+  if (m_frozen) return;
 
   auto player = get_nearest_player();
-  if (player)
-  {
-    m_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT : Direction::LEFT;
+  if (player) {
+    m_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT
+                                                : Direction::LEFT;
   }
 
-  if (!groundhit_pos_set)
-  {
-    m_sprite->set_action(m_dir == Direction::LEFT ? "left-middle" : "right-middle");
+  if (!groundhit_pos_set) {
+    m_sprite->set_action(m_dir == Direction::LEFT ? "left-middle"
+                                                  : "right-middle");
     return;
   }
 
-  if ( get_pos().y < (pos_groundhit.y - JUMPY_MID_TOLERANCE ) )
+  if (get_pos().y < (pos_groundhit.y - JUMPY_MID_TOLERANCE))
     m_sprite->set_action(m_dir == Direction::LEFT ? "left-up" : "right-up");
-  else if ( get_pos().y >= (pos_groundhit.y - JUMPY_MID_TOLERANCE) &&
-            get_pos().y < (pos_groundhit.y - JUMPY_LOW_TOLERANCE) )
-    m_sprite->set_action(m_dir == Direction::LEFT ? "left-middle" : "right-middle");
+  else if (get_pos().y >= (pos_groundhit.y - JUMPY_MID_TOLERANCE) &&
+           get_pos().y < (pos_groundhit.y - JUMPY_LOW_TOLERANCE))
+    m_sprite->set_action(m_dir == Direction::LEFT ? "left-middle"
+                                                  : "right-middle");
   else
     m_sprite->set_action(m_dir == Direction::LEFT ? "left-down" : "right-down");
 }
 
-void
-Jumpy::freeze()
-{
+void Jumpy::freeze() {
   BadGuy::freeze();
   m_physic.set_velocity_y(std::max(0.0f, m_physic.get_velocity_y()));
 }
 
-bool
-Jumpy::is_freezable() const
-{
-  return true;
-}
+bool Jumpy::is_freezable() const { return true; }
 
-bool
-Jumpy::is_flammable() const
-{
-  return true;
-}
+bool Jumpy::is_flammable() const { return true; }
 
 /* EOF */

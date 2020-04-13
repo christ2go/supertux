@@ -23,67 +23,50 @@
 #include "util/writer.hpp"
 #include "video/color.hpp"
 
-GameObject::GameObject() :
-  m_name(),
-  m_uid(),
-  m_scheduled_for_removal(false),
-  m_components(),
-  m_remove_listeners()
-{
-}
+GameObject::GameObject()
+    : m_name(),
+      m_uid(),
+      m_scheduled_for_removal(false),
+      m_components(),
+      m_remove_listeners() {}
 
-GameObject::GameObject(const std::string& name) :
-  m_name(name),
-  m_uid(),
-  m_scheduled_for_removal(false),
-  m_components(),
-  m_remove_listeners()
-{
-}
+GameObject::GameObject(const std::string& name)
+    : m_name(name),
+      m_uid(),
+      m_scheduled_for_removal(false),
+      m_components(),
+      m_remove_listeners() {}
 
-GameObject::GameObject(const ReaderMapping& reader) :
-  GameObject()
-{
+GameObject::GameObject(const ReaderMapping& reader) : GameObject() {
   reader.get("name", m_name, "");
 }
 
-GameObject::~GameObject()
-{
+GameObject::~GameObject() {
   for (const auto& entry : m_remove_listeners) {
     entry->object_removed(this);
   }
   m_remove_listeners.clear();
 }
 
-void
-GameObject::add_remove_listener(ObjectRemoveListener* listener)
-{
+void GameObject::add_remove_listener(ObjectRemoveListener* listener) {
   m_remove_listeners.push_back(listener);
 }
 
-void
-GameObject::del_remove_listener(ObjectRemoveListener* listener)
-{
+void GameObject::del_remove_listener(ObjectRemoveListener* listener) {
   m_remove_listeners.erase(std::remove(m_remove_listeners.begin(),
-                                       m_remove_listeners.end(),
-                                       listener),
+                                       m_remove_listeners.end(), listener),
                            m_remove_listeners.end());
 }
 
-void
-GameObject::save(Writer& writer)
-{
+void GameObject::save(Writer& writer) {
   auto settings = get_settings();
-  for (const auto& option_ptr : settings.get_options())
-  {
+  for (const auto& option_ptr : settings.get_options()) {
     const auto& option = *option_ptr;
     option.save(writer);
   }
 }
 
-ObjectSettings
-GameObject::get_settings()
-{
+ObjectSettings GameObject::get_settings() {
   ObjectSettings result(get_display_name());
   result.add_text(_("Name"), &m_name, "name", std::string());
   return result;

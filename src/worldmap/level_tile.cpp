@@ -1,6 +1,7 @@
 //  SuperTux
 //  Copyright (C) 2004 Ingo Ruhnke <grumbel@gmail.com>
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -28,21 +29,20 @@
 
 namespace worldmap {
 
-LevelTile::LevelTile(const std::string& basedir, const ReaderMapping& mapping) :
-  GameObject(mapping),
-  m_pos(),
-  m_basedir(basedir),
-  m_level_filename(),
-  m_title(),
-  m_auto_play(false),
-  m_target_time(),
-  m_extro_script(),
-  m_solved(false),
-  m_perfect(false),
-  m_statistics(),
-  m_sprite(),
-  m_title_color(WorldMap::level_title_color)
-{
+LevelTile::LevelTile(const std::string& basedir, const ReaderMapping& mapping)
+    : GameObject(mapping),
+      m_pos(),
+      m_basedir(basedir),
+      m_level_filename(),
+      m_title(),
+      m_auto_play(false),
+      m_target_time(),
+      m_extro_script(),
+      m_solved(false),
+      m_perfect(false),
+      m_statistics(),
+      m_sprite(),
+      m_title_color(WorldMap::level_title_color) {
   if (!mapping.get("level", m_level_filename)) {
     // Hack for backward compatibility with 0.5.x level
     m_level_filename = m_name;
@@ -67,53 +67,42 @@ LevelTile::LevelTile(const std::string& basedir, const ReaderMapping& mapping) :
     m_basedir = "";
   }
 
-  if (!PHYSFS_exists(FileSystem::join(m_basedir, m_level_filename).c_str()))
-  {
+  if (!PHYSFS_exists(FileSystem::join(m_basedir, m_level_filename).c_str())) {
     log_warning << "level file '" << m_level_filename
-                << "' does not exist and will not be added to the worldmap" << std::endl;
+                << "' does not exist and will not be added to the worldmap"
+                << std::endl;
     return;
   }
 }
 
-LevelTile::~LevelTile()
-{
+LevelTile::~LevelTile() {}
+
+void LevelTile::draw(DrawingContext& context) {
+  m_sprite->draw(context.color(), m_pos * 32 + Vector(16, 16),
+                 LAYER_OBJECTS - 1);
 }
 
-void
-LevelTile::draw(DrawingContext& context)
-{
-  m_sprite->draw(context.color(), m_pos * 32 + Vector(16, 16), LAYER_OBJECTS - 1);
-}
+void LevelTile::update(float) {}
 
-void
-LevelTile::update(float )
-{
-}
-
-void
-LevelTile::update_sprite_action()
-{
+void LevelTile::update_sprite_action() {
   if (!m_solved) {
     m_sprite->set_action("default");
   } else {
-    m_sprite->set_action((m_sprite->has_action("perfect") && m_perfect) ? "perfect" : "solved");
+    m_sprite->set_action(
+        (m_sprite->has_action("perfect") && m_perfect) ? "perfect" : "solved");
   }
 }
 
-void
-LevelTile::set_solved(bool v)
-{
+void LevelTile::set_solved(bool v) {
   m_solved = v;
   update_sprite_action();
 }
 
-void
-LevelTile::set_perfect(bool v)
-{
+void LevelTile::set_perfect(bool v) {
   m_perfect = v;
   update_sprite_action();
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

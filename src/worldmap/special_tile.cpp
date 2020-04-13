@@ -1,6 +1,7 @@
 //  SuperTux
 //  Copyright (C) 2004 Ingo Ruhnke <grumbel@gmail.com>
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,23 +25,24 @@
 
 namespace worldmap {
 
-SpecialTile::SpecialTile(const ReaderMapping& mapping) :
-  m_pos(),
-  m_sprite(),
-  m_map_message(),
-  m_passive_message(false),
-  m_script(),
-  m_invisible(false),
-  m_apply_action_north(true),
-  m_apply_action_east(true),
-  m_apply_action_south(true),
-  m_apply_action_west(true)
-{
+SpecialTile::SpecialTile(const ReaderMapping& mapping)
+    : m_pos(),
+      m_sprite(),
+      m_map_message(),
+      m_passive_message(false),
+      m_script(),
+      m_invisible(false),
+      m_apply_action_north(true),
+      m_apply_action_east(true),
+      m_apply_action_south(true),
+      m_apply_action_west(true) {
   if (!mapping.get("x", m_pos.x)) {
-    log_warning << "X coordinate of special tile not set, defaulting to 0" << std::endl;
+    log_warning << "X coordinate of special tile not set, defaulting to 0"
+                << std::endl;
   }
   if (!mapping.get("y", m_pos.y)) {
-    log_warning << "Y coordinate of special tile not set, defaulting to 0" << std::endl;
+    log_warning << "Y coordinate of special tile not set, defaulting to 0"
+                << std::endl;
   }
   if (!mapping.get("invisible-tile", m_invisible)) {
     // Ignore attribute if it's not specified. Tile is visible.
@@ -49,7 +51,8 @@ SpecialTile::SpecialTile(const ReaderMapping& mapping) :
   if (!m_invisible) {
     std::string spritefile = "";
     if (!mapping.get("sprite", spritefile)) {
-      log_warning << "No sprite specified for visible special tile." << std::endl;
+      log_warning << "No sprite specified for visible special tile."
+                  << std::endl;
     }
     m_sprite = SpriteManager::current()->create(spritefile);
   }
@@ -84,24 +87,17 @@ SpecialTile::SpecialTile(const ReaderMapping& mapping) :
   }
 }
 
-SpecialTile::~SpecialTile()
-{
+SpecialTile::~SpecialTile() {}
+
+void SpecialTile::draw(DrawingContext& context) {
+  if (m_invisible) return;
+
+  m_sprite->draw(context.color(), m_pos * 32 + Vector(16, 16),
+                 LAYER_OBJECTS - 1);
 }
 
-void
-SpecialTile::draw(DrawingContext& context)
-{
-  if (m_invisible)
-    return;
+void SpecialTile::update(float) {}
 
-  m_sprite->draw(context.color(), m_pos*32 + Vector(16, 16), LAYER_OBJECTS - 1);
-}
-
-void
-SpecialTile::update(float )
-{
-}
-
-}
+}  // namespace worldmap
 
 /* EOF */

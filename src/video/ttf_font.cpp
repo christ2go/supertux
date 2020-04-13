@@ -27,52 +27,46 @@
 #include "video/surface.hpp"
 #include "video/ttf_surface_manager.hpp"
 
-TTFFont::TTFFont(const std::string& filename, int font_size, float line_spacing, int shadow_size, int border) :
-  m_font(),
-  m_filename(filename),
-  m_font_size(font_size),
-  m_line_spacing(line_spacing),
-  m_shadow_size(shadow_size),
-  m_border(border)
-{
+TTFFont::TTFFont(const std::string& filename, int font_size, float line_spacing,
+                 int shadow_size, int border)
+    : m_font(),
+      m_filename(filename),
+      m_font_size(font_size),
+      m_line_spacing(line_spacing),
+      m_shadow_size(shadow_size),
+      m_border(border) {
   m_font = TTF_OpenFontRW(get_physfs_SDLRWops(m_filename), 1, font_size);
-  if (!m_font)
-  {
+  if (!m_font) {
     std::ostringstream msg;
     msg << "Couldn't load TTFFont: " << m_filename << ": " << SDL_GetError();
     throw std::runtime_error(msg.str());
   }
 }
 
-TTFFont::~TTFFont()
-{
-  TTF_CloseFont(m_font);
-}
+TTFFont::~TTFFont() { TTF_CloseFont(m_font); }
 
-float
-TTFFont::get_text_width(const std::string& text) const
-{
-  if (text.empty())
-    return 0.0f;
+float TTFFont::get_text_width(const std::string& text) const {
+  if (text.empty()) return 0.0f;
 
   float max_width = 0.0f;
 
   LineIterator iter(text);
-  while (iter.next())
-  {
+  while (iter.next()) {
     const std::string& line = iter.get();
 
     // Since get_cached_surface_width() takes a surface from the cache
     // instead of generating it from scratch,
     // it should be faster than doing a whole layout.
-    int line_width = TTFSurfaceManager::current()->get_cached_surface_width(*this, line);
+    int line_width =
+        TTFSurfaceManager::current()->get_cached_surface_width(*this, line);
     if (line_width < 0) {
       // Not in cache
       int w = 0;
       int h = 0;
       int ret = TTF_SizeUTF8(m_font, line.c_str(), &w, &h);
       if (ret < 0) {
-        std::cerr << "TTFFont::get_text_width(): " << TTF_GetError() << std::endl;
+        std::cerr << "TTFFont::get_text_width(): " << TTF_GetError()
+                  << std::endl;
       }
       line_width = w;
     }
@@ -82,58 +76,55 @@ TTFFont::get_text_width(const std::string& text) const
   return max_width;
 }
 
-float
-TTFFont::get_text_height(const std::string& text) const
-{
-  if (text.empty())
-    return 0.0f;
+float TTFFont::get_text_height(const std::string& text) const {
+  if (text.empty()) return 0.0f;
 
   // since UTF8 multibyte characters are decoded with values
   // outside the ASCII range there is no risk of overlapping and
   // thus we don't need to decode the utf-8 string
-  return std::accumulate(text.begin(), text.end(), get_height(), [this] (float accumulator, const char c) {
-    return accumulator += (c == '\n' ? get_height() : 0.0f);
-  });
+  return std::accumulate(text.begin(), text.end(), get_height(),
+                         [this](float accumulator, const char c) {
+                           return accumulator +=
+                                  (c == '\n' ? get_height() : 0.0f);
+                         });
 }
 
-void
-TTFFont::draw_text(Canvas& canvas, const std::string& text,
-                   const Vector& pos, FontAlignment alignment, int layer, const Color& color)
+void TTFFont::draw_text(Canvas& canvas, const std::string& text,
+                        const Vector& pos, FontAlignment alignment, int layer,
+                        const Color& color)
 
 {
-  float last_y = pos.y - (static_cast<float>(TTF_FontHeight(m_font)) - get_height()) / 2.0f;
+  float last_y =
+      pos.y -
+      (static_cast<float>(TTF_FontHeight(m_font)) - get_height()) / 2.0f;
 
   LineIterator iter(text);
-  while (iter.next())
-  {
+  while (iter.next()) {
     const std::string& line = iter.get();
 
-    if (!line.empty())
-    {
-      TTFSurfacePtr ttf_surface = TTFSurfaceManager::current()->create_surface(*this, line);
+    if (!line.empty()) {
+      TTFSurfacePtr ttf_surface =
+          TTFSurfaceManager::current()->create_surface(*this, line);
 
       Vector new_pos(pos.x, last_y);
 
-      if (alignment == ALIGN_CENTER)
-      {
+      if (alignment == ALIGN_CENTER) {
         new_pos.x -= static_cast<float>(ttf_surface->get_width()) / 2.0f;
-      }
-      else if (alignment == ALIGN_RIGHT)
-      {
+      } else if (alignment == ALIGN_RIGHT) {
         new_pos.x -= static_cast<float>(ttf_surface->get_width());
       }
 
       // draw text
-      canvas.draw_surface(ttf_surface->get_surface(), new_pos.floor(), 0.0f, color, Blend(), layer);
+      canvas.draw_surface(ttf_surface->get_surface(), new_pos.floor(), 0.0f,
+                          color, Blend(), layer);
     }
 
     last_y += get_height();
   }
 }
 
-std::string
-TTFFont::wrap_to_width(const std::string& text, float width, std::string* overflow)
-{
+std::string TTFFont::wrap_to_width(const std::string& text, float width,
+                                   std::string* overflow) {
   std::string s = text;
 
   // if text is already smaller, return full text
@@ -142,12 +133,13 @@ TTFFont::wrap_to_width(const std::string& text, float width, std::string* overfl
     return s;
   }
 
-  // if we can find a whitespace character to break at, return text up to this character
+  // if we can find a whitespace character to break at, return text up to this
+  // character
   for (int i = static_cast<int>(s.length()) - 1; i >= 0; i--) {
-    std::string s2 = s.substr(0,i);
+    std::string s2 = s.substr(0, i);
     if (s[i] != ' ') continue;
     if (get_text_width(s2) <= width) {
-      if (overflow) *overflow = s.substr(i+1);
+      if (overflow) *overflow = s.substr(i + 1);
       return s.substr(0, i);
     }
   }
@@ -155,11 +147,10 @@ TTFFont::wrap_to_width(const std::string& text, float width, std::string* overfl
   // hard-wrap at width, taking care of multibyte characters
   unsigned int char_bytes = 1;
   for (int i = 0; i < static_cast<int>(s.length()); i += char_bytes) {
-
     // calculate the number of bytes in the character
     char_bytes = 1;
-    auto iter = s.begin() + i + 1; // iter points to next byte
-    while ( iter != s.end() && (*iter & 128) && !(*iter & 64) ) {
+    auto iter = s.begin() + i + 1;  // iter points to next byte
+    while (iter != s.end() && (*iter & 128) && !(*iter & 64)) {
       // this is a "continuation" byte in the form 10xxxxxx
       ++iter;
       ++char_bytes;
@@ -167,9 +158,9 @@ TTFFont::wrap_to_width(const std::string& text, float width, std::string* overfl
 
     // check whether text now goes over allowed width, and if so
     // return everything up to the character and put the rest in the overflow
-    std::string s2 = s.substr(0,i+char_bytes);
+    std::string s2 = s.substr(0, i + char_bytes);
     if (get_text_width(s2) > width) {
-      if (i == 0) i += char_bytes; // edge case when even one char is too wide
+      if (i == 0) i += char_bytes;  // edge case when even one char is too wide
       if (overflow) *overflow = s.substr(i);
       return s.substr(0, i);
     }

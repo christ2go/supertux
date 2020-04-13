@@ -1,5 +1,6 @@
 //  SuperTux - Mole Badguy
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -25,46 +26,39 @@
 #include "sprite/sprite.hpp"
 #include "supertux/sector.hpp"
 
-static const float MOLE_WAIT_TIME = 0.2f; /**< time to wait before and after throwing */
-static const float THROW_TIME = 4.6f; /**< time to spend throwing */
+static const float MOLE_WAIT_TIME =
+    0.2f; /**< time to wait before and after throwing */
+static const float THROW_TIME = 4.6f;  /**< time to spend throwing */
 static const float THROW_INTERVAL = 1; /**< time between two thrown rocks */
-static const float THROW_VELOCITY = 400; /**< initial velocity of thrown rocks */
+static const float THROW_VELOCITY =
+    400; /**< initial velocity of thrown rocks */
 
-Mole::Mole(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/mole/mole.sprite", LAYER_TILES-1),
-  state(PRE_THROWING),
-  timer(),
-  throw_timer()
-{
+Mole::Mole(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/mole/mole.sprite", LAYER_TILES - 1),
+      state(PRE_THROWING),
+      timer(),
+      throw_timer() {
   m_physic.enable_gravity(false);
   SoundManager::current()->preload("sounds/fall.wav");
   SoundManager::current()->preload("sounds/squish.wav");
   SoundManager::current()->preload("sounds/dartfire.wav");
 }
 
-void
-Mole::activate()
-{
+void Mole::activate() {
   if (state != DEAD) set_state(PRE_THROWING);
 }
 
-void
-Mole::kill_fall()
-{
+void Mole::kill_fall() {
   set_state(DEAD);
   SoundManager::current()->play("sounds/fall.wav", get_pos());
   run_dead_script();
 }
 
-HitResponse
-Mole::collision_badguy(BadGuy& , const CollisionHit& )
-{
+HitResponse Mole::collision_badguy(BadGuy&, const CollisionHit&) {
   return FORCE_MOVE;
 }
 
-bool
-Mole::collision_squished(GameObject& )
-{
+bool Mole::collision_squished(GameObject&) {
   if (m_frozen) {
     unfreeze();
   }
@@ -75,9 +69,7 @@ Mole::collision_squished(GameObject& )
   return true;
 }
 
-void
-Mole::throw_rock()
-{
+void Mole::throw_rock() {
   float angle = math::radians(gameRandom.randf(90.0f - 15.0f, 90.0f + 15.0f));
   float vx = cosf(angle) * THROW_VELOCITY;
   float vy = -sinf(angle) * THROW_VELOCITY;
@@ -86,13 +78,10 @@ Mole::throw_rock()
   Sector::get().add<MoleRock>(m_col.m_bbox.get_middle(), Vector(vx, vy), this);
 }
 
-void
-Mole::active_update(float dt_sec)
-{
+void Mole::active_update(float dt_sec) {
   BadGuy::active_update(dt_sec);
 
-  if (m_frozen)
-    return;
+  if (m_frozen) return;
 
   switch (state) {
     case PRE_THROWING:
@@ -127,20 +116,12 @@ Mole::active_update(float dt_sec)
     case DEAD:
       break;
   }
-
 }
 
-bool
-Mole::is_freezable() const
-{
-  return true;
-}
+bool Mole::is_freezable() const { return true; }
 
-void
-Mole::set_state(MoleState new_state)
-{
-  if (m_frozen)
-    return;
+void Mole::set_state(MoleState new_state) {
+  if (m_frozen) return;
 
   switch (new_state) {
     case PRE_THROWING:
@@ -176,8 +157,7 @@ Mole::set_state(MoleState new_state)
   state = new_state;
 }
 
-void
-Mole::ignite() {
+void Mole::ignite() {
   set_state(BURNING);
   run_dead_script();
   SoundManager::current()->play("sounds/fire.ogg", get_pos());

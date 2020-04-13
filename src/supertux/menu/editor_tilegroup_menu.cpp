@@ -21,8 +21,7 @@
 #include "gui/menu_manager.hpp"
 #include "util/gettext.hpp"
 
-EditorTilegroupMenu::EditorTilegroupMenu()
-{
+EditorTilegroupMenu::EditorTilegroupMenu() {
   add_label(_("Tiles"));
   add_hl();
 
@@ -33,11 +32,10 @@ EditorTilegroupMenu::EditorTilegroupMenu()
   }
 
   add_hl();
-  add_entry(-1,_("Cancel"));
+  add_entry(-1, _("Cancel"));
 }
 
-EditorTilegroupMenu::~EditorTilegroupMenu()
-{
+EditorTilegroupMenu::~EditorTilegroupMenu() {
   auto editor = Editor::current();
   if (editor == nullptr) {
     return;
@@ -45,11 +43,8 @@ EditorTilegroupMenu::~EditorTilegroupMenu()
   editor->m_reactivate_request = true;
 }
 
-void
-EditorTilegroupMenu::menu_action(MenuItem& item)
-{
-  if (item.get_id() >= 0)
-  {
+void EditorTilegroupMenu::menu_action(MenuItem& item) {
+  if (item.get_id() >= 0) {
     Editor::current()->select_tilegroup(item.get_id());
   }
   MenuManager::instance().clear_menu_stack();

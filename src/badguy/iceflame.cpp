@@ -1,5 +1,5 @@
-//  SuperTux badguy - Iceflame a flame-like enemy that can be killed with fireballs
-//  Copyright (C) 2013 LMH <lmh.0013@gmail.com>
+//  SuperTux badguy - Iceflame a flame-like enemy that can be killed with
+//  fireballs Copyright (C) 2013 LMH <lmh.0013@gmail.com>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -26,46 +26,32 @@
 #include "sprite/sprite_manager.hpp"
 #include "supertux/sector.hpp"
 
-Iceflame::Iceflame(const ReaderMapping& reader) :
-  Flame(reader)
-{
+Iceflame::Iceflame(const ReaderMapping& reader) : Flame(reader) {
   m_lightsprite->set_color(Color(0.00f, 0.13f, 0.18f));
-  m_sprite = SpriteManager::current()->create("images/creatures/flame/iceflame.sprite");
+  m_sprite = SpriteManager::current()->create(
+      "images/creatures/flame/iceflame.sprite");
 }
 
-void
-Iceflame::active_update(float dt_sec)
-{
+void Iceflame::active_update(float dt_sec) {
   Flame::active_update(dt_sec);
   m_sprite->set_angle(math::degrees(angle) * 3.0f);
 }
 
-void
-Iceflame::ignite()
-{
+void Iceflame::ignite() {
   SoundManager::current()->play("sounds/sizzle.ogg", get_pos());
   m_sprite->set_action("fade", 1);
   Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
-                                         "default",
-                                         m_col.m_bbox.get_middle(), ANCHOR_MIDDLE,
-                                         Vector(0, -150), Vector(0,0),
-                                         LAYER_BACKGROUNDTILES+2);
+                                    "default", m_col.m_bbox.get_middle(),
+                                    ANCHOR_MIDDLE, Vector(0, -150),
+                                    Vector(0, 0), LAYER_BACKGROUNDTILES + 2);
   set_group(COLGROUP_DISABLED);
 
   // start dead-script
   run_dead_script();
 }
 
-bool
-Iceflame::is_flammable() const
-{
-  return true;
-}
+bool Iceflame::is_flammable() const { return true; }
 
-bool
-Iceflame::is_freezable() const
-{
-  return false;
-}
+bool Iceflame::is_freezable() const { return false; }
 
 /* EOF */

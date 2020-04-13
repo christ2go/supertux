@@ -24,36 +24,29 @@ static const float JUMPSPEED = -450;
 static const float BSNOWBALL_WALKSPEED = 80;
 
 BouncingSnowball::BouncingSnowball(const ReaderMapping& reader)
-  : BadGuy(reader, "images/creatures/bouncing_snowball/bouncing_snowball.sprite")
-{
-}
+    : BadGuy(reader,
+             "images/creatures/bouncing_snowball/bouncing_snowball.sprite") {}
 
-void
-BouncingSnowball::initialize()
-{
-  m_physic.set_velocity_x(m_dir == Direction::LEFT ? -BSNOWBALL_WALKSPEED : BSNOWBALL_WALKSPEED);
+void BouncingSnowball::initialize() {
+  m_physic.set_velocity_x(m_dir == Direction::LEFT ? -BSNOWBALL_WALKSPEED
+                                                   : BSNOWBALL_WALKSPEED);
   m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right");
 }
 
-bool
-BouncingSnowball::collision_squished(GameObject& object)
-{
+bool BouncingSnowball::collision_squished(GameObject& object) {
   m_sprite->set_action("squished");
   kill_squished(object);
   return true;
 }
 
-void
-BouncingSnowball::collision_solid(const CollisionHit& hit)
-{
-  if (m_sprite->get_action() == "squished")
-  {
+void BouncingSnowball::collision_solid(const CollisionHit& hit) {
+  if (m_sprite->get_action() == "squished") {
     return;
   }
 
   if (hit.bottom) {
     if (get_state() == STATE_ACTIVE) {
-      float bounce_speed = -m_physic.get_velocity_y()*0.8f;
+      float bounce_speed = -m_physic.get_velocity_y() * 0.8f;
       m_physic.set_velocity_y(std::min(JUMPSPEED, bounce_speed));
     } else {
       m_physic.set_velocity_y(0);
@@ -64,24 +57,21 @@ BouncingSnowball::collision_solid(const CollisionHit& hit)
 
   // left or right collision
   // The direction must correspond, else we got fake bounces on slopes.
-  if ((hit.left && m_dir == Direction::LEFT) || (hit.right && m_dir == Direction::RIGHT)) {
+  if ((hit.left && m_dir == Direction::LEFT) ||
+      (hit.right && m_dir == Direction::RIGHT)) {
     m_dir = m_dir == Direction::LEFT ? Direction::RIGHT : Direction::LEFT;
     m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right");
     m_physic.set_velocity_x(-m_physic.get_velocity_x());
   }
-
 }
 
-HitResponse
-BouncingSnowball::collision_badguy(BadGuy& , const CollisionHit& hit)
-{
+HitResponse BouncingSnowball::collision_badguy(BadGuy&,
+                                               const CollisionHit& hit) {
   collision_solid(hit);
   return CONTINUE;
 }
 
-void
-BouncingSnowball::after_editor_set()
-{
+void BouncingSnowball::after_editor_set() {
   BadGuy::after_editor_set();
   m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right");
 }

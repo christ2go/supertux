@@ -41,15 +41,14 @@ namespace {
 const float DEFAULT_SPEED = 20;
 const float SCROLL = 60;
 
-} // namespace
+}  // namespace
 
-TextScrollerScreen::TextScrollerScreen(const std::string& filename) :
-  m_defaultspeed(DEFAULT_SPEED),
-  m_music(),
-  m_background(),
-  m_text_scroller(),
-  m_fading(false)
-{
+TextScrollerScreen::TextScrollerScreen(const std::string& filename)
+    : m_defaultspeed(DEFAULT_SPEED),
+      m_music(),
+      m_background(),
+      m_text_scroller(),
+      m_fading(false) {
   std::string background_file;
 
   try {
@@ -80,20 +79,15 @@ TextScrollerScreen::TextScrollerScreen(const std::string& filename) :
   m_background = Surface::from_file("images/background/" + background_file);
 }
 
-TextScrollerScreen::~TextScrollerScreen()
-{
-}
+TextScrollerScreen::~TextScrollerScreen() {}
 
-void
-TextScrollerScreen::setup()
-{
+void TextScrollerScreen::setup() {
   SoundManager::current()->play_music(m_music);
-  ScreenManager::current()->set_screen_fade(std::make_unique<FadeToBlack>(FadeToBlack::FADEIN, 0.5));
+  ScreenManager::current()->set_screen_fade(
+      std::make_unique<FadeToBlack>(FadeToBlack::FADEIN, 0.5));
 }
 
-void
-TextScrollerScreen::update(float dt_sec, const Controller& controller)
-{
+void TextScrollerScreen::update(float dt_sec, const Controller& controller) {
   if (controller.hold(Control::UP)) {
     m_text_scroller->set_speed(-m_defaultspeed * 5);
   } else if (controller.hold(Control::DOWN)) {
@@ -105,56 +99,55 @@ TextScrollerScreen::update(float dt_sec, const Controller& controller)
   if ((controller.pressed(Control::JUMP) ||
        controller.pressed(Control::ACTION) ||
        controller.pressed(Control::MENU_SELECT)) &&
-      !(controller.pressed(Control::UP))) { // prevent skipping if jump with up is enabled
+      !(controller.pressed(
+          Control::UP))) {  // prevent skipping if jump with up is enabled
     m_text_scroller->scroll(SCROLL);
   }
 
   if (controller.pressed(Control::START) ||
       controller.pressed(Control::ESCAPE)) {
-    ScreenManager::current()->pop_screen(std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5));
+    ScreenManager::current()->pop_screen(
+        std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5));
   }
 
-  { // close when done
-    if (m_text_scroller->is_finished() && !m_fading)
-    {
+  {  // close when done
+    if (m_text_scroller->is_finished() && !m_fading) {
       m_fading = true;
-      ScreenManager::current()->pop_screen(std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5));
+      ScreenManager::current()->pop_screen(
+          std::make_unique<FadeToBlack>(FadeToBlack::FADEOUT, 0.5));
     }
   }
 
   m_text_scroller->update(dt_sec);
 }
 
-void
-TextScrollerScreen::draw(Compositor& compositor)
-{
+void TextScrollerScreen::draw(Compositor& compositor) {
   auto& context = compositor.make_context();
 
   const float ctx_w = static_cast<float>(context.get_width());
   const float ctx_h = static_cast<float>(context.get_height());
 
-  { // draw background
+  {  // draw background
     const float bg_w = static_cast<float>(m_background->get_width());
     const float bg_h = static_cast<float>(m_background->get_height());
 
     const float bg_ratio = bg_w / bg_h;
     const float ctx_ratio = ctx_w / ctx_h;
 
-    if (bg_ratio > ctx_ratio)
-    {
+    if (bg_ratio > ctx_ratio) {
       const float new_bg_w = ctx_h * bg_ratio;
-      context.color().draw_surface_scaled(m_background,
-                                          Rectf::from_center(Vector(ctx_w / 2.0f, ctx_h / 2.0f),
-                                                             Sizef(new_bg_w, ctx_h)),
-                                          0);
-    }
-    else
-    {
+      context.color().draw_surface_scaled(
+          m_background,
+          Rectf::from_center(Vector(ctx_w / 2.0f, ctx_h / 2.0f),
+                             Sizef(new_bg_w, ctx_h)),
+          0);
+    } else {
       const float new_bg_h = ctx_w / bg_ratio;
-      context.color().draw_surface_scaled(m_background,
-                                          Rectf::from_center(Vector(ctx_w / 2.0f, ctx_h / 2.0f),
-                                                             Sizef(ctx_w, new_bg_h)),
-                                          0);
+      context.color().draw_surface_scaled(
+          m_background,
+          Rectf::from_center(Vector(ctx_w / 2.0f, ctx_h / 2.0f),
+                             Sizef(ctx_w, new_bg_h)),
+          0);
     }
   }
 

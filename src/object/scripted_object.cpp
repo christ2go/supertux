@@ -24,24 +24,25 @@
 #include "util/reader.hpp"
 #include "util/reader_mapping.hpp"
 
-ScriptedObject::ScriptedObject(const ReaderMapping& mapping) :
-  MovingSprite(mapping, "images/objects/bonus_block/brick.sprite", LAYER_OBJECTS, COLGROUP_MOVING_STATIC),
-  ExposedObject<ScriptedObject, scripting::ScriptedObject>(this),
-  physic(),
-  solid(),
-  physic_enabled(),
-  visible(),
-  hit_script(),
-  new_vel_set(false),
-  new_vel(),
-  new_size()
-{
+ScriptedObject::ScriptedObject(const ReaderMapping& mapping)
+    : MovingSprite(mapping, "images/objects/bonus_block/brick.sprite",
+                   LAYER_OBJECTS, COLGROUP_MOVING_STATIC),
+      ExposedObject<ScriptedObject, scripting::ScriptedObject>(this),
+      physic(),
+      solid(),
+      physic_enabled(),
+      visible(),
+      hit_script(),
+      new_vel_set(false),
+      new_vel(),
+      new_size() {
   m_default_sprite_name = {};
 
   if (!Editor::is_active()) {
     if (m_name.empty()) {
       m_name = "unnamed" + std::to_string(graphicsRandom.rand());
-      log_warning << "Scripted object must have a name specified, setting to: " << m_name << std::endl;
+      log_warning << "Scripted object must have a name specified, setting to: "
+                  << m_name << std::endl;
     }
   }
 
@@ -50,128 +51,79 @@ ScriptedObject::ScriptedObject(const ReaderMapping& mapping) :
   mapping.get("visible", visible, true);
   mapping.get("hit-script", hit_script, "");
   m_layer = reader_get_layer(mapping, LAYER_OBJECTS);
-  if ( solid ){
-    set_group( COLGROUP_MOVING_STATIC );
+  if (solid) {
+    set_group(COLGROUP_MOVING_STATIC);
   } else {
-    set_group( COLGROUP_DISABLED );
+    set_group(COLGROUP_DISABLED);
   }
 }
-ObjectSettings
-ScriptedObject::get_settings()
-{
+ObjectSettings ScriptedObject::get_settings() {
   new_size.x = m_col.m_bbox.get_width();
   new_size.y = m_col.m_bbox.get_height();
 
   ObjectSettings result = MovingSprite::get_settings();
 
   result.add_int(_("Z-pos"), &m_layer, "z-pos", LAYER_OBJECTS);
-  //result.add_float("width", &new_size.x, "width", OPTION_HIDDEN);
-  //result.add_float("height", &new_size.y, "height", OPTION_HIDDEN);
+  // result.add_float("width", &new_size.x, "width", OPTION_HIDDEN);
+  // result.add_float("height", &new_size.y, "height", OPTION_HIDDEN);
   result.add_bool(_("Solid"), &solid, "solid", true);
-  result.add_bool(_("Physics enabled"), &physic_enabled, "physic-enabled", true);
+  result.add_bool(_("Physics enabled"), &physic_enabled, "physic-enabled",
+                  true);
   result.add_bool(_("Visible"), &visible, "visible", true);
   result.add_text(_("Hit script"), &hit_script, "hit-script");
 
-  result.reorder({"z-pos", "visible", "physic-enabled", "solid", "name", "sprite", "script", "button", "x", "y"});
+  result.reorder({"z-pos", "visible", "physic-enabled", "solid", "name",
+                  "sprite", "script", "button", "x", "y"});
 
   return result;
 }
 
-void
-ScriptedObject::move(float x, float y)
-{
-  m_col.m_bbox.move(Vector(x, y));
-}
+void ScriptedObject::move(float x, float y) { m_col.m_bbox.move(Vector(x, y)); }
 
-float
-ScriptedObject::get_pos_x() const
-{
-  return get_pos().x;
-}
+float ScriptedObject::get_pos_x() const { return get_pos().x; }
 
-float
-ScriptedObject::get_pos_y() const
-{
-  return get_pos().y;
-}
+float ScriptedObject::get_pos_y() const { return get_pos().y; }
 
-void
-ScriptedObject::set_velocity(float x, float y)
-{
+void ScriptedObject::set_velocity(float x, float y) {
   new_vel = Vector(x, y);
   new_vel_set = true;
 }
 
-float
-ScriptedObject::get_velocity_x() const
-{
-  return physic.get_velocity_x();
-}
+float ScriptedObject::get_velocity_x() const { return physic.get_velocity_x(); }
 
-float
-ScriptedObject::get_velocity_y() const
-{
-  return physic.get_velocity_y();
-}
+float ScriptedObject::get_velocity_y() const { return physic.get_velocity_y(); }
 
-void
-ScriptedObject::set_visible(bool visible_)
-{
-  visible = visible_;
-}
+void ScriptedObject::set_visible(bool visible_) { visible = visible_; }
 
-bool
-ScriptedObject::is_visible() const
-{
-  return visible;
-}
+bool ScriptedObject::is_visible() const { return visible; }
 
-void
-ScriptedObject::set_solid(bool solid_)
-{
+void ScriptedObject::set_solid(bool solid_) {
   solid = solid_;
-  if ( solid ){
-    set_group( COLGROUP_MOVING_STATIC );
+  if (solid) {
+    set_group(COLGROUP_MOVING_STATIC);
   } else {
-    set_group( COLGROUP_DISABLED );
+    set_group(COLGROUP_DISABLED);
   }
 }
 
-bool
-ScriptedObject::is_solid() const
-{
-  return solid;
+bool ScriptedObject::is_solid() const { return solid; }
+
+bool ScriptedObject::gravity_enabled() const {
+  return physic.gravity_enabled();
 }
 
-bool
-ScriptedObject::gravity_enabled() const
-{
-	return physic.gravity_enabled();
-}
+void ScriptedObject::enable_gravity(bool f) { physic.enable_gravity(f); }
 
-void
-ScriptedObject::enable_gravity(bool f)
-{
-	physic.enable_gravity(f);
-}
-
-void
-ScriptedObject::set_action(const std::string& animation)
-{
+void ScriptedObject::set_action(const std::string& animation) {
   m_sprite->set_action(animation);
 }
 
-std::string
-ScriptedObject::get_action() const
-{
+std::string ScriptedObject::get_action() const {
   return m_sprite->get_action();
 }
 
-void
-ScriptedObject::update(float dt_sec)
-{
-  if (!physic_enabled)
-    return;
+void ScriptedObject::update(float dt_sec) {
+  if (!physic_enabled) return;
 
   if (new_vel_set) {
     physic.set_velocity(new_vel.x, new_vel.y);
@@ -180,24 +132,17 @@ ScriptedObject::update(float dt_sec)
   m_col.m_movement = physic.get_movement(dt_sec);
 }
 
-void
-ScriptedObject::draw(DrawingContext& context)
-{
-  if (!visible)
-    return;
+void ScriptedObject::draw(DrawingContext& context) {
+  if (!visible) return;
 
   m_sprite->draw(context.color(), get_pos(), m_layer);
 }
 
-void
-ScriptedObject::collision_solid(const CollisionHit& hit)
-{
-  if (!physic_enabled)
-    return;
+void ScriptedObject::collision_solid(const CollisionHit& hit) {
+  if (!physic_enabled) return;
 
   if (hit.bottom) {
-    if (physic.get_velocity_y() > 0)
-      physic.set_velocity_y(0);
+    if (physic.get_velocity_y() > 0) physic.set_velocity_y(0);
   } else if (hit.top) {
     physic.set_velocity_y(.1f);
   }
@@ -207,10 +152,8 @@ ScriptedObject::collision_solid(const CollisionHit& hit)
   }
 }
 
-HitResponse
-ScriptedObject::collision(GameObject& other, const CollisionHit& )
-{
-  auto player = dynamic_cast<Player*> (&other);
+HitResponse ScriptedObject::collision(GameObject& other, const CollisionHit&) {
+  auto player = dynamic_cast<Player*>(&other);
   if (player && !hit_script.empty()) {
     Sector::get().run_script(hit_script, "hit-script");
   }

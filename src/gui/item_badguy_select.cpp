@@ -20,16 +20,14 @@
 #include "gui/menu_badguy_select.hpp"
 #include "gui/menu_manager.hpp"
 
-ItemBadguySelect::ItemBadguySelect(const std::string& text, std::vector<std::string>* badguys_, int id) :
-  MenuItem(text, id),
-  badguys(badguys_)
-{
-}
+ItemBadguySelect::ItemBadguySelect(const std::string& text,
+                                   std::vector<std::string>* badguys_, int id)
+    : MenuItem(text, id), badguys(badguys_) {}
 
-void
-ItemBadguySelect::process_action(const MenuAction& action) {
+void ItemBadguySelect::process_action(const MenuAction& action) {
   if (action == MenuAction::HIT) {
-    MenuManager::instance().push_menu(std::make_unique<BadguySelectMenu>(badguys));
+    MenuManager::instance().push_menu(
+        std::make_unique<BadguySelectMenu>(badguys));
   }
 }
 

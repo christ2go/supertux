@@ -22,15 +22,9 @@
 #include "squirrel/squirrel_util.hpp"
 #include "util/log.hpp"
 
-SquirrelScheduler::SquirrelScheduler(SquirrelVM& vm) :
-  m_vm(vm),
-  schedule()
-{
-}
+SquirrelScheduler::SquirrelScheduler(SquirrelVM& vm) : m_vm(vm), schedule() {}
 
-void
-SquirrelScheduler::update(float time)
-{
+void SquirrelScheduler::update(float time) {
   while (!schedule.empty() && schedule.front().wakeup_time < time) {
     HSQOBJECT thread_ref = schedule.front().thread_ref;
 
@@ -39,8 +33,9 @@ SquirrelScheduler::update(float time)
 
     HSQUIRRELVM scheduled_vm;
     if (sq_gettype(m_vm.get_vm(), -1) == OT_THREAD &&
-       SQ_SUCCEEDED(sq_getthread(m_vm.get_vm(), -1, &scheduled_vm))) {
-      if (SQ_FAILED(sq_wakeupvm(scheduled_vm, SQFalse, SQFalse, SQTrue, SQFalse))) {
+        SQ_SUCCEEDED(sq_getthread(m_vm.get_vm(), -1, &scheduled_vm))) {
+      if (SQ_FAILED(
+              sq_wakeupvm(scheduled_vm, SQFalse, SQFalse, SQTrue, SQFalse))) {
         std::ostringstream msg;
         msg << "Error waking VM: ";
         sq_getlasterror(scheduled_vm);
@@ -64,21 +59,19 @@ SquirrelScheduler::update(float time)
   }
 }
 
-void
-SquirrelScheduler::schedule_thread(HSQUIRRELVM scheduled_vm, float time)
-{
+void SquirrelScheduler::schedule_thread(HSQUIRRELVM scheduled_vm, float time) {
   // create a weakref to the VM
   sq_pushthread(m_vm.get_vm(), scheduled_vm);
   sq_weakref(m_vm.get_vm(), -1);
 
   ScheduleEntry entry;
-  if (SQ_FAILED(sq_getstackobj(m_vm.get_vm(), -1, & entry.thread_ref))) {
+  if (SQ_FAILED(sq_getstackobj(m_vm.get_vm(), -1, &entry.thread_ref))) {
     sq_pop(m_vm.get_vm(), 2);
     throw SquirrelError(m_vm.get_vm(), "Couldn't get thread weakref from vm");
   }
   entry.wakeup_time = time;
 
-  sq_addref(m_vm.get_vm(), & entry.thread_ref);
+  sq_addref(m_vm.get_vm(), &entry.thread_ref);
   sq_pop(m_vm.get_vm(), 2);
 
   schedule.push_back(entry);

@@ -23,20 +23,18 @@
 #include "sprite/sprite.hpp"
 #include "supertux/sector.hpp"
 
-LiveFire::LiveFire(const ReaderMapping& reader) :
-  WalkingBadguy(reader, "images/creatures/livefire/livefire.sprite", "left", "right"),
-  death_sound("sounds/fall.wav"),
-  state(STATE_WALKING)
-{
+LiveFire::LiveFire(const ReaderMapping& reader)
+    : WalkingBadguy(reader, "images/creatures/livefire/livefire.sprite", "left",
+                    "right"),
+      death_sound("sounds/fall.wav"),
+      state(STATE_WALKING) {
   walk_speed = 80;
   max_drop_height = 20;
   m_lightsprite->set_color(Color(1.0f, 1.0f, 1.0f));
   m_glowing = true;
 }
 
-void
-LiveFire::collision_solid(const CollisionHit& hit)
-{
+void LiveFire::collision_solid(const CollisionHit& hit) {
   if (state != STATE_WALKING) {
     BadGuy::collision_solid(hit);
     return;
@@ -44,21 +42,20 @@ LiveFire::collision_solid(const CollisionHit& hit)
   WalkingBadguy::collision_solid(hit);
 }
 
-HitResponse
-LiveFire::collision_badguy(BadGuy& badguy, const CollisionHit& hit)
-{
+HitResponse LiveFire::collision_badguy(BadGuy& badguy,
+                                       const CollisionHit& hit) {
   if (state != STATE_WALKING) {
     return BadGuy::collision_badguy(badguy, hit);
   }
   return WalkingBadguy::collision_badguy(badguy, hit);
 }
 
-void
-LiveFire::active_update(float dt_sec) {
-
+void LiveFire::active_update(float dt_sec) {
   // Remove when extinguish animation is done
-  if ((m_sprite->get_action() == "extinguish-left" || m_sprite->get_action() == "extinguish-right" )
-    && m_sprite->animation_done()) remove_me();
+  if ((m_sprite->get_action() == "extinguish-left" ||
+       m_sprite->get_action() == "extinguish-right") &&
+      m_sprite->animation_done())
+    remove_me();
 
   if (state == STATE_WALKING) {
     WalkingBadguy::active_update(dt_sec);
@@ -66,24 +63,27 @@ LiveFire::active_update(float dt_sec) {
   }
 
   if (state == STATE_SLEEPING && m_col.get_group() == COLGROUP_MOVING) {
-
     auto player = get_nearest_player();
     if (player) {
       Rectf pb = player->get_bbox();
 
-      bool inReach_left = (pb.get_right() >= m_col.m_bbox.get_right()-((m_dir == Direction::LEFT) ? 256 : 0));
-      bool inReach_right = (pb.get_left() <= m_col.m_bbox.get_left()+((m_dir == Direction::RIGHT) ? 256 : 0));
+      bool inReach_left =
+          (pb.get_right() >=
+           m_col.m_bbox.get_right() - ((m_dir == Direction::LEFT) ? 256 : 0));
+      bool inReach_right =
+          (pb.get_left() <=
+           m_col.m_bbox.get_left() + ((m_dir == Direction::RIGHT) ? 256 : 0));
       bool inReach_top = (pb.get_bottom() >= m_col.m_bbox.get_top());
       bool inReach_bottom = (pb.get_top() <= m_col.m_bbox.get_bottom());
 
       if (inReach_left && inReach_right && inReach_top && inReach_bottom) {
         // wake up
-        m_sprite->set_action(m_dir == Direction::LEFT ? "waking-left" : "waking-right", 1);
+        m_sprite->set_action(
+            m_dir == Direction::LEFT ? "waking-left" : "waking-right", 1);
         state = STATE_WAKING;
       }
     }
-  }
-  else if (state == STATE_WAKING) {
+  } else if (state == STATE_WAKING) {
     if (m_sprite->animation_done()) {
       // start walking
       state = STATE_WALKING;
@@ -94,40 +94,28 @@ LiveFire::active_update(float dt_sec) {
   BadGuy::active_update(dt_sec);
 }
 
-void
-LiveFire::freeze()
-{
+void LiveFire::freeze() {
   // attempting to freeze a flame causes it to go out
   death_sound = "sounds/sizzle.ogg";
   kill_fall();
 }
 
-bool
-LiveFire::is_freezable() const
-{
-  return true;
-}
+bool LiveFire::is_freezable() const { return true; }
 
-bool
-LiveFire::is_flammable() const
-{
-  return false;
-}
+bool LiveFire::is_flammable() const { return false; }
 
-void
-LiveFire::kill_fall()
-{
+void LiveFire::kill_fall() {
   SoundManager::current()->play(death_sound, get_pos());
   // throw a puff of smoke
   Vector ppos = m_col.m_bbox.get_middle();
   Vector pspeed = Vector(0, -150);
-  Vector paccel = Vector(0,0);
+  Vector paccel = Vector(0, 0);
   Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
-                                         "default", ppos, ANCHOR_MIDDLE,
-                                         pspeed, paccel,
-                                         LAYER_BACKGROUNDTILES+2);
+                                    "default", ppos, ANCHOR_MIDDLE, pspeed,
+                                    paccel, LAYER_BACKGROUNDTILES + 2);
   // extinguish the flame
-  m_sprite->set_action(m_dir == Direction::LEFT ? "extinguish-left" : "extinguish-right", 1);
+  m_sprite->set_action(
+      m_dir == Direction::LEFT ? "extinguish-left" : "extinguish-right", 1);
   m_physic.set_velocity_y(0);
   m_physic.set_acceleration_y(0);
   m_physic.enable_gravity(false);
@@ -141,54 +129,47 @@ LiveFire::kill_fall()
 
 /* The following defines a sleeping version */
 
-LiveFireAsleep::LiveFireAsleep(const ReaderMapping& reader) :
-  LiveFire(reader)
-{
+LiveFireAsleep::LiveFireAsleep(const ReaderMapping& reader) : LiveFire(reader) {
   state = STATE_SLEEPING;
 }
 
-void
-LiveFireAsleep::draw(DrawingContext& context)
-{
+void LiveFireAsleep::draw(DrawingContext& context) {
   if (Editor::is_active()) {
-    m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left" : "sleeping-right");
+    m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left"
+                                                  : "sleeping-right");
     BadGuy::draw(context);
   } else {
     LiveFire::draw(context);
   }
 }
 
-void
-LiveFireAsleep::initialize()
-{
+void LiveFireAsleep::initialize() {
   m_physic.set_velocity_x(0);
-  m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left" : "sleeping-right");
+  m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left"
+                                                : "sleeping-right");
 }
 
 /* The following defines a dormant version that never wakes */
-LiveFireDormant::LiveFireDormant(const ReaderMapping& reader) :
-  LiveFire(reader)
-{
+LiveFireDormant::LiveFireDormant(const ReaderMapping& reader)
+    : LiveFire(reader) {
   walk_speed = 0;
   state = STATE_DORMANT;
 }
 
-void
-LiveFireDormant::draw(DrawingContext& context)
-{
+void LiveFireDormant::draw(DrawingContext& context) {
   if (Editor::is_active()) {
-    m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left" : "sleeping-right");
+    m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left"
+                                                  : "sleeping-right");
     BadGuy::draw(context);
   } else {
     LiveFire::draw(context);
   }
 }
 
-void
-LiveFireDormant::initialize()
-{
+void LiveFireDormant::initialize() {
   m_physic.set_velocity_x(0);
-  m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left" : "sleeping-right");
+  m_sprite->set_action(m_dir == Direction::LEFT ? "sleeping-left"
+                                                : "sleeping-right");
 }
 
 /* EOF */

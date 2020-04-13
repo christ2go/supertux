@@ -1,5 +1,6 @@
 //  SuperTux - Switch Trigger
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -29,36 +30,31 @@ namespace {
 const std::string SWITCH_SOUND = "sounds/switch.ogg";
 }
 
-Switch::Switch(const ReaderMapping& reader) :
-  sprite_name(),
-  sprite(),
-  script(),
-  off_script(),
-  state(OFF),
-  bistable()
-{
-  if (!reader.get("x", m_col.m_bbox.get_left())) throw std::runtime_error("no x position set");
-  if (!reader.get("y", m_col.m_bbox.get_top())) throw std::runtime_error("no y position set");
-  if (!reader.get("sprite", sprite_name)) sprite_name = "images/objects/switch/left.sprite";
+Switch::Switch(const ReaderMapping& reader)
+    : sprite_name(), sprite(), script(), off_script(), state(OFF), bistable() {
+  if (!reader.get("x", m_col.m_bbox.get_left()))
+    throw std::runtime_error("no x position set");
+  if (!reader.get("y", m_col.m_bbox.get_top()))
+    throw std::runtime_error("no y position set");
+  if (!reader.get("sprite", sprite_name))
+    sprite_name = "images/objects/switch/left.sprite";
   sprite = SpriteManager::current()->create(sprite_name);
-  m_col.m_bbox.set_size(sprite->get_current_hitbox_width(), sprite->get_current_hitbox_height());
+  m_col.m_bbox.set_size(sprite->get_current_hitbox_width(),
+                        sprite->get_current_hitbox_height());
 
   reader.get("script", script);
   bistable = reader.get("off-script", off_script);
 
-  SoundManager::current()->preload( SWITCH_SOUND );
+  SoundManager::current()->preload(SWITCH_SOUND);
 }
 
-Switch::~Switch()
-{
-}
+Switch::~Switch() {}
 
-ObjectSettings
-Switch::get_settings()
-{
+ObjectSettings Switch::get_settings() {
   ObjectSettings result = TriggerBase::get_settings();
 
-  result.add_sprite(_("Sprite"), &sprite_name, "sprite", std::string("images/objects/switch/left.sprite"));
+  result.add_sprite(_("Sprite"), &sprite_name, "sprite",
+                    std::string("images/objects/switch/left.sprite"));
   result.add_script(_("Turn on script"), &script, "script");
   result.add_script(_("Turn off script"), &off_script, "off-script");
 
@@ -67,14 +63,11 @@ Switch::get_settings()
   return result;
 }
 
-void
-Switch::after_editor_set() {
+void Switch::after_editor_set() {
   sprite = SpriteManager::current()->create(sprite_name);
 }
 
-void
-Switch::update(float )
-{
+void Switch::update(float) {
   switch (state) {
     case OFF:
       break;
@@ -109,21 +102,17 @@ Switch::update(float )
   }
 }
 
-void
-Switch::draw(DrawingContext& context)
-{
+void Switch::draw(DrawingContext& context) {
   sprite->draw(context.color(), m_col.m_bbox.p1(), LAYER_TILES);
 }
 
-void
-Switch::event(Player& , EventType type)
-{
+void Switch::event(Player&, EventType type) {
   if (type != EVENT_ACTIVATE) return;
 
   switch (state) {
     case OFF:
       sprite->set_action("turnon", 1);
-      SoundManager::current()->play( SWITCH_SOUND );
+      SoundManager::current()->play(SWITCH_SOUND);
       state = TURN_ON;
       break;
     case TURN_ON:
@@ -131,7 +120,7 @@ Switch::event(Player& , EventType type)
     case ON:
       if (bistable) {
         sprite->set_action("turnoff", 1);
-        SoundManager::current()->play( SWITCH_SOUND );
+        SoundManager::current()->play(SWITCH_SOUND);
         state = TURN_OFF;
       }
       break;

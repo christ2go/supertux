@@ -27,14 +27,14 @@
 
 static const std::string FLAME_SOUND = "sounds/flame.wav";
 
-Flame::Flame(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/flame/flame.sprite", LAYER_FLOATINGOBJECTS,
-         "images/objects/lightmap_light/lightmap_light-small.sprite"),
-  angle(0),
-  radius(),
-  speed(),
-  sound_source()
-{
+Flame::Flame(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/flame/flame.sprite",
+             LAYER_FLOATINGOBJECTS,
+             "images/objects/lightmap_light/lightmap_light-small.sprite"),
+      angle(0),
+      radius(),
+      speed(),
+      sound_source() {
   reader.get("radius", radius, 100.0f);
   reader.get("speed", speed, 2.0f);
   if (!Editor::is_active()) {
@@ -50,9 +50,7 @@ Flame::Flame(const ReaderMapping& reader) :
   m_glowing = true;
 }
 
-ObjectSettings
-Flame::get_settings()
-{
+ObjectSettings Flame::get_settings() {
   ObjectSettings result = BadGuy::get_settings();
 
   result.add_float(_("Radius"), &radius, "radius", 100.0f);
@@ -63,9 +61,7 @@ Flame::get_settings()
   return result;
 }
 
-void
-Flame::active_update(float dt_sec)
-{
+void Flame::active_update(float dt_sec) {
   angle = fmodf(angle + dt_sec * speed, math::TAU);
   if (!Editor::is_active()) {
     Vector newpos(m_start_position.x + cosf(angle) * radius,
@@ -74,14 +70,12 @@ Flame::active_update(float dt_sec)
     sound_source->set_position(get_pos());
   }
 
-  if (m_sprite->get_action() == "fade" && m_sprite->animation_done()) remove_me();
+  if (m_sprite->get_action() == "fade" && m_sprite->animation_done())
+    remove_me();
 }
 
-void
-Flame::activate()
-{
-  if (Editor::is_active())
-    return;
+void Flame::activate() {
+  if (Editor::is_active()) return;
   sound_source = SoundManager::current()->create_sound_source(FLAME_SOUND);
   sound_source->set_position(get_pos());
   sound_source->set_looping(true);
@@ -90,54 +84,34 @@ Flame::activate()
   sound_source->play();
 }
 
-void
-Flame::deactivate()
-{
-  sound_source.reset();
-}
+void Flame::deactivate() { sound_source.reset(); }
 
+void Flame::kill_fall() {}
 
-void
-Flame::kill_fall()
-{
-}
-
-void
-Flame::freeze()
-{
+void Flame::freeze() {
   SoundManager::current()->play("sounds/sizzle.ogg", get_pos());
   m_sprite->set_action("fade", 1);
   Sector::get().add<SpriteParticle>("images/objects/particles/smoke.sprite",
-                                         "default",
-                                         m_col.m_bbox.get_middle(), ANCHOR_MIDDLE,
-                                         Vector(0, -150), Vector(0,0), LAYER_BACKGROUNDTILES+2);
+                                    "default", m_col.m_bbox.get_middle(),
+                                    ANCHOR_MIDDLE, Vector(0, -150),
+                                    Vector(0, 0), LAYER_BACKGROUNDTILES + 2);
   set_group(COLGROUP_DISABLED);
 
   // start dead-script
   run_dead_script();
 }
 
-bool
-Flame::is_freezable() const
-{
-  return true;
-}
+bool Flame::is_freezable() const { return true; }
 
-bool
-Flame::is_flammable() const
-{
-  return false;
-}
+bool Flame::is_flammable() const { return false; }
 
-void Flame::stop_looping_sounds()
-{
+void Flame::stop_looping_sounds() {
   if (sound_source) {
     sound_source->stop();
   }
 }
 
-void Flame::play_looping_sounds()
-{
+void Flame::play_looping_sounds() {
   if (sound_source) {
     sound_source->play();
   }

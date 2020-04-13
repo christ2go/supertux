@@ -23,8 +23,7 @@
 #include "supertux/screen_manager.hpp"
 #include "util/gettext.hpp"
 
-WorldmapMenu::WorldmapMenu()
-{
+WorldmapMenu::WorldmapMenu() {
   add_label(_("Pause"));
   add_hl();
   add_entry(MNID_RETURNWORLDMAP, _("Continue"));
@@ -33,11 +32,8 @@ WorldmapMenu::WorldmapMenu()
   add_entry(MNID_QUITWORLDMAP, _("Leave World"));
 }
 
-void
-WorldmapMenu::menu_action(MenuItem& item)
-{
-  switch (item.get_id())
-  {
+void WorldmapMenu::menu_action(MenuItem& item) {
+  switch (item.get_id()) {
     case MNID_RETURNWORLDMAP:
       MenuManager::instance().clear_menu_stack();
       break;

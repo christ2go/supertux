@@ -1,5 +1,6 @@
 //  SuperTux - PushButton running a script
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,26 +25,25 @@
 
 namespace {
 const std::string BUTTON_SOUND = "sounds/switch.ogg";
-//14 -> 8
-}
+// 14 -> 8
+}  // namespace
 
-PushButton::PushButton(const ReaderMapping& mapping) :
-  MovingSprite(mapping, "images/objects/pushbutton/pushbutton.sprite", LAYER_BACKGROUNDTILES+1, COLGROUP_MOVING),
-  script(),
-  state(OFF)
-{
+PushButton::PushButton(const ReaderMapping& mapping)
+    : MovingSprite(mapping, "images/objects/pushbutton/pushbutton.sprite",
+                   LAYER_BACKGROUNDTILES + 1, COLGROUP_MOVING),
+      script(),
+      state(OFF) {
   SoundManager::current()->preload(BUTTON_SOUND);
   set_action("off", -1);
-  m_col.m_bbox.set_size(m_sprite->get_current_hitbox_width(), m_sprite->get_current_hitbox_height());
+  m_col.m_bbox.set_size(m_sprite->get_current_hitbox_width(),
+                        m_sprite->get_current_hitbox_height());
 
   if (!mapping.get("script", script)) {
     log_warning << "No script set for pushbutton." << std::endl;
   }
 }
 
-ObjectSettings
-PushButton::get_settings()
-{
+ObjectSettings PushButton::get_settings() {
   ObjectSettings result = MovingSprite::get_settings();
 
   result.add_script(_("Script"), &script, "script");
@@ -53,19 +53,14 @@ PushButton::get_settings()
   return result;
 }
 
-void
-PushButton::update(float /*dt_sec*/)
-{
-}
+void PushButton::update(float /*dt_sec*/) {}
 
-HitResponse
-PushButton::collision(GameObject& other, const CollisionHit& hit)
-{
+HitResponse PushButton::collision(GameObject& other, const CollisionHit& hit) {
   auto player = dynamic_cast<Player*>(&other);
   if (!player) return FORCE_MOVE;
   float vy = player->get_physic().get_velocity_y();
 
-  //player->add_velocity(Vector(0, -150));
+  // player->add_velocity(Vector(0, -150));
   player->get_physic().set_velocity_y(-150);
 
   if (state != OFF) return FORCE_MOVE;

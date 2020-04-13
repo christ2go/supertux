@@ -24,31 +24,29 @@
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
 
-GrowUp::GrowUp(Direction direction) :
-  MovingSprite(Vector(0,0), "images/powerups/egg/egg.sprite", LAYER_OBJECTS, COLGROUP_MOVING),
-  physic(),
-  shadesprite(SpriteManager::current()->create("images/powerups/egg/egg.sprite")),
-  lightsprite(SpriteManager::current()->create("images/objects/lightmap_light/lightmap_light-small.sprite"))
-{
+GrowUp::GrowUp(Direction direction)
+    : MovingSprite(Vector(0, 0), "images/powerups/egg/egg.sprite",
+                   LAYER_OBJECTS, COLGROUP_MOVING),
+      physic(),
+      shadesprite(
+          SpriteManager::current()->create("images/powerups/egg/egg.sprite")),
+      lightsprite(SpriteManager::current()->create(
+          "images/objects/lightmap_light/lightmap_light-small.sprite")) {
   physic.enable_gravity(true);
   physic.set_velocity_x((direction == Direction::LEFT) ? -100.0f : 100.0f);
   SoundManager::current()->preload("sounds/grow.ogg");
-  //shadow to remain in place as egg rolls
+  // shadow to remain in place as egg rolls
   shadesprite->set_action("shadow");
-  //set light for glow effect
+  // set light for glow effect
   lightsprite->set_blend(Blend::ADD);
   lightsprite->set_color(Color(0.2f, 0.2f, 0.0f));
 }
 
-void
-GrowUp::update(float dt_sec)
-{
+void GrowUp::update(float dt_sec) {
   m_col.m_movement = physic.get_movement(dt_sec);
 }
 
-void
-GrowUp::draw(DrawingContext& context)
-{
+void GrowUp::draw(DrawingContext& context) {
   if (physic.get_velocity_x() != 0) {
     m_sprite->set_angle(get_pos().x * 360.0f / (32.0f * math::PI));
   }
@@ -57,26 +55,20 @@ GrowUp::draw(DrawingContext& context)
   lightsprite->draw(context.light(), get_bbox().get_middle(), 0);
 }
 
-void
-GrowUp::collision_solid(const CollisionHit& hit)
-{
-  if (hit.top)
-    physic.set_velocity_y(0);
-  if (hit.bottom && physic.get_velocity_y() > 0)
-    physic.set_velocity_y(0);
+void GrowUp::collision_solid(const CollisionHit& hit) {
+  if (hit.top) physic.set_velocity_y(0);
+  if (hit.bottom && physic.get_velocity_y() > 0) physic.set_velocity_y(0);
   if (hit.left || hit.right) {
     physic.set_velocity_x(-physic.get_velocity_x());
   }
 }
 
-HitResponse
-GrowUp::collision(GameObject& other, const CollisionHit& hit )
-{
+HitResponse GrowUp::collision(GameObject& other, const CollisionHit& hit) {
   auto player = dynamic_cast<Player*>(&other);
   if (player != nullptr) {
     if (!player->add_bonus(GROWUP_BONUS, true)) {
       // Tux can't grow right now.
-      collision_solid( hit );
+      collision_solid(hit);
       return ABORT_MOVE;
     }
 
@@ -89,10 +81,6 @@ GrowUp::collision(GameObject& other, const CollisionHit& hit )
   return FORCE_MOVE;
 }
 
-void
-GrowUp::do_jump()
-{
-  physic.set_velocity_y(-300);
-}
+void GrowUp::do_jump() { physic.set_velocity_y(-300); }
 
 /* EOF */

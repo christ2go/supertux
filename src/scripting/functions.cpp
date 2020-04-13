@@ -43,10 +43,8 @@ namespace {
 
 // not added to header, function to only be used by others
 // in this file
-bool validate_sector_player()
-{
-  if (::Sector::current() == nullptr)
-  {
+bool validate_sector_player() {
+  if (::Sector::current() == nullptr) {
     log_info << "No current sector." << std::endl;
     return false;
   }
@@ -54,145 +52,111 @@ bool validate_sector_player()
   return true;
 }
 
-} // namespace
+}  // namespace
 
 namespace scripting {
 
-SQInteger display(HSQUIRRELVM vm)
-{
+SQInteger display(HSQUIRRELVM vm) {
   ConsoleBuffer::output << squirrel2string(vm, -1) << std::endl;
   return 0;
 }
 
-void print_stacktrace(HSQUIRRELVM vm)
-{
-  print_squirrel_stack(vm);
-}
+void print_stacktrace(HSQUIRRELVM vm) { print_squirrel_stack(vm); }
 
-SQInteger get_current_thread(HSQUIRRELVM vm)
-{
+SQInteger get_current_thread(HSQUIRRELVM vm) {
   sq_pushthread(vm, vm);
   return 1;
 }
 
-bool is_christmas()
-{
-  return g_config->christmas_mode;
-}
+bool is_christmas() { return g_config->christmas_mode; }
 
-void wait(HSQUIRRELVM vm, float seconds)
-{
-  if (auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm)))
-  {
+void wait(HSQUIRRELVM vm, float seconds) {
+  if (auto squirrelenv =
+          static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm))) {
     squirrelenv->wait_for_seconds(vm, seconds);
-  }
-  else if (auto squirrelvm = static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm)))
-  {
+  } else if (auto squirrelvm = static_cast<SquirrelVirtualMachine*>(
+                 sq_getsharedforeignptr(vm))) {
     squirrelvm->wait_for_seconds(vm, seconds);
-  }
-  else
-  {
+  } else {
     log_warning << "wait(): no VM or environment available\n";
   }
 }
 
-void wait_for_screenswitch(HSQUIRRELVM vm)
-{
-  auto squirrelvm = static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm));
-  //auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm));
+void wait_for_screenswitch(HSQUIRRELVM vm) {
+  auto squirrelvm =
+      static_cast<SquirrelVirtualMachine*>(sq_getsharedforeignptr(vm));
+  // auto squirrelenv = static_cast<SquirrelEnvironment*>(sq_getforeignptr(vm));
   squirrelvm->wait_for_screenswitch(vm);
 }
 
-void exit_screen()
-{
-  ScreenManager::current()->pop_screen();
-}
+void exit_screen() { ScreenManager::current()->pop_screen(); }
 
-std::string translate(const std::string& text)
-{
+std::string translate(const std::string& text) {
   return g_dictionary_manager->get_dictionary().translate(text);
 }
 
-std::string _(const std::string& text)
-{
-  return translate(text);
+std::string _(const std::string& text) { return translate(text); }
+
+std::string translate_plural(const std::string& text,
+                             const std::string& text_plural, int num) {
+  return g_dictionary_manager->get_dictionary().translate_plural(
+      text, text_plural, num);
 }
 
-std::string translate_plural(const std::string& text, const std::string& text_plural, int num)
-{
-  return g_dictionary_manager->get_dictionary().translate_plural(text, text_plural, num);
-}
-
-std::string __(const std::string& text, const std::string& text_plural, int num)
-{
+std::string __(const std::string& text, const std::string& text_plural,
+               int num) {
   return translate_plural(text, text_plural, num);
 }
 
-void display_text_file(const std::string& filename)
-{
-  ScreenManager::current()->push_screen(std::make_unique<TextScrollerScreen>(filename));
+void display_text_file(const std::string& filename) {
+  ScreenManager::current()->push_screen(
+      std::make_unique<TextScrollerScreen>(filename));
 }
 
-void load_worldmap(const std::string& filename)
-{
+void load_worldmap(const std::string& filename) {
   using namespace worldmap;
 
-  if (!WorldMap::current())
-  {
+  if (!WorldMap::current()) {
     throw std::runtime_error("Can't start Worldmap without active WorldMap");
-  }
-  else
-  {
-    ScreenManager::current()->push_screen(std::make_unique<WorldMapScreen>(
-                                            std::make_unique<WorldMap>(filename, WorldMap::current()->get_savegame())));
+  } else {
+    ScreenManager::current()->push_screen(
+        std::make_unique<WorldMapScreen>(std::make_unique<WorldMap>(
+            filename, WorldMap::current()->get_savegame())));
   }
 }
 
-void set_next_worldmap(const std::string& dirname, const std::string& spawnpoint)
-{
+void set_next_worldmap(const std::string& dirname,
+                       const std::string& spawnpoint) {
   GameManager::current()->set_next_worldmap(dirname, spawnpoint);
 }
 
-void load_level(const std::string& filename)
-{
-  if (!GameSession::current())
-  {
+void load_level(const std::string& filename) {
+  if (!GameSession::current()) {
     throw std::runtime_error("Can't start level without active level.");
-  }
-  else
-  {
-    ScreenManager::current()->push_screen(std::make_unique<GameSession>(filename, GameSession::current()->get_savegame()));
+  } else {
+    ScreenManager::current()->push_screen(std::make_unique<GameSession>(
+        filename, GameSession::current()->get_savegame()));
   }
 }
 
-void import(HSQUIRRELVM vm, const std::string& filename)
-{
+void import(HSQUIRRELVM vm, const std::string& filename) {
   IFileStream in(filename);
   compile_and_run(vm, in, filename);
 }
 
-void debug_collrects(bool enable)
-{
-  g_debug.show_collision_rects = enable;
-}
+void debug_collrects(bool enable) { g_debug.show_collision_rects = enable; }
 
-void debug_show_fps(bool enable)
-{
-  g_config->show_fps = enable;
-}
+void debug_show_fps(bool enable) { g_config->show_fps = enable; }
 
-void debug_draw_solids_only(bool enable)
-{
+void debug_draw_solids_only(bool enable) {
   ::Sector::s_draw_solids_only = enable;
 }
 
-void debug_draw_editor_images(bool enable)
-{
+void debug_draw_editor_images(bool enable) {
   Tile::draw_editor_images = enable;
 }
 
-void debug_worldmap_ghost(bool enable)
-{
+void debug_worldmap_ghost(bool enable) {
   auto worldmap = worldmap::WorldMap::current();
 
   if (worldmap == nullptr)
@@ -202,162 +166,125 @@ void debug_worldmap_ghost(bool enable)
   tux.set_ghost_mode(enable);
 }
 
-void save_state()
-{
+void save_state() {
   auto worldmap = worldmap::WorldMap::current();
 
-  if (!worldmap)
-  {
+  if (!worldmap) {
     throw std::runtime_error("Can't save state without active Worldmap");
-  }
-  else
-  {
+  } else {
     worldmap->save_state();
   }
 }
 
-void load_state()
-{
+void load_state() {
   auto worldmap = worldmap::WorldMap::current();
 
-  if (!worldmap)
-  {
+  if (!worldmap) {
     throw std::runtime_error("Can't save state without active Worldmap");
-  }
-  else
-  {
+  } else {
     worldmap->load_state();
   }
 }
 
-void play_music(const std::string& filename)
-{
+void play_music(const std::string& filename) {
   SoundManager::current()->play_music(filename);
 }
 
-void stop_music(float fadetime)
-{
+void stop_music(float fadetime) {
   SoundManager::current()->stop_music(fadetime);
 }
 
-void fade_in_music(const std::string& filename, float fadetime) 
-{
+void fade_in_music(const std::string& filename, float fadetime) {
   SoundManager::current()->play_music(filename, fadetime);
 }
 
-void resume_music(float fadetime) 
-{
+void resume_music(float fadetime) {
   SoundManager::current()->resume_music(fadetime);
 }
 
-void pause_music(float fadetime) 
-{
+void pause_music(float fadetime) {
   SoundManager::current()->pause_music(fadetime);
 }
 
-void play_sound(const std::string& filename)
-{
+void play_sound(const std::string& filename) {
   SoundManager::current()->play(filename);
 }
 
-void grease()
-{
+void grease() {
   if (!validate_sector_player()) return;
-  ::Player& tux = ::Sector::get().get_player(); // scripting::Player != ::Player
-  tux.get_physic().set_velocity_x(tux.get_physic().get_velocity_x()*3);
+  ::Player& tux =
+      ::Sector::get().get_player();  // scripting::Player != ::Player
+  tux.get_physic().set_velocity_x(tux.get_physic().get_velocity_x() * 3);
 }
 
-void invincible()
-{
+void invincible() {
   if (!validate_sector_player()) return;
   ::Player& tux = ::Sector::get().get_player();
   tux.m_invincible_timer.start(10000);
 }
 
-void ghost()
-{
+void ghost() {
   if (!validate_sector_player()) return;
   ::Player& tux = ::Sector::get().get_player();
   tux.set_ghost_mode(true);
 }
 
-void mortal()
-{
+void mortal() {
   if (!validate_sector_player()) return;
   ::Player& tux = ::Sector::get().get_player();
   tux.m_invincible_timer.stop();
   tux.set_ghost_mode(false);
 }
 
-void restart()
-{
+void restart() {
   auto session = GameSession::current();
-  if (session == nullptr)
-  {
+  if (session == nullptr) {
     log_info << "No game session" << std::endl;
     return;
   }
   session->restart_level();
 }
 
-void whereami()
-{
+void whereami() {
   if (!validate_sector_player()) return;
   ::Player& tux = ::Sector::get().get_player();
-  log_info << "You are at x " << (static_cast<int>(tux.get_pos().x)) << ", y " << (static_cast<int>(tux.get_pos().y)) << std::endl;
+  log_info << "You are at x " << (static_cast<int>(tux.get_pos().x)) << ", y "
+           << (static_cast<int>(tux.get_pos().y)) << std::endl;
 }
 
-void gotoend()
-{
-  if (!validate_sector_player()) return;
-  ::Player& tux = ::Sector::get().get_player();
-  tux.move(Vector(
-              (::Sector::get().get_width()) - (static_cast<float>(SCREEN_WIDTH) * 2.0f), 0));
-  ::Sector::get().get_camera().reset(
-    Vector(tux.get_pos().x, tux.get_pos().y));
-}
-
-void warp(float offset_x, float offset_y)
-{
+void gotoend() {
   if (!validate_sector_player()) return;
   ::Player& tux = ::Sector::get().get_player();
   tux.move(Vector(
-              tux.get_pos().x + (offset_x*32), tux.get_pos().y - (offset_y*32)));
-  ::Sector::get().get_camera().reset(
-    Vector(tux.get_pos().x, tux.get_pos().y));
+      (::Sector::get().get_width()) - (static_cast<float>(SCREEN_WIDTH) * 2.0f),
+      0));
+  ::Sector::get().get_camera().reset(Vector(tux.get_pos().x, tux.get_pos().y));
 }
 
-void camera()
-{
+void warp(float offset_x, float offset_y) {
+  if (!validate_sector_player()) return;
+  ::Player& tux = ::Sector::get().get_player();
+  tux.move(Vector(tux.get_pos().x + (offset_x * 32),
+                  tux.get_pos().y - (offset_y * 32)));
+  ::Sector::get().get_camera().reset(Vector(tux.get_pos().x, tux.get_pos().y));
+}
+
+void camera() {
   if (!validate_sector_player()) return;
   const auto& cam_pos = ::Sector::get().get_camera().get_translation();
   log_info << "Camera is at " << cam_pos.x << "," << cam_pos.y << std::endl;
 }
 
-void set_gamma(float gamma)
-{
-  VideoSystem::current()->set_gamma(gamma);
-}
+void set_gamma(float gamma) { VideoSystem::current()->set_gamma(gamma); }
 
-void quit()
-{
-  ScreenManager::current()->quit();
-}
+void quit() { ScreenManager::current()->quit(); }
 
-int rand()
-{
-  return gameRandom.rand();
-}
+int rand() { return gameRandom.rand(); }
 
-void set_game_speed(float speed)
-{
-  ::g_debug.set_game_speed_multiplier(speed);
-}
+void set_game_speed(float speed) { ::g_debug.set_game_speed_multiplier(speed); }
 
-void record_demo(const std::string& filename)
-{
-  if (GameSession::current() == nullptr)
-  {
+void record_demo(const std::string& filename) {
+  if (GameSession::current() == nullptr) {
     log_info << "No game session" << std::endl;
     return;
   }
@@ -365,11 +292,9 @@ void record_demo(const std::string& filename)
   GameSession::current()->record_demo(filename);
 }
 
-void play_demo(const std::string& filename)
-{
+void play_demo(const std::string& filename) {
   auto session = GameSession::current();
-  if (session == nullptr)
-  {
+  if (session == nullptr) {
     log_info << "No game session" << std::endl;
     return;
   }
@@ -380,6 +305,6 @@ void play_demo(const std::string& filename)
   session->play_demo(filename);
 }
 
-}
+}  // namespace scripting
 
 /* EOF */

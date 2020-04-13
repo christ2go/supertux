@@ -23,16 +23,13 @@
 #include "util/file_system.hpp"
 #include "util/log.hpp"
 
-ReaderDocument
-ReaderDocument::from_stream(std::istream& stream, const std::string& filename)
-{
+ReaderDocument ReaderDocument::from_stream(std::istream& stream,
+                                           const std::string& filename) {
   sexp::Value sx = sexp::Parser::from_stream(stream, sexp::Parser::USE_ARRAYS);
   return ReaderDocument(filename, std::move(sx));
 }
 
-ReaderDocument
-ReaderDocument::from_file(const std::string& filename)
-{
+ReaderDocument ReaderDocument::from_file(const std::string& filename) {
   log_debug << "ReaderDocument::parse: " << filename << std::endl;
 
   IFileStream in(filename);
@@ -45,27 +42,16 @@ ReaderDocument::from_file(const std::string& filename)
   }
 }
 
-ReaderDocument::ReaderDocument(const std::string& filename, sexp::Value sx) :
-  m_filename(filename),
-  m_sx(std::move(sx))
-{
-}
+ReaderDocument::ReaderDocument(const std::string& filename, sexp::Value sx)
+    : m_filename(filename), m_sx(std::move(sx)) {}
 
-ReaderObject
-ReaderDocument::get_root() const
-{
+ReaderObject ReaderDocument::get_root() const {
   return ReaderObject(*this, m_sx);
 }
 
-std::string
-ReaderDocument::get_filename() const
-{
-  return m_filename;
-}
+std::string ReaderDocument::get_filename() const { return m_filename; }
 
-std::string
-ReaderDocument::get_directory() const
-{
+std::string ReaderDocument::get_directory() const {
   return FileSystem::dirname(m_filename);
 }
 

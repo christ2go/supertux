@@ -19,18 +19,11 @@
 
 #include "math/vector.hpp"
 
-Vector Vector::unit() const
-{
-  return *this / norm();
-}
+Vector Vector::unit() const { return *this / norm(); }
 
-float Vector::norm() const
-{
-  return sqrtf(x*x + y*y);
-}
+float Vector::norm() const { return sqrtf(x * x + y * y); }
 
-std::ostream& operator<<(std::ostream& out, const Vector& vector)
-{
+std::ostream& operator<<(std::ostream& out, const Vector& vector) {
   out << "Vector(" << vector.x << ", " << vector.y << ')';
   return out;
 }

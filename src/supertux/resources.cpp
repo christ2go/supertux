@@ -45,28 +45,27 @@ SurfacePtr Resources::no_tile;
 
 std::string Resources::current_font;
 
-void
-Resources::load()
-{
+void Resources::load() {
   // Load the mouse-cursor
-  mouse_cursor.reset(new MouseCursor(SpriteManager::current()->create("images/engine/menu/mousecursor.sprite")));
+  mouse_cursor.reset(new MouseCursor(SpriteManager::current()->create(
+      "images/engine/menu/mousecursor.sprite")));
   MouseCursor::set_current(mouse_cursor.get());
 
-  if (g_debug.get_use_bitmap_fonts())
-  {
-    console_font.reset(new BitmapFont(BitmapFont::FIXED, "fonts/andale12.stf", 1));
+  if (g_debug.get_use_bitmap_fonts()) {
+    console_font.reset(
+        new BitmapFont(BitmapFont::FIXED, "fonts/andale12.stf", 1));
     fixed_font.reset(new BitmapFont(BitmapFont::FIXED, "fonts/white.stf"));
     normal_font.reset(new BitmapFont(BitmapFont::VARIABLE, "fonts/white.stf"));
-    small_font.reset(new BitmapFont(BitmapFont::VARIABLE, "fonts/white-small.stf", 1));
-    big_font.reset(new BitmapFont(BitmapFont::VARIABLE, "fonts/white-big.stf", 3));
-  }
-  else
-  {
-    console_font.reset(new TTFFont("fonts/SuperTux-Medium.ttf", 12, 1.25f, 0, 1));
+    small_font.reset(
+        new BitmapFont(BitmapFont::VARIABLE, "fonts/white-small.stf", 1));
+    big_font.reset(
+        new BitmapFont(BitmapFont::VARIABLE, "fonts/white-big.stf", 3));
+  } else {
+    console_font.reset(
+        new TTFFont("fonts/SuperTux-Medium.ttf", 12, 1.25f, 0, 1));
 
     auto font = get_font_for_locale(g_config->locale);
-    if(font != current_font)
-    {
+    if (font != current_font) {
       current_font = font;
       fixed_font.reset(new TTFFont(font, 18, 1.25f, 2, 1));
       normal_font = fixed_font;
@@ -77,28 +76,24 @@ Resources::load()
 
   /* Load menu images */
   checkbox = Surface::from_file("images/engine/menu/checkbox-unchecked.png");
-  checkbox_checked = Surface::from_file("images/engine/menu/checkbox-checked.png");
+  checkbox_checked =
+      Surface::from_file("images/engine/menu/checkbox-checked.png");
   back = Surface::from_file("images/engine/menu/arrow-back.png");
   arrow_left = Surface::from_file("images/engine/menu/arrow-left.png");
   arrow_right = Surface::from_file("images/engine/menu/arrow-right.png");
   no_tile = Surface::from_file("images/tiles/auxiliary/notile.png");
 }
 
-std::string
-Resources::get_font_for_locale(const std::string& locale)
-{
-  if(locale == "ne")
-    return "fonts/NotoSansDevanagari-Medium.ttf";
-  if(locale == "cmn" || locale == "ja" || locale == "zh_CN" || locale == "zh_TW")
+std::string Resources::get_font_for_locale(const std::string& locale) {
+  if (locale == "ne") return "fonts/NotoSansDevanagari-Medium.ttf";
+  if (locale == "cmn" || locale == "ja" || locale == "zh_CN" ||
+      locale == "zh_TW")
     return "fonts/NotoSansCJKjp-Medium.otf";
-  if(locale == "he")
-    return "fonts/NotoSansHebrew-Medium.ttf";
+  if (locale == "he") return "fonts/NotoSansHebrew-Medium.ttf";
   return "fonts/SuperTux-Medium.ttf";
 }
 
-void
-Resources::unload()
-{
+void Resources::unload() {
   // Free menu images
   no_tile.reset();
   checkbox.reset();
@@ -117,14 +112,8 @@ Resources::unload()
   mouse_cursor.reset();
 }
 
-Resources::Resources()
-{
-  load();
-}
+Resources::Resources() { load(); }
 
-Resources::~Resources()
-{
-  unload();
-}
+Resources::~Resources() { unload(); }
 
 /* EOF */

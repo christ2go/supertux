@@ -29,36 +29,38 @@ namespace {
 const float BULLET_XM = 600;
 }
 
-Bullet::Bullet(const Vector& pos, float xm, Direction dir, BonusType type_) :
-  physic(),
-  life_count(3),
-  sprite(),
-  lightsprite(SpriteManager::current()->create("images/objects/lightmap_light/lightmap_light-small.sprite")),
-  type(type_)
-{
+Bullet::Bullet(const Vector& pos, float xm, Direction dir, BonusType type_)
+    : physic(),
+      life_count(3),
+      sprite(),
+      lightsprite(SpriteManager::current()->create(
+          "images/objects/lightmap_light/lightmap_light-small.sprite")),
+      type(type_) {
   float speed = dir == Direction::RIGHT ? BULLET_XM : -BULLET_XM;
   physic.set_velocity_x(speed + xm);
 
   if (type == FIRE_BONUS) {
-    sprite = SpriteManager::current()->create("images/objects/bullets/firebullet.sprite");
+    sprite = SpriteManager::current()->create(
+        "images/objects/bullets/firebullet.sprite");
     lightsprite->set_blend(Blend::ADD);
     lightsprite->set_color(Color(0.3f, 0.1f, 0.0f));
- } else if (type == ICE_BONUS) {
+  } else if (type == ICE_BONUS) {
     life_count = 10;
-    sprite = SpriteManager::current()->create("images/objects/bullets/icebullet.sprite");
+    sprite = SpriteManager::current()->create(
+        "images/objects/bullets/icebullet.sprite");
   } else {
     log_warning << "Bullet::Bullet called with unknown BonusType" << std::endl;
     life_count = 10;
-    sprite = SpriteManager::current()->create("images/objects/bullets/firebullet.sprite");
+    sprite = SpriteManager::current()->create(
+        "images/objects/bullets/firebullet.sprite");
   }
 
   m_col.m_bbox.set_pos(pos);
-  m_col.m_bbox.set_size(sprite->get_current_hitbox_width(), sprite->get_current_hitbox_height());
+  m_col.m_bbox.set_size(sprite->get_current_hitbox_width(),
+                        sprite->get_current_hitbox_height());
 }
 
-void
-Bullet::update(float dt_sec)
-{
+void Bullet::update(float dt_sec) {
   // cause fireball color to flicker randomly
   if (gameRandom.rand(5) != 0) {
     lightsprite->set_color(Color(0.3f + gameRandom.randf(10) / 100.0f,
@@ -67,10 +69,8 @@ Bullet::update(float dt_sec)
   } else
     lightsprite->set_color(Color(0.3f, 0.1f, 0.0f));
   // remove bullet when it's offscreen
-  float scroll_x =
-    Sector::get().get_camera().get_translation().x;
-  float scroll_y =
-    Sector::get().get_camera().get_translation().y;
+  float scroll_x = Sector::get().get_camera().get_translation().x;
+  float scroll_y = Sector::get().get_camera().get_translation().y;
   if (get_pos().x < scroll_x ||
       get_pos().x > scroll_x + static_cast<float>(SCREEN_WIDTH) ||
       //     get_pos().y < scroll_y ||
@@ -83,18 +83,14 @@ Bullet::update(float dt_sec)
   m_col.m_movement = physic.get_movement(dt_sec);
 }
 
-void
-Bullet::draw(DrawingContext& context)
-{
+void Bullet::draw(DrawingContext& context) {
   sprite->draw(context.color(), get_pos(), LAYER_OBJECTS);
-  if (type == FIRE_BONUS){
+  if (type == FIRE_BONUS) {
     lightsprite->draw(context.light(), m_col.m_bbox.get_middle(), 0);
   }
 }
 
-void
-Bullet::collision_solid(const CollisionHit& hit)
-{
+void Bullet::collision_solid(const CollisionHit& hit) {
   if (hit.top || hit.bottom) {
     physic.set_velocity_y(-physic.get_velocity_y());
     life_count--;
@@ -107,15 +103,11 @@ Bullet::collision_solid(const CollisionHit& hit)
   }
 }
 
-void
-Bullet::ricochet(GameObject& , const CollisionHit& hit)
-{
+void Bullet::ricochet(GameObject&, const CollisionHit& hit) {
   collision_solid(hit);
 }
 
-HitResponse
-Bullet::collision(GameObject& , const CollisionHit& )
-{
+HitResponse Bullet::collision(GameObject&, const CollisionHit&) {
   return FORCE_MOVE;
 }
 

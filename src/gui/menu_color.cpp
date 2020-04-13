@@ -18,25 +18,20 @@
 
 #include "util/gettext.hpp"
 
-ColorMenu::ColorMenu(Color* color_) :
-  color(color_)
-{
+ColorMenu::ColorMenu(Color* color_) : color(color_) {
   add_label(_("Mix the colour"));
   add_hl();
 
-  add_color_channel( &(color->red), Color::RED);
-  add_color_channel( &(color->green), Color::GREEN);
-  add_color_channel( &(color->blue), Color::BLUE);
-  add_color_channel( &(color->alpha), Color::BLACK, -1, true);
+  add_color_channel(&(color->red), Color::RED);
+  add_color_channel(&(color->green), Color::GREEN);
+  add_color_channel(&(color->blue), Color::BLUE);
+  add_color_channel(&(color->alpha), Color::BLACK, -1, true);
   add_color_display(color);
 
   add_hl();
   add_back(_("OK"));
 }
 
-void
-ColorMenu::menu_action(MenuItem& item)
-{
-}
+void ColorMenu::menu_action(MenuItem& item) {}
 
 /* EOF */

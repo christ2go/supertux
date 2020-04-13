@@ -29,35 +29,36 @@
 static const float STUMPY_SPEED = 120;
 static const float INVINCIBLE_TIME = 1;
 
-Stumpy::Stumpy(const ReaderMapping& reader) :
-  WalkingBadguy(reader, "images/creatures/mr_tree/stumpy.sprite","left","right", LAYER_OBJECTS,
-                "images/objects/lightmap_light/lightmap_light-large.sprite"),
-  mystate(STATE_NORMAL),
-  invincible_timer()
-{
+Stumpy::Stumpy(const ReaderMapping& reader)
+    : WalkingBadguy(
+          reader, "images/creatures/mr_tree/stumpy.sprite", "left", "right",
+          LAYER_OBJECTS,
+          "images/objects/lightmap_light/lightmap_light-large.sprite"),
+      mystate(STATE_NORMAL),
+      invincible_timer() {
   walk_speed = STUMPY_SPEED;
   max_drop_height = 16;
   SoundManager::current()->preload("sounds/mr_treehit.ogg");
 }
 
-Stumpy::Stumpy(const Vector& pos, Direction d) :
-  WalkingBadguy(pos, d, "images/creatures/mr_tree/stumpy.sprite","left","right"),
-  mystate(STATE_INVINCIBLE),
-  invincible_timer()
-{
+Stumpy::Stumpy(const Vector& pos, Direction d)
+    : WalkingBadguy(pos, d, "images/creatures/mr_tree/stumpy.sprite", "left",
+                    "right"),
+      mystate(STATE_INVINCIBLE),
+      invincible_timer() {
   walk_speed = STUMPY_SPEED;
   max_drop_height = 16;
   SoundManager::current()->preload("sounds/mr_treehit.ogg");
   invincible_timer.start(INVINCIBLE_TIME);
 }
 
-void
-Stumpy::initialize()
-{
+void Stumpy::initialize() {
   switch (mystate) {
     case STATE_INVINCIBLE:
-      m_sprite->set_action(m_dir == Direction::LEFT ? "dizzy-left" : "dizzy-right");
-      m_col.m_bbox.set_size(m_sprite->get_current_hitbox_width(), m_sprite->get_current_hitbox_height());
+      m_sprite->set_action(m_dir == Direction::LEFT ? "dizzy-left"
+                                                    : "dizzy-right");
+      m_col.m_bbox.set_size(m_sprite->get_current_hitbox_width(),
+                            m_sprite->get_current_hitbox_height());
       m_physic.set_velocity_x(0);
       break;
     case STATE_NORMAL:
@@ -66,9 +67,7 @@ Stumpy::initialize()
   }
 }
 
-void
-Stumpy::active_update(float dt_sec)
-{
+void Stumpy::active_update(float dt_sec) {
   switch (mystate) {
     case STATE_INVINCIBLE:
       if (invincible_timer.check()) {
@@ -83,10 +82,7 @@ Stumpy::active_update(float dt_sec)
   }
 }
 
-bool
-Stumpy::collision_squished(GameObject& object)
-{
-
+bool Stumpy::collision_squished(GameObject& object) {
   // if we're still invincible, we ignore the hit
   if (mystate == STATE_INVINCIBLE) {
     SoundManager::current()->play("sounds/mr_treehit.ogg", get_pos());
@@ -97,8 +93,10 @@ Stumpy::collision_squished(GameObject& object)
 
   // if we can die, we do
   if (mystate == STATE_NORMAL) {
-    m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
-    m_col.set_size(m_sprite->get_current_hitbox_width(), m_sprite->get_current_hitbox_height());
+    m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left"
+                                                  : "squished-right");
+    m_col.set_size(m_sprite->get_current_hitbox_width(),
+                   m_sprite->get_current_hitbox_height());
     kill_squished(object);
     // spawn some particles
     // TODO: provide convenience function in MovingSprite or MovingObject?
@@ -106,28 +104,23 @@ Stumpy::collision_squished(GameObject& object)
       Vector ppos = m_col.m_bbox.get_middle();
       float angle = graphicsRandom.randf(-math::PI_2, math::PI_2);
       float velocity = graphicsRandom.randf(45, 90);
-      float vx = sinf(angle)*velocity;
-      float vy = -cosf(angle)*velocity;
+      float vx = sinf(angle) * velocity;
+      float vy = -cosf(angle) * velocity;
       Vector pspeed = Vector(vx, vy);
-      Vector paccel = Vector(0, Sector::get().get_gravity()*10);
+      Vector paccel = Vector(0, Sector::get().get_gravity() * 10);
       Sector::get().add<SpriteParticle>("images/objects/particles/bark.sprite",
-                                             "default",
-                                             ppos, ANCHOR_MIDDLE,
-                                             pspeed, paccel,
-                                             LAYER_OBJECTS-1);
+                                        "default", ppos, ANCHOR_MIDDLE, pspeed,
+                                        paccel, LAYER_OBJECTS - 1);
     }
 
     return true;
-
   }
 
-  //TODO: exception?
+  // TODO: exception?
   return true;
 }
 
-void
-Stumpy::collision_solid(const CollisionHit& hit)
-{
+void Stumpy::collision_solid(const CollisionHit& hit) {
   update_on_ground_flag(hit);
 
   switch (mystate) {
@@ -145,9 +138,7 @@ Stumpy::collision_solid(const CollisionHit& hit)
   }
 }
 
-HitResponse
-Stumpy::collision_badguy(BadGuy& badguy, const CollisionHit& hit)
-{
+HitResponse Stumpy::collision_badguy(BadGuy& badguy, const CollisionHit& hit) {
   switch (mystate) {
     case STATE_INVINCIBLE:
       if (hit.top || hit.bottom) {
@@ -164,10 +155,6 @@ Stumpy::collision_badguy(BadGuy& badguy, const CollisionHit& hit)
   return CONTINUE;
 }
 
-bool
-Stumpy::is_freezable() const
-{
-  return true;
-}
+bool Stumpy::is_freezable() const { return true; }
 
 /* EOF */

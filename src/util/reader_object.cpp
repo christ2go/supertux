@@ -24,30 +24,21 @@
 #include "util/reader_error.hpp"
 #include "util/reader_mapping.hpp"
 
-ReaderObject::ReaderObject(const ReaderDocument& doc, const sexp::Value& sx) :
-  m_doc(doc),
-  m_sx(sx)
-{
-}
+ReaderObject::ReaderObject(const ReaderDocument& doc, const sexp::Value& sx)
+    : m_doc(doc), m_sx(sx) {}
 
-std::string
-ReaderObject::get_name() const
-{
+std::string ReaderObject::get_name() const {
   assert_array_size_ge(m_doc, m_sx, 1);
   assert_is_symbol(m_doc, m_sx.as_array()[0]);
 
   return m_sx.as_array()[0].as_string();
 }
 
-ReaderMapping
-ReaderObject::get_mapping() const
-{
+ReaderMapping ReaderObject::get_mapping() const {
   return ReaderMapping(m_doc, m_sx);
 }
 
-ReaderCollection
-ReaderObject::get_collection() const
-{
+ReaderCollection ReaderObject::get_collection() const {
   return ReaderCollection(m_doc, m_sx);
 }
 

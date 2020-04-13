@@ -20,24 +20,14 @@
 #include "supertux/sector.hpp"
 #include "util/writer.hpp"
 
-MovingObject::MovingObject() :
-  m_col(COLGROUP_MOVING, *this)
-{
-}
+MovingObject::MovingObject() : m_col(COLGROUP_MOVING, *this) {}
 
-MovingObject::MovingObject(const ReaderMapping& reader) :
-  GameObject(reader),
-  m_col(COLGROUP_MOVING, *this)
-{
-}
+MovingObject::MovingObject(const ReaderMapping& reader)
+    : GameObject(reader), m_col(COLGROUP_MOVING, *this) {}
 
-MovingObject::~MovingObject()
-{
-}
+MovingObject::~MovingObject() {}
 
-ObjectSettings
-MovingObject::get_settings()
-{
+ObjectSettings MovingObject::get_settings() {
   ObjectSettings result = GameObject::get_settings();
 
   if (has_variable_size()) {
@@ -50,17 +40,23 @@ MovingObject::get_settings()
   return result;
 }
 
-void
-MovingObject::editor_select()
-{
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::LEFT_UP, ResizeMarker::Side::LEFT_UP);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::LEFT_UP, ResizeMarker::Side::NONE);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::LEFT_UP, ResizeMarker::Side::RIGHT_DOWN);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::NONE, ResizeMarker::Side::LEFT_UP);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::NONE, ResizeMarker::Side::RIGHT_DOWN);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::RIGHT_DOWN, ResizeMarker::Side::LEFT_UP);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::RIGHT_DOWN, ResizeMarker::Side::NONE);
-  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::RIGHT_DOWN, ResizeMarker::Side::RIGHT_DOWN);
+void MovingObject::editor_select() {
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::LEFT_UP,
+                                  ResizeMarker::Side::LEFT_UP);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::LEFT_UP,
+                                  ResizeMarker::Side::NONE);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::LEFT_UP,
+                                  ResizeMarker::Side::RIGHT_DOWN);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::NONE,
+                                  ResizeMarker::Side::LEFT_UP);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::NONE,
+                                  ResizeMarker::Side::RIGHT_DOWN);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::RIGHT_DOWN,
+                                  ResizeMarker::Side::LEFT_UP);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::RIGHT_DOWN,
+                                  ResizeMarker::Side::NONE);
+  Sector::get().add<ResizeMarker>(&m_col.m_bbox, ResizeMarker::Side::RIGHT_DOWN,
+                                  ResizeMarker::Side::RIGHT_DOWN);
 }
 
 /* EOF */

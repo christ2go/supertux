@@ -19,13 +19,9 @@
 #include "supertux/colorscheme.hpp"
 #include "video/color.hpp"
 
-ItemInactive::ItemInactive(const std::string& text_) :
-  MenuItem(text_)
-{
-}
+ItemInactive::ItemInactive(const std::string& text_) : MenuItem(text_) {}
 
-Color
-ItemInactive::get_color() const {
+Color ItemInactive::get_color() const {
   return ColorScheme::Menu::inactive_color;
 }
 

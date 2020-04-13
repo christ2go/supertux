@@ -24,42 +24,38 @@
 #include "util/gettext.hpp"
 #include "version.h"
 
-CommandLineArguments::CommandLineArguments() :
-  m_action(NO_ACTION),
-  m_log_level(LOG_WARNING),
-  datadir(),
-  userdir(),
-  fullscreen_size(),
-  fullscreen_refresh_rate(),
-  window_size(),
-  aspect_size(),
-  use_fullscreen(),
-  video(),
-  show_fps(),
-  show_player_pos(),
-  sound_enabled(),
-  music_enabled(),
-  filenames(),
-  enable_script_debugger(),
-  start_demo(),
-  record_demo(),
-  tux_spawn_pos(),
-  sector(),
-  spawnpoint(),
-  developer_mode(),
-  christmas_mode(),
-  repository_url(),
-  editor(),
-  resave()
-{
-}
+CommandLineArguments::CommandLineArguments()
+    : m_action(NO_ACTION),
+      m_log_level(LOG_WARNING),
+      datadir(),
+      userdir(),
+      fullscreen_size(),
+      fullscreen_refresh_rate(),
+      window_size(),
+      aspect_size(),
+      use_fullscreen(),
+      video(),
+      show_fps(),
+      show_player_pos(),
+      sound_enabled(),
+      music_enabled(),
+      filenames(),
+      enable_script_debugger(),
+      start_demo(),
+      record_demo(),
+      tux_spawn_pos(),
+      sector(),
+      spawnpoint(),
+      developer_mode(),
+      christmas_mode(),
+      repository_url(),
+      editor(),
+      resave() {}
 
-void
-CommandLineArguments::print_datadir() const
-{
+void CommandLineArguments::print_datadir() const {
   // Print the datadir searchpath to stdout, one path per
   // line. Then exit. Intended for use by the supertux-editor.
-  char **sp;
+  char** sp;
   sp = PHYSFS_getSearchPath();
   if (sp)
     for (size_t sp_index = 0; sp[sp_index]; sp_index++)
@@ -67,181 +63,162 @@ CommandLineArguments::print_datadir() const
   PHYSFS_freeList(sp);
 }
 
-void
-CommandLineArguments::print_help(const char* arg0) const
-{
+void CommandLineArguments::print_help(const char* arg0) const {
   std::cerr
-    << boost::format(_("Usage: %s [OPTIONS] [LEVELFILE]")) % arg0 << "\n" << "\n"
-    << _("General Options:") << "\n"
-    << _("  -h, --help                   Show this help message and quit") << "\n"
-    << _("  -v, --version                Show SuperTux version and quit") << "\n"
-    << _("  --verbose                    Print verbose messages") << "\n"
-    << _("  --debug                      Print extra verbose messages") << "\n"
-    << _( "  --print-datadir              Print SuperTux's primary data directory.") << "\n"
-    << "\n"
-    << _("Video Options:") << "\n"
-    << _("  -f, --fullscreen             Run in fullscreen mode") << "\n"
-    << _("  -w, --window                 Run in window mode") << "\n"
-    << _("  -g, --geometry WIDTHxHEIGHT  Run SuperTux in given resolution") << "\n"
-    << _("  -a, --aspect WIDTH:HEIGHT    Run SuperTux with given aspect ratio") << "\n"
-    << _("  -d, --default                Reset video settings to default values") << "\n"
-    << _("  --renderer RENDERER          Use sdl, opengl, or auto to render") << "\n"
-    << "\n"
-    << _("Audio Options:") << "\n"
-    << _("  --disable-sound              Disable sound effects") << "\n"
-    << _("  --disable-music              Disable music") << "\n"
-    << "\n"
-    << _("Game Options:") << "\n"
-    << _("  --edit-level                 Open given level in editor") << "\n"
-    << _("  --resave                     Loads given level and saves it") << "\n"
-    << _("  --show-fps                   Display framerate in levels") << "\n"
-    << _("  --no-show-fps                Do not display framerate in levels") << "\n"
-    << _("  --show-pos                   Display player's current position") << "\n"
-    << _("  --no-show-pos                Do not display player's position") << "\n"
-    << _("  --developer                  Switch on developer feature") << "\n"
-    << _("  -s, --debug-scripts          Enable script debugger.") << "\n"
-    << _("  --spawn-pos X,Y              Where in the level to spawn Tux. Only used if level is specified.") << "\n"
-    << _("  --sector SECTOR              Spawn Tux in SECTOR\n") << "\n"
-    << _("  --spawnpoint SPAWNPOINT      Spawn Tux at SPAWNPOINT\n") << "\n"
-    << "\n"
-    << _("Demo Recording Options:") << "\n"
-    << _("  --record-demo FILE LEVEL     Record a demo to FILE") << "\n"
-    << _("  --play-demo FILE LEVEL       Play a recorded demo") << "\n"
-    << "\n"
-    << _("Directory Options:") << "\n"
-    << _("  --datadir DIR                Set the directory for the games datafiles") << "\n"
-    << _("  --userdir DIR                Set the directory for user data (savegames, etc.)") << "\n"
-    << "\n"
-    << _("Add-On Options:") << "\n"
-    << _("  --repository-url URL         Set the URL to the Add-On repository") << "\n"
-    << "\n"
-    << _("Environment variables:") << "\n"
-    << _("  SUPERTUX2_USER_DIR           Directory for user data (savegames, etc.)" ) << "\n"
-    << _("  SUPERTUX2_DATA_DIR           Directory for the games datafiles" ) << "\n"
-    << "\n"
-    << std::flush;
+      << boost::format(_("Usage: %s [OPTIONS] [LEVELFILE]")) % arg0 << "\n"
+      << "\n"
+      << _("General Options:") << "\n"
+      << _("  -h, --help                   Show this help message and quit")
+      << "\n"
+      << _("  -v, --version                Show SuperTux version and quit")
+      << "\n"
+      << _("  --verbose                    Print verbose messages") << "\n"
+      << _("  --debug                      Print extra verbose messages")
+      << "\n"
+      << _("  --print-datadir              Print SuperTux's primary data "
+           "directory.")
+      << "\n"
+      << "\n"
+      << _("Video Options:") << "\n"
+      << _("  -f, --fullscreen             Run in fullscreen mode") << "\n"
+      << _("  -w, --window                 Run in window mode") << "\n"
+      << _("  -g, --geometry WIDTHxHEIGHT  Run SuperTux in given resolution")
+      << "\n"
+      << _("  -a, --aspect WIDTH:HEIGHT    Run SuperTux with given aspect "
+           "ratio")
+      << "\n"
+      << _("  -d, --default                Reset video settings to default "
+           "values")
+      << "\n"
+      << _("  --renderer RENDERER          Use sdl, opengl, or auto to render")
+      << "\n"
+      << "\n"
+      << _("Audio Options:") << "\n"
+      << _("  --disable-sound              Disable sound effects") << "\n"
+      << _("  --disable-music              Disable music") << "\n"
+      << "\n"
+      << _("Game Options:") << "\n"
+      << _("  --edit-level                 Open given level in editor") << "\n"
+      << _("  --resave                     Loads given level and saves it")
+      << "\n"
+      << _("  --show-fps                   Display framerate in levels") << "\n"
+      << _("  --no-show-fps                Do not display framerate in levels")
+      << "\n"
+      << _("  --show-pos                   Display player's current position")
+      << "\n"
+      << _("  --no-show-pos                Do not display player's position")
+      << "\n"
+      << _("  --developer                  Switch on developer feature") << "\n"
+      << _("  -s, --debug-scripts          Enable script debugger.") << "\n"
+      << _("  --spawn-pos X,Y              Where in the level to spawn Tux. "
+           "Only used if level is specified.")
+      << "\n"
+      << _("  --sector SECTOR              Spawn Tux in SECTOR\n") << "\n"
+      << _("  --spawnpoint SPAWNPOINT      Spawn Tux at SPAWNPOINT\n") << "\n"
+      << "\n"
+      << _("Demo Recording Options:") << "\n"
+      << _("  --record-demo FILE LEVEL     Record a demo to FILE") << "\n"
+      << _("  --play-demo FILE LEVEL       Play a recorded demo") << "\n"
+      << "\n"
+      << _("Directory Options:") << "\n"
+      << _("  --datadir DIR                Set the directory for the games "
+           "datafiles")
+      << "\n"
+      << _("  --userdir DIR                Set the directory for user data "
+           "(savegames, etc.)")
+      << "\n"
+      << "\n"
+      << _("Add-On Options:") << "\n"
+      << _("  --repository-url URL         Set the URL to the Add-On "
+           "repository")
+      << "\n"
+      << "\n"
+      << _("Environment variables:") << "\n"
+      << _("  SUPERTUX2_USER_DIR           Directory for user data (savegames, "
+           "etc.)")
+      << "\n"
+      << _("  SUPERTUX2_DATA_DIR           Directory for the games datafiles")
+      << "\n"
+      << "\n"
+      << std::flush;
 }
 
-void
-CommandLineArguments::print_version() const
-{
+void CommandLineArguments::print_version() const {
   std::cout << PACKAGE_NAME << " " << PACKAGE_VERSION << std::endl;
 }
 
-void
-CommandLineArguments::parse_args(int argc, char** argv)
-{
-  for (int i = 1; i < argc; ++i)
-  {
+void CommandLineArguments::parse_args(int argc, char** argv) {
+  for (int i = 1; i < argc; ++i) {
     std::string arg = argv[i];
 
-    if (arg == "--version" || arg == "-v")
-    {
+    if (arg == "--version" || arg == "-v") {
       m_action = PRINT_VERSION;
 
-    }
-    else if (arg == "--help" || arg == "-h")
-    {
+    } else if (arg == "--help" || arg == "-h") {
       m_action = PRINT_HELP;
-    }
-    else if (arg == "--print-datadir")
-    {
+    } else if (arg == "--print-datadir") {
       m_action = PRINT_DATADIR;
-    }
-    else if (arg == "--debug")
-    {
+    } else if (arg == "--debug") {
       m_log_level = LOG_DEBUG;
-    }
-    else if (arg == "--verbose")
-    {
-      if (m_log_level < LOG_INFO)
-      {
+    } else if (arg == "--verbose") {
+      if (m_log_level < LOG_INFO) {
         m_log_level = LOG_INFO;
       }
-    }
-    else if (arg == "--datadir")
-    {
-      if (i + 1 >= argc)
-      {
+    } else if (arg == "--datadir") {
+      if (i + 1 >= argc) {
         throw std::runtime_error("Need to specify a directory for --datadir");
-      }
-      else
-      {
+      } else {
         datadir = argv[++i];
       }
-    }
-    else if (arg == "--userdir")
-    {
-      if (i + 1 >= argc)
-      {
+    } else if (arg == "--userdir") {
+      if (i + 1 >= argc) {
         throw std::runtime_error("Need to specify a directory for --userdir");
-      }
-      else
-      {
+      } else {
         userdir = argv[++i];
       }
-    }
-    else if (arg == "--fullscreen" || arg == "-f")
-    {
+    } else if (arg == "--fullscreen" || arg == "-f") {
       use_fullscreen = true;
-    }
-    else if (arg == "--default" || arg == "-d")
-    {
+    } else if (arg == "--default" || arg == "-d") {
       use_fullscreen = false;
 
       window_size = Size(1280, 800);
       fullscreen_size = Size(1280, 800);
       fullscreen_refresh_rate = 0;
       aspect_size = Size(0, 0);  // auto detect
-    }
-    else if (arg == "--window" || arg == "-w")
-    {
+    } else if (arg == "--window" || arg == "-w") {
       use_fullscreen = false;
-    }
-    else if (arg == "--geometry" || arg == "-g")
-    {
+    } else if (arg == "--geometry" || arg == "-g") {
       i += 1;
-      if (i >= argc)
-      {
-        throw std::runtime_error("Need to specify a size (WIDTHxHEIGHT) for geometry argument");
-      }
-      else
-      {
+      if (i >= argc) {
+        throw std::runtime_error(
+            "Need to specify a size (WIDTHxHEIGHT) for geometry argument");
+      } else {
         int width, height;
-        if (sscanf(argv[i], "%9dx%9d", &width, &height) != 2)
-        {
-          throw std::runtime_error("Invalid geometry spec, should be WIDTHxHEIGHT");
-        }
-        else
-        {
-          window_size     = Size(width, height);
+        if (sscanf(argv[i], "%9dx%9d", &width, &height) != 2) {
+          throw std::runtime_error(
+              "Invalid geometry spec, should be WIDTHxHEIGHT");
+        } else {
+          window_size = Size(width, height);
           fullscreen_size = Size(width, height);
           fullscreen_refresh_rate = 0;
         }
       }
-    }
-    else if (arg == "--aspect" || arg == "-a")
-    {
+    } else if (arg == "--aspect" || arg == "-a") {
       i += 1;
-      if (i >= argc)
-      {
-        throw std::runtime_error("Need to specify a ratio (WIDTH:HEIGHT) for aspect ratio");
-      }
-      else
-      {
-        int aspect_width  = 0;
+      if (i >= argc) {
+        throw std::runtime_error(
+            "Need to specify a ratio (WIDTH:HEIGHT) for aspect ratio");
+      } else {
+        int aspect_width = 0;
         int aspect_height = 0;
-        if (strcmp(argv[i], "auto") == 0)
-        {
-          aspect_width  = 0;
+        if (strcmp(argv[i], "auto") == 0) {
+          aspect_width = 0;
           aspect_height = 0;
-        }
-        else if (sscanf(argv[i], "%9d:%9d", &aspect_width, &aspect_height) != 2)
-        {
-          throw std::runtime_error("Invalid aspect spec, should be WIDTH:HEIGHT or auto");
-        }
-        else
-        {
+        } else if (sscanf(argv[i], "%9d:%9d", &aspect_width, &aspect_height) !=
+                   2) {
+          throw std::runtime_error(
+              "Invalid aspect spec, should be WIDTH:HEIGHT or auto");
+        } else {
           // use aspect ratio to calculate logical resolution
           if (aspect_width / aspect_height > 1) {
             aspect_size = Size(600 * aspect_width / aspect_height, 600);
@@ -250,85 +227,50 @@ CommandLineArguments::parse_args(int argc, char** argv)
           }
         }
       }
-    }
-    else if (arg == "--renderer")
-    {
+    } else if (arg == "--renderer") {
       i += 1;
-      if (i >= argc)
-      {
-        throw std::runtime_error("Need to specify a renderer for renderer argument");
-      }
-      else
-      {
+      if (i >= argc) {
+        throw std::runtime_error(
+            "Need to specify a renderer for renderer argument");
+      } else {
         video = VideoSystem::get_video_system(argv[i]);
       }
-    }
-    else if (arg == "--show-fps")
-    {
+    } else if (arg == "--show-fps") {
       show_fps = true;
-    }
-    else if (arg == "--no-show-fps")
-    {
+    } else if (arg == "--no-show-fps") {
       show_fps = false;
-    }
-    else if (arg == "--show-pos")
-    {
+    } else if (arg == "--show-pos") {
       show_player_pos = true;
-    }
-    else if (arg == "--no-show-pos")
-    {
+    } else if (arg == "--no-show-pos") {
       show_player_pos = false;
-    }
-    else if (arg == "--developer")
-    {
+    } else if (arg == "--developer") {
       developer_mode = true;
-    }
-    else if (arg == "--christmas")
-    {
+    } else if (arg == "--christmas") {
       christmas_mode = true;
-    }
-    else if (arg == "--no-christmas")
-    {
+    } else if (arg == "--no-christmas") {
       christmas_mode = false;
-    }
-    else if (arg == "--disable-sound" || arg == "--disable-sfx")
-    {
+    } else if (arg == "--disable-sound" || arg == "--disable-sfx") {
       sound_enabled = false;
-    }
-    else if (arg == "--disable-music")
-    {
+    } else if (arg == "--disable-music") {
       music_enabled = false;
-    }
-    else if (arg == "--play-demo")
-    {
-      if (i + 1 >= argc)
-      {
+    } else if (arg == "--play-demo") {
+      if (i + 1 >= argc) {
         throw std::runtime_error("Need to specify a demo filename");
-      }
-      else
-      {
+      } else {
         start_demo = argv[++i];
       }
-    }
-    else if (arg == "--record-demo")
-    {
-      if (i + 1 >= argc)
-      {
+    } else if (arg == "--record-demo") {
+      if (i + 1 >= argc) {
         throw std::runtime_error("Need to specify a demo filename");
-      }
-      else
-      {
+      } else {
         record_demo = argv[++i];
       }
-    }
-    else if (arg == "--spawn-pos")
-    {
+    } else if (arg == "--spawn-pos") {
       Vector spawn_pos;
 
       if (++i >= argc)
         throw std::runtime_error("Need to specify a spawn-pos X,Y");
-      else
-      {
+      else {
         int x, y;
         if (sscanf(argv[i], "%9d,%9d", &x, &y) != 2)
           throw std::runtime_error("Invalid spawn-pos, should be X,Y");
@@ -337,51 +279,38 @@ CommandLineArguments::parse_args(int argc, char** argv)
       }
 
       tux_spawn_pos = spawn_pos;
-    }
-    else if (arg == "--sector") {
+    } else if (arg == "--sector") {
       if (++i >= argc) {
         throw std::runtime_error("--sector SECTOR needs an argument");
       } else {
         sector = argv[i];
       }
-    }
-    else if (arg == "--spawnpoint") {
+    } else if (arg == "--spawnpoint") {
       if (++i >= argc) {
         throw std::runtime_error("--spawnpoint SPAWNPOINT needs an argument");
       } else {
         spawnpoint = argv[i];
       }
-    }
-    else if (arg == "--debug-scripts" || arg == "-s")
-    {
+    } else if (arg == "--debug-scripts" || arg == "-s") {
       enable_script_debugger = true;
-    }
-    else if (arg == "--repository-url")
-    {
-      if (i + 1 >= argc)
-      {
+    } else if (arg == "--repository-url") {
+      if (i + 1 >= argc) {
         throw std::runtime_error("Need to specify a repository URL");
-      }
-      else
-      {
+      } else {
         repository_url = argv[++i];
       }
-    }
-    else if (arg == "--editor" || arg == "--edit-level")
-    {
+    } else if (arg == "--editor" || arg == "--edit-level") {
       editor = true;
-    }
-    else if (arg == "--resave")
-    {
+    } else if (arg == "--resave") {
       resave = true;
-    }
-    else if (arg[0] != '-')
-    {
+    } else if (arg[0] != '-') {
       filenames.push_back(arg);
-    }
-    else
-    {
-      throw std::runtime_error((boost::format("Unknown option '%1%''. Use --help to see a list of options") % arg).str());
+    } else {
+      throw std::runtime_error(
+          (boost::format(
+               "Unknown option '%1%''. Use --help to see a list of options") %
+           arg)
+              .str());
     }
   }
 
@@ -391,10 +320,11 @@ CommandLineArguments::parse_args(int argc, char** argv)
   }
 }
 
-void
-CommandLineArguments::merge_into(Config& config)
-{
-#define merge_option(x) if (x) { config.x = *(x); }
+void CommandLineArguments::merge_into(Config& config) {
+#define merge_option(x) \
+  if (x) {              \
+    config.x = *(x);    \
+  }
 
   merge_option(fullscreen_size);
   merge_option(fullscreen_refresh_rate);

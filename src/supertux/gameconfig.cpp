@@ -22,49 +22,44 @@
 #include "util/writer.hpp"
 #include "util/log.hpp"
 
-Config::Config() :
-  profile(1),
-  fullscreen_size(0, 0),
-  fullscreen_refresh_rate(0),
-  window_size(1280, 800),
-  window_resizable(true),
-  aspect_size(0, 0), // auto detect
-  magnification(0.0f),
-  use_fullscreen(false),
-  video(VideoSystem::VIDEO_AUTO),
-  try_vsync(true),
-  show_fps(false),
-  show_player_pos(false),
-  show_controller(false),
-  sound_enabled(true),
-  music_enabled(true),
-  sound_volume(100),
-  music_volume(50),
-  random_seed(0), // set by time(), by default (unless in config)
-  enable_script_debugger(false),
-  start_demo(),
-  record_demo(),
-  tux_spawn_pos(),
-  locale(),
-  keyboard_config(),
-  joystick_config(),
-  addons(),
-  developer_mode(false),
-  christmas_mode(false),
-  transitions_enabled(true),
-  confirmation_dialog(false),
-  pause_on_focusloss(true),
-  repository_url()
-{
-}
+Config::Config()
+    : profile(1),
+      fullscreen_size(0, 0),
+      fullscreen_refresh_rate(0),
+      window_size(1280, 800),
+      window_resizable(true),
+      aspect_size(0, 0),  // auto detect
+      magnification(0.0f),
+      use_fullscreen(false),
+      video(VideoSystem::VIDEO_AUTO),
+      try_vsync(true),
+      show_fps(false),
+      show_player_pos(false),
+      show_controller(false),
+      sound_enabled(true),
+      music_enabled(true),
+      sound_volume(100),
+      music_volume(50),
+      random_seed(0),  // set by time(), by default (unless in config)
+      enable_script_debugger(false),
+      start_demo(),
+      record_demo(),
+      tux_spawn_pos(),
+      locale(),
+      keyboard_config(),
+      joystick_config(),
+      addons(),
+      developer_mode(false),
+      christmas_mode(false),
+      transitions_enabled(true),
+      confirmation_dialog(false),
+      pause_on_focusloss(true),
+      repository_url() {}
 
-void
-Config::load()
-{
+void Config::load() {
   auto doc = ReaderDocument::from_file("config");
   auto root = doc.get_root();
-  if (root.get_name() != "supertux-config")
-  {
+  if (root.get_name() != "supertux-config") {
     throw std::runtime_error("File is not a supertux-config file");
   }
 
@@ -78,8 +73,7 @@ Config::load()
   config_mapping.get("pause_on_focusloss", pause_on_focusloss);
 
   if (is_christmas()) {
-    if (!config_mapping.get("christmas", christmas_mode))
-    {
+    if (!config_mapping.get("christmas", christmas_mode)) {
       christmas_mode = true;
     }
   }
@@ -89,38 +83,36 @@ Config::load()
   config_mapping.get("repository_url", repository_url);
 
   boost::optional<ReaderMapping> config_video_mapping;
-  if (config_mapping.get("video", config_video_mapping))
-  {
+  if (config_mapping.get("video", config_video_mapping)) {
     config_video_mapping->get("fullscreen", use_fullscreen);
     std::string video_string;
     config_video_mapping->get("video", video_string);
     video = VideoSystem::get_video_system(video_string);
     config_video_mapping->get("vsync", try_vsync);
 
-    config_video_mapping->get("fullscreen_width",  fullscreen_size.width);
+    config_video_mapping->get("fullscreen_width", fullscreen_size.width);
     config_video_mapping->get("fullscreen_height", fullscreen_size.height);
-    if (fullscreen_size.width < 0 || fullscreen_size.height < 0)
-    {
+    if (fullscreen_size.width < 0 || fullscreen_size.height < 0) {
       // Somehow, an invalid size got entered into the config file,
       // let's use the "auto" setting instead.
       fullscreen_size = Size(0, 0);
     }
-    config_video_mapping->get("fullscreen_refresh_rate", fullscreen_refresh_rate);
+    config_video_mapping->get("fullscreen_refresh_rate",
+                              fullscreen_refresh_rate);
 
-    config_video_mapping->get("window_width",  window_size.width);
+    config_video_mapping->get("window_width", window_size.width);
     config_video_mapping->get("window_height", window_size.height);
 
     config_video_mapping->get("window_resizable", window_resizable);
 
-    config_video_mapping->get("aspect_width",  aspect_size.width);
+    config_video_mapping->get("aspect_width", aspect_size.width);
     config_video_mapping->get("aspect_height", aspect_size.height);
 
     config_video_mapping->get("magnification", magnification);
   }
 
   boost::optional<ReaderMapping> config_audio_mapping;
-  if (config_mapping.get("audio", config_audio_mapping))
-  {
+  if (config_mapping.get("audio", config_audio_mapping)) {
     config_audio_mapping->get("sound_enabled", sound_enabled);
     config_audio_mapping->get("music_enabled", music_enabled);
     config_audio_mapping->get("sound_volume", sound_volume);
@@ -128,49 +120,38 @@ Config::load()
   }
 
   boost::optional<ReaderMapping> config_control_mapping;
-  if (config_mapping.get("control", config_control_mapping))
-  {
+  if (config_mapping.get("control", config_control_mapping)) {
     boost::optional<ReaderMapping> keymap_mapping;
-    if (config_control_mapping->get("keymap", keymap_mapping))
-    {
+    if (config_control_mapping->get("keymap", keymap_mapping)) {
       keyboard_config.read(*keymap_mapping);
     }
 
     boost::optional<ReaderMapping> joystick_mapping;
-    if (config_control_mapping->get("joystick", joystick_mapping))
-    {
+    if (config_control_mapping->get("joystick", joystick_mapping)) {
       joystick_config.read(*joystick_mapping);
     }
   }
 
   boost::optional<ReaderCollection> config_addons_mapping;
-  if (config_mapping.get("addons", config_addons_mapping))
-  {
-    for (auto const& addon_node : config_addons_mapping->get_objects())
-    {
-      if (addon_node.get_name() == "addon")
-      {
+  if (config_mapping.get("addons", config_addons_mapping)) {
+    for (auto const& addon_node : config_addons_mapping->get_objects()) {
+      if (addon_node.get_name() == "addon") {
         auto addon = addon_node.get_mapping();
 
         std::string id;
         bool enabled = false;
-        if (addon.get("id", id) &&
-            addon.get("enabled", enabled))
-        {
+        if (addon.get("id", id) && addon.get("enabled", enabled)) {
           addons.push_back({id, enabled});
         }
-      }
-      else
-      {
-        log_warning << "Unknown token in config file: " << addon_node.get_name() << std::endl;
+      } else {
+        log_warning << "Unknown token in config file: " << addon_node.get_name()
+                    << std::endl;
       }
     }
   }
 }
 
-void
-Config::save()
-{
+void Config::save() {
   Writer writer("config");
 
   writer.start_list("supertux-config");
@@ -199,16 +180,16 @@ Config::save()
   }
   writer.write("vsync", try_vsync);
 
-  writer.write("fullscreen_width",  fullscreen_size.width);
+  writer.write("fullscreen_width", fullscreen_size.width);
   writer.write("fullscreen_height", fullscreen_size.height);
   writer.write("fullscreen_refresh_rate", fullscreen_refresh_rate);
 
-  writer.write("window_width",  window_size.width);
+  writer.write("window_width", window_size.width);
   writer.write("window_height", window_size.height);
 
   writer.write("window_resizable", window_resizable);
 
-  writer.write("aspect_width",  aspect_size.width);
+  writer.write("aspect_width", aspect_size.width);
   writer.write("aspect_height", aspect_size.height);
 
   writer.write("magnification", magnification);
@@ -235,8 +216,7 @@ Config::save()
   writer.end_list("control");
 
   writer.start_list("addons");
-  for (const auto& addon : addons)
-  {
+  for (const auto& addon : addons) {
     writer.start_list("addon");
     writer.write("id", addon.id);
     writer.write("enabled", addon.enabled);

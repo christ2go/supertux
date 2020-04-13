@@ -20,42 +20,29 @@
 #include "collision/collision_listener.hpp"
 #include "supertux/game_object.hpp"
 
-CollisionObject::CollisionObject(CollisionGroup group, CollisionListener& listener) :
-  m_listener(listener),
-  m_bbox(),
-  m_movement(),
-  m_group(group),
-  m_dest()
-{
-}
+CollisionObject::CollisionObject(CollisionGroup group,
+                                 CollisionListener& listener)
+    : m_listener(listener), m_bbox(), m_movement(), m_group(group), m_dest() {}
 
-void
-CollisionObject::collision_solid(const CollisionHit& hit)
-{
+void CollisionObject::collision_solid(const CollisionHit& hit) {
   m_listener.collision_solid(hit);
 }
 
-bool
-CollisionObject::collides(CollisionObject& other, const CollisionHit& hit) const
-{
+bool CollisionObject::collides(CollisionObject& other,
+                               const CollisionHit& hit) const {
   return m_listener.collides(dynamic_cast<GameObject&>(other.m_listener), hit);
 }
 
-HitResponse
-CollisionObject::collision(CollisionObject& other, const CollisionHit& hit)
-{
+HitResponse CollisionObject::collision(CollisionObject& other,
+                                       const CollisionHit& hit) {
   return m_listener.collision(dynamic_cast<GameObject&>(other.m_listener), hit);
 }
 
-void
-CollisionObject::collision_tile(uint32_t tile_attributes)
-{
+void CollisionObject::collision_tile(uint32_t tile_attributes) {
   m_listener.collision_tile(tile_attributes);
 }
 
-bool
-CollisionObject::is_valid() const
-{
+bool CollisionObject::is_valid() const {
   return m_listener.listener_is_valid();
 }
 

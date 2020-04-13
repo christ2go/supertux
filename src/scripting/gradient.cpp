@@ -20,9 +20,7 @@
 
 namespace scripting {
 
-void
-Gradient::set_direction(const std::string& direction)
-{
+void Gradient::set_direction(const std::string& direction) {
   SCRIPT_GUARD_VOID;
 
   if (direction == "horizontal")
@@ -37,46 +35,35 @@ Gradient::set_direction(const std::string& direction)
     log_info << "Invalid direction for gradient \"" << direction << "\"";
 }
 
-std::string
-Gradient::get_direction() const
-{
+std::string Gradient::get_direction() const {
   SCRIPT_GUARD_DEFAULT;
 
   auto direction = object.get_direction();
 
-  if (direction == GradientDirection::HORIZONTAL)
-    return "horizontal";
-  if (direction == GradientDirection::VERTICAL)
-    return "vertical";
+  if (direction == GradientDirection::HORIZONTAL) return "horizontal";
+  if (direction == GradientDirection::VERTICAL) return "vertical";
   if (direction == GradientDirection::HORIZONTAL_SECTOR)
     return "horizontal_sector";
-  if (direction == GradientDirection::VERTICAL_SECTOR)
-    return "vertical_sector";
+  if (direction == GradientDirection::VERTICAL_SECTOR) return "vertical_sector";
 
   return nullptr;
 }
 
-void
-Gradient::set_color1(float red, float green, float blue)
-{
+void Gradient::set_color1(float red, float green, float blue) {
   SCRIPT_GUARD_VOID;
   object.set_gradient(Color(red, green, blue), object.get_gradient_bottom());
 }
 
-void
-Gradient::set_color2(float red, float green, float blue)
-{
+void Gradient::set_color2(float red, float green, float blue) {
   SCRIPT_GUARD_VOID;
   object.set_gradient(object.get_gradient_top(), Color(red, green, blue));
 }
 
-void
-Gradient::swap_colors()
-{
+void Gradient::swap_colors() {
   SCRIPT_GUARD_VOID;
   object.set_gradient(object.get_gradient_bottom(), object.get_gradient_top());
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

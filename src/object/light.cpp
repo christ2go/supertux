@@ -19,25 +19,17 @@
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
 
-Light::Light(const Vector& center, const Color& color_) :
-  position(center),
-  color(color_),
-  sprite(SpriteManager::current()->create("images/objects/lightmap_light/lightmap_light.sprite"))
-{
-}
+Light::Light(const Vector& center, const Color& color_)
+    : position(center),
+      color(color_),
+      sprite(SpriteManager::current()->create(
+          "images/objects/lightmap_light/lightmap_light.sprite")) {}
 
-Light::~Light()
-{
-}
+Light::~Light() {}
 
-void
-Light::update(float )
-{
-}
+void Light::update(float) {}
 
-void
-Light::draw(DrawingContext& context)
-{
+void Light::draw(DrawingContext& context) {
   sprite->set_color(color);
   sprite->set_blend(Blend::ADD);
   sprite->draw(context.light(), position, 0);

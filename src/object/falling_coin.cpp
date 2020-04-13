@@ -22,24 +22,20 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-FallingCoin::FallingCoin(const Vector& start_position, const int vel_x) :
-  physic(),
-  pos(start_position),
-  sprite(SpriteManager::current()->create("images/objects/coin/coin.sprite"))
-{
+FallingCoin::FallingCoin(const Vector& start_position, const int vel_x)
+    : physic(),
+      pos(start_position),
+      sprite(
+          SpriteManager::current()->create("images/objects/coin/coin.sprite")) {
   physic.set_velocity_y(-800.0f);
   physic.set_velocity_x(static_cast<float>(vel_x));
 }
 
-void
-FallingCoin::draw(DrawingContext& context)
-{
+void FallingCoin::draw(DrawingContext& context) {
   sprite->draw(context.color(), pos, LAYER_FLOATINGOBJECTS + 5);
 }
 
-void
-FallingCoin::update(float dt_sec)
-{
+void FallingCoin::update(float dt_sec) {
   pos += physic.get_movement(dt_sec);
   if (pos.y > static_cast<float>(SCREEN_HEIGHT) &&
       physic.get_velocity_y() > 0.0f)

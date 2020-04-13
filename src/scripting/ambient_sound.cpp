@@ -20,27 +20,21 @@
 
 namespace scripting {
 
-void
-AmbientSound::set_pos(float x, float y)
-{
+void AmbientSound::set_pos(float x, float y) {
   SCRIPT_GUARD_VOID;
   object.set_pos(x, y);
 }
 
-float
-AmbientSound::get_pos_x() const
-{
+float AmbientSound::get_pos_x() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos_x();
 }
 
-float
-AmbientSound::get_pos_y() const
-{
+float AmbientSound::get_pos_y() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos_y();
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

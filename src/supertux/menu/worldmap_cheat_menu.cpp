@@ -26,8 +26,7 @@
 #include "worldmap/tux.hpp"
 #include "worldmap/worldmap.hpp"
 
-WorldmapCheatMenu::WorldmapCheatMenu()
-{
+WorldmapCheatMenu::WorldmapCheatMenu() {
   auto worldmap = worldmap::WorldMap::current();
   auto& tux = worldmap->get_singleton_by_type<worldmap::Tux>();
 
@@ -40,8 +39,8 @@ WorldmapCheatMenu::WorldmapCheatMenu()
   add_entry(MNID_EARTH, _("Bonus: Earth"));
   add_entry(MNID_SHRINK, _("Bonus: None"));
   add_hl();
-  add_entry(MNID_GHOST, (tux.get_ghost_mode() ?
-                         _("Leave Ghost Mode") : _("Activate Ghost Mode")));
+  add_entry(MNID_GHOST, (tux.get_ghost_mode() ? _("Leave Ghost Mode")
+                                              : _("Activate Ghost Mode")));
   add_hl();
   add_entry(MNID_FINISH_LEVEL, _("Finish Level"));
   add_entry(MNID_RESET_LEVEL, _("Reset Level"));
@@ -55,17 +54,14 @@ WorldmapCheatMenu::WorldmapCheatMenu()
   add_back(_("Back"));
 }
 
-void
-WorldmapCheatMenu::menu_action(MenuItem& item)
-{
+void WorldmapCheatMenu::menu_action(MenuItem& item) {
   auto worldmap = worldmap::WorldMap::current();
   auto& tux = worldmap->get_singleton_by_type<worldmap::Tux>();
   assert(worldmap);
 
   PlayerStatus& status = worldmap->get_savegame().get_player_status();
 
-  switch (item.get_id())
-  {
+  switch (item.get_id()) {
     case MNID_GROW:
       status.bonus = GROWUP_BONUS;
       break;
@@ -96,27 +92,21 @@ WorldmapCheatMenu::menu_action(MenuItem& item)
       tux.set_ghost_mode(!tux.get_ghost_mode());
       break;
 
-    case MNID_FINISH_LEVEL:
-      {
-        auto level_tile = worldmap->at_level();
-        if (level_tile)
-        {
-          level_tile->set_solved(true);
-          level_tile->set_perfect(false);
-        }
+    case MNID_FINISH_LEVEL: {
+      auto level_tile = worldmap->at_level();
+      if (level_tile) {
+        level_tile->set_solved(true);
+        level_tile->set_perfect(false);
       }
-      break;
+    } break;
 
-    case MNID_RESET_LEVEL:
-      {
-        auto level_tile = worldmap->at_level();
-        if (level_tile)
-        {
-          level_tile->set_solved(false);
-          level_tile->set_perfect(false);
-        }
+    case MNID_RESET_LEVEL: {
+      auto level_tile = worldmap->at_level();
+      if (level_tile) {
+        level_tile->set_solved(false);
+        level_tile->set_perfect(false);
       }
-      break;
+    } break;
 
     case MNID_FINISH_WORLDMAP:
       worldmap->set_levels_solved(true, false);
@@ -138,14 +128,12 @@ WorldmapCheatMenu::menu_action(MenuItem& item)
   MenuManager::instance().clear_menu_stack();
 }
 
-WorldmapLevelSelectMenu::WorldmapLevelSelectMenu()
-{
+WorldmapLevelSelectMenu::WorldmapLevelSelectMenu() {
   auto worldmap = worldmap::WorldMap::current();
   int id = 0;
   add_label(_("Select level"));
   add_hl();
-  for (auto& level : worldmap->get_objects_by_type<worldmap::LevelTile>())
-  {
+  for (auto& level : worldmap->get_objects_by_type<worldmap::LevelTile>()) {
     add_entry(id, level.get_title());
     id++;
   }
@@ -153,16 +141,13 @@ WorldmapLevelSelectMenu::WorldmapLevelSelectMenu()
   add_back(_("Back"));
 }
 
-void
-WorldmapLevelSelectMenu::menu_action(MenuItem& item)
-{
+void WorldmapLevelSelectMenu::menu_action(MenuItem& item) {
   auto worldmap = worldmap::WorldMap::current();
   auto& tux = worldmap->get_singleton_by_type<worldmap::Tux>();
   int id = 0;
-  for(const auto& tile : worldmap->get_objects_by_type<worldmap::LevelTile>())
-  {
-    if(id == item.get_id())
-    {
+  for (const auto& tile :
+       worldmap->get_objects_by_type<worldmap::LevelTile>()) {
+    if (id == item.get_id()) {
       tux.set_tile_pos(tile.get_pos());
       break;
     }

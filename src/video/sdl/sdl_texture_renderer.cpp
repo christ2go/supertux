@@ -27,39 +27,29 @@
 #include "video/sdl/sdl_video_system.hpp"
 #include "video/video_system.hpp"
 
-SDLTextureRenderer::SDLTextureRenderer(SDLVideoSystem& video_system, SDL_Renderer* renderer, const Size& size, int downscale) :
-  m_video_system(video_system),
-  m_renderer(renderer),
-  m_painter(m_video_system, *this, m_renderer),
-  m_size(size),
-  m_downscale(downscale),
-  m_texture()
-{
-}
+SDLTextureRenderer::SDLTextureRenderer(SDLVideoSystem& video_system,
+                                       SDL_Renderer* renderer, const Size& size,
+                                       int downscale)
+    : m_video_system(video_system),
+      m_renderer(renderer),
+      m_painter(m_video_system, *this, m_renderer),
+      m_size(size),
+      m_downscale(downscale),
+      m_texture() {}
 
-SDLTextureRenderer::~SDLTextureRenderer()
-{
-}
+SDLTextureRenderer::~SDLTextureRenderer() {}
 
-SDL_Texture*
-SDLTextureRenderer::get_sdl_texture() const
-{
+SDL_Texture* SDLTextureRenderer::get_sdl_texture() const {
   return static_cast<SDLTexture*>(m_texture.get())->get_texture();
 }
 
-void
-SDLTextureRenderer::start_draw()
-{
-  if (!m_texture)
-  {
+void SDLTextureRenderer::start_draw() {
+  if (!m_texture) {
     const int w = m_size.width / m_downscale;
     const int h = m_size.height / m_downscale;
-    SDL_Texture* sdl_texture = SDL_CreateTexture(m_renderer,
-                                                 SDL_PIXELFORMAT_RGB888,
-                                                 SDL_TEXTUREACCESS_TARGET,
-                                                 w, h);
-    if (!sdl_texture)
-    {
+    SDL_Texture* sdl_texture = SDL_CreateTexture(
+        m_renderer, SDL_PIXELFORMAT_RGB888, SDL_TEXTUREACCESS_TARGET, w, h);
+    if (!sdl_texture) {
       std::stringstream msg;
       msg << "Couldn't create lightmap texture: " << SDL_GetError();
       throw std::runtime_error(msg.str());
@@ -69,36 +59,22 @@ SDLTextureRenderer::start_draw()
   }
 
   SDL_SetRenderTarget(m_renderer, get_sdl_texture());
-  SDL_RenderSetScale(m_renderer,
-                     1.0f / static_cast<float>(m_downscale),
+  SDL_RenderSetScale(m_renderer, 1.0f / static_cast<float>(m_downscale),
                      1.0f / static_cast<float>(m_downscale));
 }
 
-void
-SDLTextureRenderer::end_draw()
-{
+void SDLTextureRenderer::end_draw() {
   SDL_RenderSetScale(m_renderer, 1.0f, 1.0f);
   SDL_SetRenderTarget(m_renderer, nullptr);
 }
 
-Rect
-SDLTextureRenderer::get_rect() const
-{
+Rect SDLTextureRenderer::get_rect() const {
   return Rect(0, 0,
-              Size(m_size.width / m_downscale,
-                   m_size.height / m_downscale));
+              Size(m_size.width / m_downscale, m_size.height / m_downscale));
 }
 
-Size
-SDLTextureRenderer::get_logical_size() const
-{
-  return m_size;
-}
+Size SDLTextureRenderer::get_logical_size() const { return m_size; }
 
-TexturePtr
-SDLTextureRenderer::get_texture() const
-{
-  return m_texture;
-}
+TexturePtr SDLTextureRenderer::get_texture() const { return m_texture; }
 
 /* EOF */

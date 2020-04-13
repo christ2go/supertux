@@ -21,38 +21,40 @@
 #include "supertux/resources.hpp"
 #include "video/drawing_context.hpp"
 
-ItemIntField::ItemIntField(const std::string& text_, int* input_, int id_) :
-  MenuItem(text_, id_),
-  number(input_),
-  input(std::to_string(*input_)),
-  flickw(static_cast<int>(Resources::normal_font->get_text_width("_")))
-{
-}
+ItemIntField::ItemIntField(const std::string& text_, int* input_, int id_)
+    : MenuItem(text_, id_),
+      number(input_),
+      input(std::to_string(*input_)),
+      flickw(static_cast<int>(Resources::normal_font->get_text_width("_"))) {}
 
-void
-ItemIntField::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active) {
+void ItemIntField::draw(DrawingContext& context, const Vector& pos,
+                        int menu_width, bool active) {
   std::string r_input = input;
-  bool fl = active && (int(g_real_time*2)%2);
-  if ( fl ) {
+  bool fl = active && (int(g_real_time * 2) % 2);
+  if (fl) {
     r_input += "_";
   }
-  context.color().draw_text(Resources::normal_font, r_input,
-                            Vector(pos.x + static_cast<float>(menu_width) - 16 - static_cast<float>(fl ? 0 : flickw),
-                                   pos.y - Resources::normal_font->get_height() / 2.0f),
-                            ALIGN_RIGHT, LAYER_GUI, ColorScheme::Menu::field_color);
-  context.color().draw_text(Resources::normal_font, get_text(),
-                            Vector(pos.x + 16.0f,
-                                   pos.y - Resources::normal_font->get_height() / 2.0f),
-                            ALIGN_LEFT, LAYER_GUI, active ? ColorScheme::Menu::active_color : get_color());
+  context.color().draw_text(
+      Resources::normal_font, r_input,
+      Vector(pos.x + static_cast<float>(menu_width) - 16 -
+                 static_cast<float>(fl ? 0 : flickw),
+             pos.y - Resources::normal_font->get_height() / 2.0f),
+      ALIGN_RIGHT, LAYER_GUI, ColorScheme::Menu::field_color);
+  context.color().draw_text(
+      Resources::normal_font, get_text(),
+      Vector(pos.x + 16.0f,
+             pos.y - Resources::normal_font->get_height() / 2.0f),
+      ALIGN_LEFT, LAYER_GUI,
+      active ? ColorScheme::Menu::active_color : get_color());
 }
 
-int
-ItemIntField::get_width() const {
-  return static_cast<int>(Resources::normal_font->get_text_width(get_text()) + Resources::normal_font->get_text_width(input)) + 16 + flickw;
+int ItemIntField::get_width() const {
+  return static_cast<int>(Resources::normal_font->get_text_width(get_text()) +
+                          Resources::normal_font->get_text_width(input)) +
+         16 + flickw;
 }
 
-void
-ItemIntField::event(const SDL_Event& ev) {
+void ItemIntField::event(const SDL_Event& ev) {
   if (ev.type == SDL_TEXTINPUT) {
     std::string txt = ev.text.text;
     for (auto& c : txt) {
@@ -61,8 +63,7 @@ ItemIntField::event(const SDL_Event& ev) {
   }
 }
 
-void
-ItemIntField::add_char(char c) {
+void ItemIntField::add_char(char c) {
   if (c == '-') {
     if (input.length() && input != "0") {
       *number *= -1;
@@ -85,8 +86,7 @@ ItemIntField::add_char(char c) {
   }
 }
 
-void
-ItemIntField::process_action(const MenuAction& action) {
+void ItemIntField::process_action(const MenuAction& action) {
   if (action == MenuAction::REMOVE && input.length()) {
     unsigned char last_char;
     do {
@@ -95,7 +95,7 @@ ItemIntField::process_action(const MenuAction& action) {
       if (input.length() == 0) {
         break;
       }
-    } while ( (last_char & 128) && !(last_char & 64) );
+    } while ((last_char & 128) && !(last_char & 64));
     if (input.length() && input != "-") {
       *number = std::stoi(input);
     } else {

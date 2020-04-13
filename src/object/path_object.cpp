@@ -25,67 +25,52 @@
 #include "util/reader_mapping.hpp"
 #include "util/writer.hpp"
 
-PathObject::PathObject() :
-  m_path_uid(),
-  m_walker()
-{
-}
+PathObject::PathObject() : m_path_uid(), m_walker() {}
 
-PathObject::~PathObject()
-{
-}
+PathObject::~PathObject() {}
 
-void
-PathObject::init_path(const ReaderMapping& mapping, bool running_default)
-{
+void PathObject::init_path(const ReaderMapping& mapping, bool running_default) {
   bool running = running_default;
   mapping.get("running", running);
 
   std::string path_ref;
   boost::optional<ReaderMapping> path_mapping;
-  if (mapping.get("path", path_mapping))
-  {
-    auto& path_gameobject = d_gameobject_manager->add<PathGameObject>(*path_mapping, true);
+  if (mapping.get("path", path_mapping)) {
+    auto& path_gameobject =
+        d_gameobject_manager->add<PathGameObject>(*path_mapping, true);
     m_path_uid = path_gameobject.get_uid();
     m_walker.reset(new PathWalker(m_path_uid, running));
-  }
-  else if (mapping.get("path-ref", path_ref))
-  {
-    d_gameobject_manager->request_name_resolve(path_ref, [this, running](UID uid){
-        m_path_uid = uid;
-        m_walker.reset(new PathWalker(uid, running));
-      });
+  } else if (mapping.get("path-ref", path_ref)) {
+    d_gameobject_manager->request_name_resolve(
+        path_ref, [this, running](UID uid) {
+          m_path_uid = uid;
+          m_walker.reset(new PathWalker(uid, running));
+        });
   }
 }
 
-void
-PathObject::init_path_pos(const Vector& pos, bool running)
-{
+void PathObject::init_path_pos(const Vector& pos, bool running) {
   auto& path_gameobject = d_gameobject_manager->add<PathGameObject>(pos);
   m_path_uid = path_gameobject.get_uid();
   m_walker.reset(new PathWalker(path_gameobject.get_uid(), running));
 }
 
-Path*
-PathObject::get_path() const
-{
-  if(!d_gameobject_manager)
-    return nullptr;
+Path* PathObject::get_path() const {
+  if (!d_gameobject_manager) return nullptr;
 
-  if (auto* path_gameobject = d_gameobject_manager->get_object_by_uid<PathGameObject>(m_path_uid)) {
+  if (auto* path_gameobject =
+          d_gameobject_manager->get_object_by_uid<PathGameObject>(m_path_uid)) {
     return &path_gameobject->get_path();
   } else {
     return nullptr;
   }
 }
 
-std::string
-PathObject::get_path_ref() const
-{
-  if(!d_gameobject_manager)
-    return nullptr;
+std::string PathObject::get_path_ref() const {
+  if (!d_gameobject_manager) return nullptr;
 
-  if (auto* path_gameobject = d_gameobject_manager->get_object_by_uid<PathGameObject>(m_path_uid)) {
+  if (auto* path_gameobject =
+          d_gameobject_manager->get_object_by_uid<PathGameObject>(m_path_uid)) {
     return path_gameobject->get_name();
   } else {
     return {};

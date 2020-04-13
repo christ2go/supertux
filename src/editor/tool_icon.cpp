@@ -19,42 +19,28 @@
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
 
-ToolIcon::ToolIcon(const std::string& icon) :
-  m_pos(0, 0),
-  m_surfaces(),
-  m_mode(0),
-  m_surf_count(0)
-{
+ToolIcon::ToolIcon(const std::string& icon)
+    : m_pos(0, 0), m_surfaces(), m_mode(0), m_surf_count(0) {
   push_mode(icon);
 }
 
-void
-ToolIcon::push_mode(const std::string& icon)
-{
+void ToolIcon::push_mode(const std::string& icon) {
   auto surface = Surface::from_file(icon);
   m_surfaces.push_back(surface);
   m_surf_count++;
 }
 
-void
-ToolIcon::draw(DrawingContext& context)
-{
+void ToolIcon::draw(DrawingContext& context) {
   context.color().draw_surface(m_surfaces[m_mode], m_pos, LAYER_GUI - 9);
 }
 
-void
-ToolIcon::next_mode()
-{
+void ToolIcon::next_mode() {
   m_mode++;
   if (m_mode >= m_surf_count) {
     m_mode = 0;
   }
 }
 
-SurfacePtr
-ToolIcon::get_current_surface() const
-{
-  return m_surfaces[m_mode];
-}
+SurfacePtr ToolIcon::get_current_surface() const { return m_surfaces[m_mode]; }
 
 /* EOF */

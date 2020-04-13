@@ -1,5 +1,6 @@
 //  SuperTux - Wind
-//  Copyright (C) 2006 Christoph Sommer <christoph.sommer@2006.expires.deltadevelopment.de>
+//  Copyright (C) 2006 Christoph Sommer
+//  <christoph.sommer@2006.expires.deltadevelopment.de>
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -24,16 +25,15 @@
 #include "util/reader_mapping.hpp"
 #include "video/drawing_context.hpp"
 
-Wind::Wind(const ReaderMapping& reader) :
-  MovingObject(reader),
-  ExposedObject<Wind, scripting::Wind>(this),
-  blowing(),
-  speed(),
-  acceleration(),
-  new_size(),
-  dt_sec(0)
-{
-  float w,h;
+Wind::Wind(const ReaderMapping& reader)
+    : MovingObject(reader),
+      ExposedObject<Wind, scripting::Wind>(this),
+      blowing(),
+      speed(),
+      acceleration(),
+      new_size(),
+      dt_sec(0) {
+  float w, h;
   reader.get("x", m_col.m_bbox.get_left(), 0.0f);
   reader.get("y", m_col.m_bbox.get_top(), 0.0f);
   reader.get("width", w, 32.0f);
@@ -50,29 +50,26 @@ Wind::Wind(const ReaderMapping& reader) :
   set_group(COLGROUP_TOUCHABLE);
 }
 
-ObjectSettings
-Wind::get_settings()
-{
+ObjectSettings Wind::get_settings() {
   new_size.x = m_col.m_bbox.get_width();
   new_size.y = m_col.m_bbox.get_height();
 
   ObjectSettings result = MovingObject::get_settings();
 
-  //result.add_float("width", &new_size.x, "width", OPTION_HIDDEN);
-  //result.add_float("height", &new_size.y, "height", OPTION_HIDDEN);
+  // result.add_float("width", &new_size.x, "width", OPTION_HIDDEN);
+  // result.add_float("height", &new_size.y, "height", OPTION_HIDDEN);
   result.add_float(_("Speed X"), &speed.x, "speed-x");
   result.add_float(_("Speed Y"), &speed.y, "speed-y");
   result.add_float(_("Acceleration"), &acceleration, "acceleration");
   result.add_bool(_("Blowing"), &blowing, "blowing", true);
 
-  result.reorder({"blowing", "speed-x", "speed-y", "acceleration", "region", "name", "x", "y"});
+  result.reorder({"blowing", "speed-x", "speed-y", "acceleration", "region",
+                  "name", "x", "y"});
 
   return result;
 }
 
-void
-Wind::update(float dt_sec_)
-{
+void Wind::update(float dt_sec_) {
   dt_sec = dt_sec_;
 
   if (!blowing) return;
@@ -81,28 +78,28 @@ Wind::update(float dt_sec_)
   // TODO: nicer, configurable particles for wind?
   if (graphicsRandom.rand(0, 100) < 20) {
     // emit a particle
-    Vector ppos = Vector(graphicsRandom.randf(m_col.m_bbox.get_left()+8, m_col.m_bbox.get_right()-8), graphicsRandom.randf(m_col.m_bbox.get_top()+8, m_col.m_bbox.get_bottom()-8));
+    Vector ppos = Vector(graphicsRandom.randf(m_col.m_bbox.get_left() + 8,
+                                              m_col.m_bbox.get_right() - 8),
+                         graphicsRandom.randf(m_col.m_bbox.get_top() + 8,
+                                              m_col.m_bbox.get_bottom() - 8));
     Vector pspeed = Vector(speed.x, speed.y);
-    Sector::get().add<Particles>(ppos, 44, 46, pspeed, Vector(0,0), 1, Color(.4f, .4f, .4f), 3, .1f,
-                                      LAYER_BACKGROUNDTILES+1);
+    Sector::get().add<Particles>(ppos, 44, 46, pspeed, Vector(0, 0), 1,
+                                 Color(.4f, .4f, .4f), 3, .1f,
+                                 LAYER_BACKGROUNDTILES + 1);
   }
 }
 
-void
-Wind::draw(DrawingContext& context)
-{
+void Wind::draw(DrawingContext& context) {
   if (Editor::is_active()) {
-    context.color().draw_filled_rect(m_col.m_bbox, Color(0.0f, 1.0f, 1.0f, 0.6f),
-                             0.0f, LAYER_OBJECTS);
+    context.color().draw_filled_rect(
+        m_col.m_bbox, Color(0.0f, 1.0f, 1.0f, 0.6f), 0.0f, LAYER_OBJECTS);
   }
 }
 
-HitResponse
-Wind::collision(GameObject& other, const CollisionHit& )
-{
+HitResponse Wind::collision(GameObject& other, const CollisionHit&) {
   if (!blowing) return ABORT_MOVE;
 
-  auto player = dynamic_cast<Player*> (&other);
+  auto player = dynamic_cast<Player*>(&other);
   if (player) {
     if (!player->on_ground()) {
       player->add_velocity(speed * acceleration * dt_sec, speed);
@@ -112,16 +109,8 @@ Wind::collision(GameObject& other, const CollisionHit& )
   return ABORT_MOVE;
 }
 
-void
-Wind::start()
-{
-  blowing = true;
-}
+void Wind::start() { blowing = true; }
 
-void
-Wind::stop()
-{
-  blowing = false;
-}
+void Wind::stop() { blowing = false; }
 
 /* EOF */

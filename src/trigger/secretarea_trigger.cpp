@@ -28,20 +28,19 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-static const float MESSAGE_TIME=3.5;
+static const float MESSAGE_TIME = 3.5;
 
-SecretAreaTrigger::SecretAreaTrigger(const ReaderMapping& reader) :
-  TriggerBase(reader),
-  message_timer(),
-  message_displayed(false),
-  message(),
-  fade_tilemap(),
-  script(),
-  new_size()
-{
+SecretAreaTrigger::SecretAreaTrigger(const ReaderMapping& reader)
+    : TriggerBase(reader),
+      message_timer(),
+      message_displayed(false),
+      message(),
+      fade_tilemap(),
+      script(),
+      new_size() {
   reader.get("x", m_col.m_bbox.get_left());
   reader.get("y", m_col.m_bbox.get_top());
-  float w,h;
+  float w, h;
   reader.get("width", w, 32.0f);
   reader.get("height", h, 32.0f);
   m_col.m_bbox.set_size(w, h);
@@ -55,20 +54,18 @@ SecretAreaTrigger::SecretAreaTrigger(const ReaderMapping& reader) :
   reader.get("script", script);
 }
 
-SecretAreaTrigger::SecretAreaTrigger(const Rectf& area, const std::string& fade_tilemap_) :
-  message_timer(),
-  message_displayed(false),
-  message(_("You found a secret area!")),
-  fade_tilemap(fade_tilemap_),
-  script(),
-  new_size()
-{
+SecretAreaTrigger::SecretAreaTrigger(const Rectf& area,
+                                     const std::string& fade_tilemap_)
+    : message_timer(),
+      message_displayed(false),
+      message(_("You found a secret area!")),
+      fade_tilemap(fade_tilemap_),
+      script(),
+      new_size() {
   m_col.m_bbox = area;
 }
 
-ObjectSettings
-SecretAreaTrigger::get_settings()
-{
+ObjectSettings SecretAreaTrigger::get_settings() {
   new_size.x = m_col.m_bbox.get_width();
   new_size.y = m_col.m_bbox.get_height();
 
@@ -79,44 +76,39 @@ SecretAreaTrigger::get_settings()
   result.add_translatable_text(_("Message"), &message, "message");
   result.add_script(_("Script"), &script, "script");
 
-  result.reorder({"fade-tilemap", "script", "sprite", "message", "region", "name", "x", "y"});
+  result.reorder({"fade-tilemap", "script", "sprite", "message", "region",
+                  "name", "x", "y"});
 
   return result;
 }
 
-void
-SecretAreaTrigger::after_editor_set()
-{
+void SecretAreaTrigger::after_editor_set() {
   m_col.m_bbox.set_size(new_size.x, new_size.y);
 }
 
-std::string
-SecretAreaTrigger::get_fade_tilemap_name() const
-{
+std::string SecretAreaTrigger::get_fade_tilemap_name() const {
   return fade_tilemap;
 }
 
-void
-SecretAreaTrigger::draw(DrawingContext& context)
-{
+void SecretAreaTrigger::draw(DrawingContext& context) {
   if (message_timer.started()) {
     context.push_transform();
     context.set_translation(Vector(0, 0));
-    Vector pos = Vector(0, static_cast<float>(SCREEN_HEIGHT) / 2.0f - Resources::normal_font->get_height() / 2.0f);
-    context.color().draw_center_text(Resources::normal_font, message, pos, LAYER_HUD, SecretAreaTrigger::text_color);
+    Vector pos = Vector(0, static_cast<float>(SCREEN_HEIGHT) / 2.0f -
+                               Resources::normal_font->get_height() / 2.0f);
+    context.color().draw_center_text(Resources::normal_font, message, pos,
+                                     LAYER_HUD, SecretAreaTrigger::text_color);
     context.pop_transform();
   }
   if (Editor::is_active() || g_debug.show_collision_rects) {
-    context.color().draw_filled_rect(m_col.m_bbox, Color(0.0f, 1.0f, 0.0f, 0.6f),
-                             0.0f, LAYER_OBJECTS);
+    context.color().draw_filled_rect(
+        m_col.m_bbox, Color(0.0f, 1.0f, 0.0f, 0.6f), 0.0f, LAYER_OBJECTS);
   } else if (message_timer.check()) {
     remove_me();
   }
 }
 
-void
-SecretAreaTrigger::event(Player& , EventType type)
-{
+void SecretAreaTrigger::event(Player&, EventType type) {
   if (type == EVENT_TOUCH) {
     if (!message_displayed) {
       message_timer.start(MESSAGE_TIME);

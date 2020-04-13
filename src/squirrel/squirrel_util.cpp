@@ -29,11 +29,9 @@
 #include "supertux/game_object.hpp"
 #include "util/log.hpp"
 
-std::string squirrel2string(HSQUIRRELVM v, SQInteger i)
-{
+std::string squirrel2string(HSQUIRRELVM v, SQInteger i) {
   std::ostringstream os;
-  switch (sq_gettype(v, i))
-  {
+  switch (sq_gettype(v, i)) {
     case OT_NULL:
       os << "<null>";
       break;
@@ -68,19 +66,17 @@ std::string squirrel2string(HSQUIRRELVM v, SQInteger i)
     case OT_TABLE: {
       bool first = true;
       os << "{";
-      sq_pushnull(v);  //null iterator
-      while (SQ_SUCCEEDED(sq_next(v,i-1)))
-      {
+      sq_pushnull(v);  // null iterator
+      while (SQ_SUCCEEDED(sq_next(v, i - 1))) {
         if (!first) {
           os << ", ";
         }
         first = false;
 
-        //here -1 is the value and -2 is the key
-        os << squirrel2string(v, -2) << " => "
-           << squirrel2string(v, -1);
+        // here -1 is the value and -2 is the key
+        os << squirrel2string(v, -2) << " => " << squirrel2string(v, -1);
 
-        sq_pop(v,2); //pops key and val before the nex iteration
+        sq_pop(v, 2);  // pops key and val before the nex iteration
       }
       sq_pop(v, 1);
       os << "}";
@@ -89,19 +85,18 @@ std::string squirrel2string(HSQUIRRELVM v, SQInteger i)
     case OT_ARRAY: {
       bool first = true;
       os << "[";
-      sq_pushnull(v);  //null iterator
-      while (SQ_SUCCEEDED(sq_next(v,i-1)))
-      {
+      sq_pushnull(v);  // null iterator
+      while (SQ_SUCCEEDED(sq_next(v, i - 1))) {
         if (!first) {
           os << ", ";
         }
         first = false;
 
-        //here -1 is the value and -2 is the key
+        // here -1 is the value and -2 is the key
         // we ignore the key, since that is just the index in an array
         os << squirrel2string(v, -1);
 
-        sq_pop(v,2); //pops key and val before the nex iteration
+        sq_pop(v, 2);  // pops key and val before the nex iteration
       }
       sq_pop(v, 1);
       os << "]";
@@ -141,14 +136,12 @@ std::string squirrel2string(HSQUIRRELVM v, SQInteger i)
   return os.str();
 }
 
-void print_squirrel_stack(HSQUIRRELVM v)
-{
+void print_squirrel_stack(HSQUIRRELVM v) {
   printf("--------------------------------------------------------------\n");
   SQInteger count = sq_gettop(v);
   for (int i = 1; i <= count; ++i) {
-    printf("%d: ",i);
-    switch (sq_gettype(v, i))
-    {
+    printf("%d: ", i);
+    switch (sq_gettype(v, i)) {
       case OT_NULL:
         printf("null");
         break;
@@ -212,24 +205,22 @@ void print_squirrel_stack(HSQUIRRELVM v)
   printf("--------------------------------------------------------------\n");
 }
 
-SQInteger squirrel_read_char(SQUserPointer file)
-{
-  std::istream* in = reinterpret_cast<std::istream*> (file);
+SQInteger squirrel_read_char(SQUserPointer file) {
+  std::istream* in = reinterpret_cast<std::istream*>(file);
   int c = in->get();
-  if (in->eof())
-    return 0;
+  if (in->eof()) return 0;
   return c;
 }
 
-void compile_script(HSQUIRRELVM vm, std::istream& in, const std::string& sourcename)
-{
-  if (SQ_FAILED(sq_compile(vm, squirrel_read_char, &in, sourcename.c_str(), true)))
+void compile_script(HSQUIRRELVM vm, std::istream& in,
+                    const std::string& sourcename) {
+  if (SQ_FAILED(
+          sq_compile(vm, squirrel_read_char, &in, sourcename.c_str(), true)))
     throw SquirrelError(vm, "Couldn't parse script");
 }
 
 void compile_and_run(HSQUIRRELVM vm, std::istream& in,
-                     const std::string& sourcename)
-{
+                     const std::string& sourcename) {
   compile_script(vm, in, sourcename);
 
   SQInteger oldtop = sq_gettop(vm);
@@ -238,21 +229,19 @@ void compile_and_run(HSQUIRRELVM vm, std::istream& in,
     sq_pushroottable(vm);
     if (SQ_FAILED(sq_call(vm, 1, SQFalse, SQTrue)))
       throw SquirrelError(vm, "Couldn't start script");
-  } catch(...) {
+  } catch (...) {
     sq_settop(vm, oldtop);
     throw;
   }
 
   // we can remove the closure in case the script was not suspended
   if (sq_getvmstate(vm) != SQ_VMSTATE_SUSPENDED) {
-    sq_settop(vm, oldtop-1);
+    sq_settop(vm, oldtop - 1);
   }
 }
 
-HSQUIRRELVM object_to_vm(HSQOBJECT object)
-{
-  if (object._type != OT_THREAD)
-    return nullptr;
+HSQUIRRELVM object_to_vm(HSQOBJECT object) {
+  if (object._type != OT_THREAD) return nullptr;
 
   return object._unVal.pThread;
 }

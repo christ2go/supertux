@@ -22,10 +22,8 @@
 #include "video/canvas.hpp"
 #include "video/renderer.hpp"
 
-void
-draw_tile(Canvas& canvas, const TileSet& tileset, uint32_t id, const Vector& pos,
-          int z_pos, const Color& color)
-{
+void draw_tile(Canvas& canvas, const TileSet& tileset, uint32_t id,
+               const Vector& pos, int z_pos, const Color& color) {
   const Tile& tile = tileset.get(id);
   tile.draw(canvas, pos, z_pos, color);
 }

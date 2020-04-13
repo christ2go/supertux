@@ -30,8 +30,7 @@
 
 namespace {
 
-PathStyle PathStyle_from_string(const std::string& text)
-{
+PathStyle PathStyle_from_string(const std::string& text) {
   if (text == "none") {
     return PathStyle::NONE;
   } else if (text == "solid") {
@@ -42,52 +41,47 @@ PathStyle PathStyle_from_string(const std::string& text)
   }
 }
 
-} // namespace
+}  // namespace
 
-PathGameObject::PathGameObject() :
-  m_path(new Path),
-  m_style(PathStyle::NONE),
-  m_edge_sprite(),
-  m_node_sprite()
-{
+PathGameObject::PathGameObject()
+    : m_path(new Path),
+      m_style(PathStyle::NONE),
+      m_edge_sprite(),
+      m_node_sprite() {
   m_name = make_unique_name("path", this);
 }
 
-PathGameObject::PathGameObject(const Vector& pos) :
-  m_path(new Path(pos)),
-  m_style(PathStyle::NONE),
-  m_edge_sprite(),
-  m_node_sprite()
-{
+PathGameObject::PathGameObject(const Vector& pos)
+    : m_path(new Path(pos)),
+      m_style(PathStyle::NONE),
+      m_edge_sprite(),
+      m_node_sprite() {
   m_name = make_unique_name("path", this);
 }
 
-PathGameObject::PathGameObject(const ReaderMapping& mapping, bool backward_compatibility_hack) :
-  GameObject(mapping),
-  m_path(new Path),
-  m_style(PathStyle::NONE),
-  m_edge_sprite(),
-  m_node_sprite()
-{
-  if (backward_compatibility_hack)
-  {
+PathGameObject::PathGameObject(const ReaderMapping& mapping,
+                               bool backward_compatibility_hack)
+    : GameObject(mapping),
+      m_path(new Path),
+      m_style(PathStyle::NONE),
+      m_edge_sprite(),
+      m_node_sprite() {
+  if (backward_compatibility_hack) {
     m_path->read(mapping);
-  }
-  else
-  {
+  } else {
     boost::optional<ReaderMapping> path_mapping;
-    if (mapping.get("path", path_mapping))
-    {
+    if (mapping.get("path", path_mapping)) {
       m_path->read(*path_mapping);
     }
   }
 
   mapping.get_custom("style", m_style, PathStyle_from_string);
 
-  if (m_style == PathStyle::SOLID)
-  {
-    m_edge_sprite = SpriteManager::current()->create("images/objects/path/edge.sprite");
-    m_node_sprite = SpriteManager::current()->create("images/objects/path/node.sprite");
+  if (m_style == PathStyle::SOLID) {
+    m_edge_sprite =
+        SpriteManager::current()->create("images/objects/path/edge.sprite");
+    m_node_sprite =
+        SpriteManager::current()->create("images/objects/path/node.sprite");
   }
 
   if (m_name.empty()) {
@@ -95,26 +89,17 @@ PathGameObject::PathGameObject(const ReaderMapping& mapping, bool backward_compa
   }
 }
 
-PathGameObject::~PathGameObject()
-{
-}
+PathGameObject::~PathGameObject() {}
 
-void
-PathGameObject::update(float dt_sec)
-{
+void PathGameObject::update(float dt_sec) {
   // nothing to do
 }
 
-void
-PathGameObject::draw(DrawingContext& context)
-{
-  if (m_style == PathStyle::SOLID)
-  {
+void PathGameObject::draw(DrawingContext& context) {
+  if (m_style == PathStyle::SOLID) {
     boost::optional<Vector> previous_node;
-    for (const auto& node : m_path->get_nodes())
-    {
-      if (previous_node)
-      {
+    for (const auto& node : m_path->get_nodes()) {
+      if (previous_node) {
         const Vector p1 = *previous_node;
         const Vector p2 = node.position;
         const Vector diff = (p2 - p1);
@@ -126,10 +111,11 @@ PathGameObject::draw(DrawingContext& context)
         // whole edge
         dot_distance = length / floorf(length / dot_distance);
 
-        for (float i = dot_distance; i < length; i += dot_distance) // NOLINT
+        for (float i = dot_distance; i < length; i += dot_distance)  // NOLINT
         {
           Vector dot_pos = p1 + unit * i;
-          m_edge_sprite->draw(context.color(), Vector(dot_pos), LAYER_OBJECTS - 1);
+          m_edge_sprite->draw(context.color(), Vector(dot_pos),
+                              LAYER_OBJECTS - 1);
         }
       }
 
@@ -139,30 +125,27 @@ PathGameObject::draw(DrawingContext& context)
     }
   }
 
-  if (g_debug.show_collision_rects)
-  {
+  if (g_debug.show_collision_rects) {
     const Color node_color = Color::BLUE;
     const Color edge_color = Color::MAGENTA;
 
     boost::optional<Vector> previous_node;
-    for (const auto& node : m_path->get_nodes())
-    {
-      if (previous_node)
-      {
-        context.color().draw_line(*previous_node, node.position, edge_color, LAYER_OBJECTS - 2);
+    for (const auto& node : m_path->get_nodes()) {
+      if (previous_node) {
+        context.color().draw_line(*previous_node, node.position, edge_color,
+                                  LAYER_OBJECTS - 2);
       }
 
-      context.color().draw_filled_rect(Rectf::from_center(node.position, Sizef(16.0f, 16.0f)),
-                                       node_color, LAYER_OBJECTS - 1);
+      context.color().draw_filled_rect(
+          Rectf::from_center(node.position, Sizef(16.0f, 16.0f)), node_color,
+          LAYER_OBJECTS - 1);
 
       previous_node = node.position;
     }
   }
 }
 
-ObjectSettings
-PathGameObject::get_settings()
-{
+ObjectSettings PathGameObject::get_settings() {
   ObjectSettings result = GameObject::get_settings();
 
   result.add_path(_("Path"), m_path.get(), "path");
@@ -170,15 +153,11 @@ PathGameObject::get_settings()
   return result;
 }
 
-void
-PathGameObject::editor_select()
-{
+void PathGameObject::editor_select() {
   log_fatal << "PathGameObject::selected" << std::endl;
 }
 
-void
-PathGameObject::editor_deselect()
-{
+void PathGameObject::editor_deselect() {
   log_fatal << "PathGameObject::deselected" << std::endl;
 }
 

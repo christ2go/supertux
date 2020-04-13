@@ -62,9 +62,7 @@
 
 bool Editor::s_resaving_in_progress = false;
 
-bool
-Editor::is_active()
-{
+bool Editor::is_active() {
   if (s_resaving_in_progress) {
     return true;
   } else {
@@ -73,32 +71,32 @@ Editor::is_active()
   }
 }
 
-Editor::Editor() :
-  m_level(),
-  m_world(),
-  m_levelfile(),
-  m_test_levelfile(),
-  m_quit_request(false),
-  m_newlevel_request(false),
-  m_reload_request(false),
-  m_reactivate_request(false),
-  m_deactivate_request(false),
-  m_save_request(false),
-  m_test_request(false),
-  m_savegame(),
-  m_sector(),
-  m_levelloaded(false),
-  m_leveltested(false),
-  m_tileset(nullptr),
-  m_widgets(),
-  m_overlay_widget(),
-  m_toolbox_widget(),
-  m_layers_widget(),
-  m_enabled(false),
-  m_bgr_surface(Surface::from_file("images/background/antarctic/arctis2.png")),
-  m_undo_manager(new UndoManager),
-  m_ignore_sector_change(false)
-{
+Editor::Editor()
+    : m_level(),
+      m_world(),
+      m_levelfile(),
+      m_test_levelfile(),
+      m_quit_request(false),
+      m_newlevel_request(false),
+      m_reload_request(false),
+      m_reactivate_request(false),
+      m_deactivate_request(false),
+      m_save_request(false),
+      m_test_request(false),
+      m_savegame(),
+      m_sector(),
+      m_levelloaded(false),
+      m_leveltested(false),
+      m_tileset(nullptr),
+      m_widgets(),
+      m_overlay_widget(),
+      m_toolbox_widget(),
+      m_layers_widget(),
+      m_enabled(false),
+      m_bgr_surface(
+          Surface::from_file("images/background/antarctic/arctis2.png")),
+      m_undo_manager(new UndoManager),
+      m_ignore_sector_change(false) {
   auto toolbox_widget = std::make_unique<EditorToolboxWidget>(*this);
   auto layers_widget = std::make_unique<EditorLayersWidget>(*this);
   auto overlay_widget = std::make_unique<EditorOverlayWidget>(*this);
@@ -107,10 +105,10 @@ Editor::Editor() :
   m_layers_widget = layers_widget.get();
   m_overlay_widget = overlay_widget.get();
 
-  auto undo_button_widget = std::make_unique<ButtonWidget>("images/engine/editor/undo.png",
-    Vector(10, 10), [this]{ undo(); });
-  auto redo_button_widget = std::make_unique<ButtonWidget>("images/engine/editor/redo.png",
-    Vector(60, 10), [this]{ redo(); });
+  auto undo_button_widget = std::make_unique<ButtonWidget>(
+      "images/engine/editor/undo.png", Vector(10, 10), [this] { undo(); });
+  auto redo_button_widget = std::make_unique<ButtonWidget>(
+      "images/engine/editor/redo.png", Vector(60, 10), [this] { redo(); });
 
   m_widgets.push_back(std::move(undo_button_widget));
   m_widgets.push_back(std::move(redo_button_widget));
@@ -119,36 +117,29 @@ Editor::Editor() :
   m_widgets.push_back(std::move(overlay_widget));
 }
 
-Editor::~Editor()
-{
-}
+Editor::~Editor() {}
 
-void
-Editor::draw(Compositor& compositor)
-{
+void Editor::draw(Compositor& compositor) {
   auto& context = compositor.make_context();
 
   if (m_levelloaded) {
-  for(const auto& widget : m_widgets) {
-    widget->draw(context);
-  }
+    for (const auto& widget : m_widgets) {
+      widget->draw(context);
+    }
 
     m_sector->draw(context);
     context.color().draw_filled_rect(context.get_rect(),
-                                     Color(0.0f, 0.0f, 0.0f),
-                                     0.0f, std::numeric_limits<int>::min());
+                                     Color(0.0f, 0.0f, 0.0f), 0.0f,
+                                     std::numeric_limits<int>::min());
   } else {
-    context.color().draw_surface_scaled(m_bgr_surface,
-                                        context.get_rect(),
+    context.color().draw_surface_scaled(m_bgr_surface, context.get_rect(),
                                         -100);
   }
 
   MouseCursor::current()->draw(context);
 }
 
-void
-Editor::update(float dt_sec, const Controller& controller)
-{
+void Editor::update(float dt_sec, const Controller& controller) {
   // Pass all requests
   if (m_reload_request) {
     reload_level();
@@ -159,7 +150,7 @@ Editor::update(float dt_sec, const Controller& controller)
   }
 
   if (m_newlevel_request) {
-    //Create new level
+    // Create new level
   }
 
   if (m_reactivate_request) {
@@ -204,36 +195,26 @@ Editor::update(float dt_sec, const Controller& controller)
   }
 }
 
-void
-Editor::save_level()
-{
+void Editor::save_level() {
   m_undo_manager->reset_index();
-  m_level->save(m_world ? FileSystem::join(m_world->get_basedir(), m_levelfile) :
-              m_levelfile);
+  m_level->save(m_world ? FileSystem::join(m_world->get_basedir(), m_levelfile)
+                        : m_levelfile);
 }
 
-std::string
-Editor::get_level_directory() const
-{
+std::string Editor::get_level_directory() const {
   std::string basedir;
-  if (m_world != nullptr)
-  {
+  if (m_world != nullptr) {
     basedir = m_world->get_basedir();
-    if (basedir == "./")
-    {
+    if (basedir == "./") {
       basedir = PHYSFS_getRealDir(m_levelfile.c_str());
     }
-  }
-  else
-  {
+  } else {
     basedir = FileSystem::dirname(m_levelfile);
   }
   return std::string(basedir);
 }
 
-void
-Editor::test_level()
-{
+void Editor::test_level() {
   Tile::draw_editor_images = false;
   Compositor::s_render_lighting = true;
   std::string backup_filename = m_levelfile + "~";
@@ -250,53 +231,40 @@ Editor::test_level()
 
   m_test_levelfile = FileSystem::join(directory, backup_filename);
   m_level->save(m_test_levelfile);
-  if (!m_level->is_worldmap())
-  {
+  if (!m_level->is_worldmap()) {
     GameManager::current()->start_level(*current_world, backup_filename);
-  }
-  else
-  {
-    GameManager::current()->start_worldmap(*current_world, "", m_test_levelfile);
+  } else {
+    GameManager::current()->start_worldmap(*current_world, "",
+                                           m_test_levelfile);
   }
 
   m_leveltested = true;
 }
 
-void
-Editor::open_level_directory()
-{
+void Editor::open_level_directory() {
   m_level->save(FileSystem::join(get_level_directory(), m_levelfile));
   auto path = FileSystem::join(PHYSFS_getWriteDir(), get_level_directory());
   FileSystem::open_path(path);
 }
 
-void
-Editor::set_world(std::unique_ptr<World> w)
-{
-  m_world = std::move(w);
-}
+void Editor::set_world(std::unique_ptr<World> w) { m_world = std::move(w); }
 
-int
-Editor::get_tileselect_select_mode() const
-{
+int Editor::get_tileselect_select_mode() const {
   return m_toolbox_widget->get_tileselect_select_mode();
 }
 
-int
-Editor::get_tileselect_move_mode() const
-{
+int Editor::get_tileselect_move_mode() const {
   return m_toolbox_widget->get_tileselect_move_mode();
 }
 
-void
-Editor::scroll(const Vector& velocity)
-{
+void Editor::scroll(const Vector& velocity) {
   if (!m_levelloaded) return;
 
-  Rectf bounds(0.0f,
-               0.0f,
-               std::max(0.0f, m_sector->get_width() - static_cast<float>(SCREEN_WIDTH - 128)),
-               std::max(0.0f, m_sector->get_height() - static_cast<float>(SCREEN_HEIGHT - 32)));
+  Rectf bounds(0.0f, 0.0f,
+               std::max(0.0f, m_sector->get_width() -
+                                  static_cast<float>(SCREEN_WIDTH - 128)),
+               std::max(0.0f, m_sector->get_height() -
+                                  static_cast<float>(SCREEN_HEIGHT - 32)));
   Camera& camera = m_sector->get_camera();
   Vector pos = camera.get_translation() + velocity;
   pos = Vector(math::clamp(pos.x, bounds.get_left(), bounds.get_right()),
@@ -306,18 +274,14 @@ Editor::scroll(const Vector& velocity)
   m_overlay_widget->update_pos();
 }
 
-void
-Editor::esc_press()
-{
+void Editor::esc_press() {
   m_enabled = false;
   m_overlay_widget->delete_markers();
   MenuManager::instance().set_menu(MenuStorage::EDITOR_MENU);
 }
 
-void
-Editor::update_keyboard(const Controller& controller)
-{
-  if (!m_enabled){
+void Editor::update_keyboard(const Controller& controller) {
+  if (!m_enabled) {
     return;
   }
 
@@ -343,9 +307,7 @@ Editor::update_keyboard(const Controller& controller)
   }
 }
 
-void
-Editor::load_sector(const std::string& name)
-{
+void Editor::load_sector(const std::string& name) {
   Sector* sector = m_level->get_sector(name);
   if (!sector) {
     sector = m_level->get_sector(0);
@@ -353,17 +315,15 @@ Editor::load_sector(const std::string& name)
   set_sector(sector);
 }
 
-void
-Editor::set_sector(Sector* sector)
-{
+void Editor::set_sector(Sector* sector) {
   if (!sector) return;
 
   m_sector = sector;
   m_sector->activate("main");
 
-  { // initialize badguy sprites and other GameObject stuff
+  {  // initialize badguy sprites and other GameObject stuff
     BIND_SECTOR(*m_sector);
-    for(auto& object : m_sector->get_objects()) {
+    for (auto& object : m_sector->get_objects()) {
       object->after_editor_set();
     }
   }
@@ -371,15 +331,14 @@ Editor::set_sector(Sector* sector)
   m_layers_widget->refresh();
 }
 
-void
-Editor::delete_current_sector()
-{
+void Editor::delete_current_sector() {
   if (m_level->m_sectors.size() <= 1) {
     log_fatal << "deleting the last sector is not allowed" << std::endl;
   }
 
-  for (auto i = m_level->m_sectors.begin(); i != m_level->m_sectors.end(); ++i) {
-    if ( i->get() == get_sector() ) {
+  for (auto i = m_level->m_sectors.begin(); i != m_level->m_sectors.end();
+       ++i) {
+    if (i->get() == get_sector()) {
       m_level->m_sectors.erase(i);
       break;
     }
@@ -389,9 +348,7 @@ Editor::delete_current_sector()
   m_reactivate_request = true;
 }
 
-void
-Editor::set_level(std::unique_ptr<Level> level, bool reset)
-{
+void Editor::set_level(std::unique_ptr<Level> level, bool reset) {
   m_undo_manager->reset_index();
   std::string sector_name = "main";
   Vector translation;
@@ -420,8 +377,7 @@ Editor::set_level(std::unique_ptr<Level> level, bool reset)
 
   load_sector(sector_name);
 
-  if (m_sector != nullptr)
-  {
+  if (m_sector != nullptr) {
     m_sector->activate(sector_name);
     m_sector->get_camera().set_mode(Camera::Mode::MANUAL);
 
@@ -435,25 +391,20 @@ Editor::set_level(std::unique_ptr<Level> level, bool reset)
   m_overlay_widget->on_level_change();
 }
 
-void
-Editor::reload_level()
-{
+void Editor::reload_level() {
   ReaderMapping::s_translations_enabled = false;
-  set_level(LevelParser::from_file(m_world ?
-                                   FileSystem::join(m_world->get_basedir(), m_levelfile) : m_levelfile,
-                                   StringUtil::has_suffix(m_levelfile, ".stwm"),
-                                   true));
+  set_level(LevelParser::from_file(
+      m_world ? FileSystem::join(m_world->get_basedir(), m_levelfile)
+              : m_levelfile,
+      StringUtil::has_suffix(m_levelfile, ".stwm"), true));
   ReaderMapping::s_translations_enabled = true;
 }
 
-void
-Editor::quit_editor()
-{
+void Editor::quit_editor() {
   m_quit_request = false;
 
-  auto quit = [this] ()
-  {
-    //Quit level editor
+  auto quit = [this]() {
+    // Quit level editor
     m_world = nullptr;
     m_levelfile = "";
     m_levelloaded = false;
@@ -462,19 +413,15 @@ Editor::quit_editor()
     ScreenManager::current()->pop_screen();
   };
 
-  check_unsaved_changes([quit] {
-    quit();
-  });
+  check_unsaved_changes([quit] { quit(); });
 }
 
-void
-Editor::check_unsaved_changes(const std::function<void ()>& action)
-{
-  if (m_undo_manager->has_unsaved_changes() && m_levelloaded)
-  {
+void Editor::check_unsaved_changes(const std::function<void()>& action) {
+  if (m_undo_manager->has_unsaved_changes() && m_levelloaded) {
     m_enabled = false;
     auto dialog = std::make_unique<Dialog>();
-    dialog->set_text(_("This level contains unsaved changes, do you want to save?"));
+    dialog->set_text(
+        _("This level contains unsaved changes, do you want to save?"));
     dialog->add_default_button(_("Yes"), [this, action] {
       check_save_prerequisites([this, action] {
         save_level();
@@ -486,31 +433,22 @@ Editor::check_unsaved_changes(const std::function<void ()>& action)
       action();
       m_enabled = true;
     });
-    dialog->add_button(_("Cancel"), [this] {
-      m_enabled = true;
-    });
+    dialog->add_button(_("Cancel"), [this] { m_enabled = true; });
     MenuManager::instance().set_dialog(std::move(dialog));
-  }
-  else
-  {
+  } else {
     action();
   }
 }
 
-void
-Editor::leave()
-{
+void Editor::leave() {
   MouseCursor::current()->set_icon(nullptr);
   Compositor::s_render_lighting = true;
 }
 
-void
-Editor::setup()
-{
+void Editor::setup() {
   Tile::draw_editor_images = true;
   Sector::s_draw_solids_only = false;
   if (!m_levelloaded) {
-
 #if 0
     if (AddonManager::current()->is_old_addon_enabled()) {
       auto dialog = std::make_unique<Dialog>();
@@ -534,7 +472,8 @@ Editor::setup()
     } else
 #endif
     {
-      MenuManager::instance().push_menu(MenuStorage::EDITOR_LEVELSET_SELECT_MENU);
+      MenuManager::instance().push_menu(
+          MenuStorage::EDITOR_LEVELSET_SELECT_MENU);
     }
   }
   m_toolbox_widget->setup();
@@ -543,11 +482,9 @@ Editor::setup()
 
   // Reactivate the editor after level test
   if (m_leveltested) {
-    if (!m_test_levelfile.empty())
-    {
+    if (!m_test_levelfile.empty()) {
       // Try to remove the test level using the PhysFS file system
-      if (physfsutil::remove(m_test_levelfile) != 0)
-      {
+      if (physfsutil::remove(m_test_levelfile) != 0) {
         // This file is not inside any PhysFS mounts,
         // try to remove this using normal file system
         // methods.
@@ -566,45 +503,36 @@ Editor::setup()
   }
 }
 
-void
-Editor::resize()
-{
+void Editor::resize() {
   // Calls on window resize.
   m_toolbox_widget->resize();
   m_layers_widget->resize();
   m_overlay_widget->update_pos();
 }
 
-void
-Editor::event(const SDL_Event& ev)
-{
+void Editor::event(const SDL_Event& ev) {
   if (!m_enabled) return;
 
-  try
-  {
-	if (ev.type == SDL_KEYDOWN &&
-        ev.key.keysym.sym == SDLK_t &&
+  try {
+    if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_t &&
         ev.key.keysym.mod & KMOD_CTRL) {
-		test_level();
-		}
+      test_level();
+    }
 
-	if (ev.type == SDL_KEYDOWN &&
-        ev.key.keysym.sym == SDLK_s &&
+    if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_s &&
         ev.key.keysym.mod & KMOD_CTRL) {
-		save_level();
-		}
+      save_level();
+    }
 
-	if (ev.type == SDL_KEYDOWN &&
-        ev.key.keysym.sym == SDLK_z &&
+    if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_z &&
         ev.key.keysym.mod & KMOD_CTRL) {
-		undo();
-		}
+      undo();
+    }
 
-	if (ev.type == SDL_KEYDOWN &&
-        ev.key.keysym.sym == SDLK_y &&
+    if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_y &&
         ev.key.keysym.mod & KMOD_CTRL) {
-		redo();
-		}
+      redo();
+    }
 
     if (ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_F6) {
       Compositor::s_render_lighting = !Compositor::s_render_lighting;
@@ -615,19 +543,16 @@ Editor::event(const SDL_Event& ev)
 
     BIND_SECTOR(*m_sector);
 
-    for(const auto& widget : m_widgets) {
-      if (widget->event(ev))
-        break;
+    for (const auto& widget : m_widgets) {
+      if (widget->event(ev)) break;
     }
 
     // unreliable heuristic to snapshot the current state for future undo
     if (((ev.type == SDL_KEYUP && ev.key.repeat == 0 &&
-         ev.key.keysym.sym != SDLK_LSHIFT &&
-         ev.key.keysym.sym != SDLK_RSHIFT &&
-         ev.key.keysym.sym != SDLK_LCTRL &&
-         ev.key.keysym.sym != SDLK_RCTRL) ||
-         ev.type == SDL_MOUSEBUTTONUP))
-    {
+          ev.key.keysym.sym != SDLK_LSHIFT &&
+          ev.key.keysym.sym != SDLK_RSHIFT && ev.key.keysym.sym != SDLK_LCTRL &&
+          ev.key.keysym.sym != SDLK_RCTRL) ||
+         ev.type == SDL_MOUSEBUTTONUP)) {
       if (!m_ignore_sector_change) {
         if (m_level) {
           m_undo_manager->try_snapshot(*m_level);
@@ -641,46 +566,29 @@ Editor::event(const SDL_Event& ev)
       float scroll_y = static_cast<float>(ev.wheel.y * -32);
       scroll({scroll_x, scroll_y});
     }
-  }
-  catch(const std::exception& err)
-  {
-    log_warning << "error while processing Editor::event(): " << err.what() << std::endl;
+  } catch (const std::exception& err) {
+    log_warning << "error while processing Editor::event(): " << err.what()
+                << std::endl;
   }
 }
 
-void
-Editor::update_node_iterators()
-{
+void Editor::update_node_iterators() {
   m_overlay_widget->update_node_iterators();
 }
 
-void
-Editor::delete_markers()
-{
-  m_overlay_widget->delete_markers();
-}
+void Editor::delete_markers() { m_overlay_widget->delete_markers(); }
 
-void
-Editor::sort_layers()
-{
-  m_layers_widget->sort_layers();
-}
+void Editor::sort_layers() { m_layers_widget->sort_layers(); }
 
-void
-Editor::select_tilegroup(int id)
-{
+void Editor::select_tilegroup(int id) {
   m_toolbox_widget->select_tilegroup(id);
 }
 
-const std::vector<Tilegroup>&
-Editor::get_tilegroups() const
-{
+const std::vector<Tilegroup>& Editor::get_tilegroups() const {
   return m_tileset->get_tilegroups();
 }
 
-void
-Editor::change_tileset()
-{
+void Editor::change_tileset() {
   m_tileset = TileManager::current()->get_tileset(m_level->get_tileset());
   m_toolbox_widget->set_input_type(EditorToolboxWidget::InputType::NONE);
   for (const auto& sector : m_level->m_sectors) {
@@ -690,65 +598,51 @@ Editor::change_tileset()
   }
 }
 
-void
-Editor::select_objectgroup(int id)
-{
+void Editor::select_objectgroup(int id) {
   m_toolbox_widget->select_objectgroup(id);
 }
 
-const std::vector<ObjectGroup>&
-Editor::get_objectgroups() const
-{
+const std::vector<ObjectGroup>& Editor::get_objectgroups() const {
   return m_toolbox_widget->get_object_info().m_groups;
 }
 
-void
-Editor::check_save_prerequisites(const std::function<void ()>& callback) const
-{
-  if (m_level->is_worldmap())
-  {
+void Editor::check_save_prerequisites(
+    const std::function<void()>& callback) const {
+  if (m_level->is_worldmap()) {
     callback();
     return;
   }
 
   bool sector_valid = false, spawnpoint_valid = false;
-  for (const auto& sector : m_level->m_sectors)
-  {
-    if (sector->get_name() == "main")
-    {
+  for (const auto& sector : m_level->m_sectors) {
+    if (sector->get_name() == "main") {
       sector_valid = true;
-      for (const auto& spawnpoint : sector->get_objects_by_type<SpawnPointMarker>())
-      {
-        if (spawnpoint.get_name() == "main")
-        {
+      for (const auto& spawnpoint :
+           sector->get_objects_by_type<SpawnPointMarker>()) {
+        if (spawnpoint.get_name() == "main") {
           spawnpoint_valid = true;
         }
       }
     }
   }
 
-  if(sector_valid && spawnpoint_valid)
-  {
+  if (sector_valid && spawnpoint_valid) {
     callback();
     return;
-  }
-  else
-  {
-    if (!sector_valid)
-    {
-      Dialog::show_message(_("Couldn't find a \"main\" sector.\nPlease change the name of the sector where\nyou'd like the player to start to \"main\""));
+  } else {
+    if (!sector_valid) {
+      Dialog::show_message(
+          _("Couldn't find a \"main\" sector.\nPlease change the name of the "
+            "sector where\nyou'd like the player to start to \"main\""));
+    } else if (!spawnpoint_valid) {
+      Dialog::show_message(_(
+          "Couldn't find a \"main\" spawnpoint.\n Please change the name of "
+          "the spawnpoint where\nyou'd like the player to start to \"main\""));
     }
-    else if (!spawnpoint_valid)
-    {
-      Dialog::show_message(_("Couldn't find a \"main\" spawnpoint.\n Please change the name of the spawnpoint where\nyou'd like the player to start to \"main\""));
-    }
   }
-
 }
 
-void
-Editor::undo()
-{
+void Editor::undo() {
   log_info << "attempting undo" << std::endl;
   auto level = m_undo_manager->undo();
   if (level) {
@@ -759,9 +653,7 @@ Editor::undo()
   }
 }
 
-void
-Editor::redo()
-{
+void Editor::redo() {
   log_info << "attempting redo" << std::endl;
   auto level = m_undo_manager->redo();
   if (level) {

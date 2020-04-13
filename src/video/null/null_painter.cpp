@@ -18,74 +18,48 @@
 
 #include "util/log.hpp"
 
-NullPainter::NullPainter() :
-  m_clip_rect()
-{
-}
+NullPainter::NullPainter() : m_clip_rect() {}
 
-NullPainter::~NullPainter()
-{
-}
+NullPainter::~NullPainter() {}
 
-void
-NullPainter::draw_texture(const TextureRequest& request)
-{
+void NullPainter::draw_texture(const TextureRequest& request) {
   log_info << "NullPainter::draw_texture()" << std::endl;
 }
 
-void
-NullPainter::draw_gradient(const GradientRequest& request)
-{
+void NullPainter::draw_gradient(const GradientRequest& request) {
   log_info << "NullPainter::draw_gradient()" << std::endl;
 }
 
-void
-NullPainter::draw_filled_rect(const FillRectRequest& request)
-{
+void NullPainter::draw_filled_rect(const FillRectRequest& request) {
   log_info << "NullPainter::draw_filled_rect()" << std::endl;
 }
 
-void
-NullPainter::draw_inverse_ellipse(const InverseEllipseRequest& request)
-{
+void NullPainter::draw_inverse_ellipse(const InverseEllipseRequest& request) {
   log_info << "NullPainter::draw_inverse_ellipse()" << std::endl;
 }
 
-void
-NullPainter::draw_line(const LineRequest& request)
-{
+void NullPainter::draw_line(const LineRequest& request) {
   log_info << "NullPainter::draw_line()" << std::endl;
 }
 
-void
-NullPainter::draw_triangle(const TriangleRequest& request)
-{
+void NullPainter::draw_triangle(const TriangleRequest& request) {
   log_info << "NullPainter::draw_triangle()" << std::endl;
 }
 
-
-void
-NullPainter::clear(const Color& color)
-{
+void NullPainter::clear(const Color& color) {
   log_info << "NullPainter::clear()" << std::endl;
 }
 
-void
-NullPainter::get_pixel(const GetPixelRequest& request) const
-{
+void NullPainter::get_pixel(const GetPixelRequest& request) const {
   log_info << "NullPainter::get_pixel()" << std::endl;
 }
 
-void
-NullPainter::set_clip_rect(const Rect& rect)
-{
+void NullPainter::set_clip_rect(const Rect& rect) {
   log_info << "NullPainter::set_clip_rect()" << std::endl;
   m_clip_rect = rect;
 }
 
-void
-NullPainter::clear_clip_rect()
-{
+void NullPainter::clear_clip_rect() {
   log_info << "NullPainter::clear_clip_rect()" << std::endl;
   m_clip_rect = boost::none;
 }

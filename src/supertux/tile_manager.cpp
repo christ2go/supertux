@@ -20,21 +20,13 @@
 #include "supertux/tile.hpp"
 #include "supertux/tile_set.hpp"
 
-TileManager::TileManager() :
-  m_tilesets()
-{
-}
+TileManager::TileManager() : m_tilesets() {}
 
-TileSet*
-TileManager::get_tileset(const std::string &filename)
-{
+TileSet* TileManager::get_tileset(const std::string& filename) {
   auto it = m_tilesets.find(filename);
-  if (it != m_tilesets.end())
-  {
+  if (it != m_tilesets.end()) {
     return it->second.get();
-  }
-  else
-  {
+  } else {
     auto tileset = TileSet::from_file(filename);
     TileSet* result = tileset.get();
     m_tilesets[filename] = std::move(tileset);

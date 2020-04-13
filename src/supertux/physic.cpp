@@ -19,46 +19,38 @@
 
 #include "supertux/sector.hpp"
 
-Physic::Physic() :
-  ax(0), ay(0),
-  vx(0), vy(0),
-  gravity_enabled_flag(true),
-  gravity_modifier(1.0f)
-{
-}
+Physic::Physic()
+    : ax(0),
+      ay(0),
+      vx(0),
+      vy(0),
+      gravity_enabled_flag(true),
+      gravity_modifier(1.0f) {}
 
-void
-Physic::reset()
-{
+void Physic::reset() {
   ax = ay = vx = vy = 0;
   gravity_enabled_flag = true;
 }
 
-void
-Physic::set_velocity(float nvx, float nvy)
-{
+void Physic::set_velocity(float nvx, float nvy) {
   vx = nvx;
   vy = nvy;
 }
 
-void
-Physic::set_velocity(const Vector& vector)
-{
+void Physic::set_velocity(const Vector& vector) {
   vx = vector.x;
   vy = vector.y;
 }
 
-void
-Physic::set_acceleration(float nax, float nay)
-{
+void Physic::set_acceleration(float nax, float nay) {
   ax = nax;
   ay = nay;
 }
 
-Vector
-Physic::get_movement(float dt_sec)
-{
-  float grav = gravity_enabled_flag ? (Sector::get().get_gravity() * gravity_modifier * 100.0f) : 0;
+Vector Physic::get_movement(float dt_sec) {
+  float grav = gravity_enabled_flag
+                   ? (Sector::get().get_gravity() * gravity_modifier * 100.0f)
+                   : 0;
 
   // Semi-implicit Euler integration
   // with constant acceleration, this will result in a position delta of

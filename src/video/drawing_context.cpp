@@ -26,87 +26,54 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-DrawingContext::DrawingContext(VideoSystem& video_system_, obstack& obst, bool overlay) :
-  m_video_system(video_system_),
-  m_obst(obst),
-  m_overlay(overlay),
-  m_viewport(0, 0,
-             m_video_system.get_viewport().get_screen_width(),
-             m_video_system.get_viewport().get_screen_height()),
-  m_ambient_color(Color::WHITE),
-  m_transform_stack(1),
-  m_colormap_canvas(*this, m_obst),
-  m_lightmap_canvas(*this, m_obst)
-{
-}
+DrawingContext::DrawingContext(VideoSystem& video_system_, obstack& obst,
+                               bool overlay)
+    : m_video_system(video_system_),
+      m_obst(obst),
+      m_overlay(overlay),
+      m_viewport(0, 0, m_video_system.get_viewport().get_screen_width(),
+                 m_video_system.get_viewport().get_screen_height()),
+      m_ambient_color(Color::WHITE),
+      m_transform_stack(1),
+      m_colormap_canvas(*this, m_obst),
+      m_lightmap_canvas(*this, m_obst) {}
 
-DrawingContext::~DrawingContext()
-{
-  clear();
-}
+DrawingContext::~DrawingContext() { clear(); }
 
-void
-DrawingContext::set_ambient_color(Color ambient_color)
-{
+void DrawingContext::set_ambient_color(Color ambient_color) {
   m_ambient_color = ambient_color;
 }
 
-Rectf
-DrawingContext::get_cliprect() const
-{
-  return Rectf(get_translation().x,
-               get_translation().y,
-               get_translation().x + static_cast<float>(m_viewport.get_width()),
-               get_translation().y + static_cast<float>(m_viewport.get_height()));
+Rectf DrawingContext::get_cliprect() const {
+  return Rectf(
+      get_translation().x, get_translation().y,
+      get_translation().x + static_cast<float>(m_viewport.get_width()),
+      get_translation().y + static_cast<float>(m_viewport.get_height()));
 }
 
-void
-DrawingContext::set_flip(Flip flip)
-{
-  transform().flip = flip;
-}
+void DrawingContext::set_flip(Flip flip) { transform().flip = flip; }
 
-Flip
-DrawingContext::get_flip() const
-{
-  return transform().flip;
-}
+Flip DrawingContext::get_flip() const { return transform().flip; }
 
-void
-DrawingContext::set_alpha(float alpha)
-{
-  transform().alpha = alpha;
-}
+void DrawingContext::set_alpha(float alpha) { transform().alpha = alpha; }
 
-float
-DrawingContext::get_alpha() const
-{
-  return transform().alpha;
-}
+float DrawingContext::get_alpha() const { return transform().alpha; }
 
-DrawingTransform&
-DrawingContext::transform()
-{
+DrawingTransform& DrawingContext::transform() {
   assert(!m_transform_stack.empty());
   return m_transform_stack.back();
 }
 
-const DrawingTransform&
-DrawingContext::transform() const
-{
+const DrawingTransform& DrawingContext::transform() const {
   assert(!m_transform_stack.empty());
   return m_transform_stack.back();
 }
 
-void
-DrawingContext::push_transform()
-{
+void DrawingContext::push_transform() {
   m_transform_stack.push_back(transform());
 }
 
-void
-DrawingContext::pop_transform()
-{
+void DrawingContext::pop_transform() {
   m_transform_stack.pop_back();
   assert(!m_transform_stack.empty());
 }

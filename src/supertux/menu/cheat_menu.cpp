@@ -23,8 +23,7 @@
 #include "supertux/game_session.hpp"
 #include "supertux/sector.hpp"
 
-CheatMenu::CheatMenu()
-{
+CheatMenu::CheatMenu() {
   auto& player = Sector::get().get_player();
 
   add_label(_("Cheats"));
@@ -38,21 +37,18 @@ CheatMenu::CheatMenu()
   add_entry(MNID_SHRINK, _("Shrink Tux"));
   add_entry(MNID_KILL, _("Kill Tux"));
   add_entry(MNID_FINISH, _("Finish Level"));
-  add_entry(MNID_GHOST, player.get_ghost_mode() ?
-            _("Leave Ghost Mode") : _("Activate Ghost Mode"));
+  add_entry(MNID_GHOST, player.get_ghost_mode() ? _("Leave Ghost Mode")
+                                                : _("Activate Ghost Mode"));
   add_hl();
   add_back(_("Back"));
 }
 
-void
-CheatMenu::menu_action(MenuItem& item)
-{
+void CheatMenu::menu_action(MenuItem& item) {
   if (!Sector::current()) return;
 
   auto& player = Sector::get().get_player();
 
-  switch (item.get_id())
-  {
+  switch (item.get_id()) {
     case MNID_GROW:
       player.set_bonus(GROWUP_BONUS);
       break;
@@ -86,21 +82,16 @@ CheatMenu::menu_action(MenuItem& item)
       break;
 
     case MNID_FINISH:
-      if (GameSession::current())
-      {
+      if (GameSession::current()) {
         GameSession::current()->finish(true);
       }
       break;
 
     case MNID_GHOST:
-      if (GameSession::current())
-      {
-        if (player.get_ghost_mode())
-        {
+      if (GameSession::current()) {
+        if (player.get_ghost_mode()) {
           scripting::mortal();
-        }
-        else
-        {
+        } else {
           scripting::ghost();
         }
       }

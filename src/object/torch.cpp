@@ -22,17 +22,19 @@
 #include "sprite/sprite_manager.hpp"
 #include "util/reader_mapping.hpp"
 
-Torch::Torch(const ReaderMapping& reader) :
-  MovingObject(reader),
-  ExposedObject<Torch, scripting::Torch>(this),
-  m_torch(),
-  m_flame(SpriteManager::current()->create("images/objects/torch/flame.sprite")),
-  m_flame_glow(SpriteManager::current()->create("images/objects/torch/flame_glow.sprite")),
-  m_flame_light(SpriteManager::current()->create("images/objects/torch/flame_light.sprite")),
-  m_burning(true),
-  sprite_name("images/objects/torch/torch1.sprite"),
-  m_layer(0)
-{
+Torch::Torch(const ReaderMapping& reader)
+    : MovingObject(reader),
+      ExposedObject<Torch, scripting::Torch>(this),
+      m_torch(),
+      m_flame(SpriteManager::current()->create(
+          "images/objects/torch/flame.sprite")),
+      m_flame_glow(SpriteManager::current()->create(
+          "images/objects/torch/flame_glow.sprite")),
+      m_flame_light(SpriteManager::current()->create(
+          "images/objects/torch/flame_light.sprite")),
+      m_burning(true),
+      sprite_name("images/objects/torch/torch1.sprite"),
+      m_layer(0) {
   reader.get("x", m_col.m_bbox.get_left());
   reader.get("y", m_col.m_bbox.get_top());
 
@@ -42,17 +44,14 @@ Torch::Torch(const ReaderMapping& reader) :
 
   m_torch = SpriteManager::current()->create(sprite_name);
   m_col.m_bbox.set_size(static_cast<float>(m_torch->get_width()),
-                static_cast<float>(m_torch->get_height()));
+                        static_cast<float>(m_torch->get_height()));
   m_flame_glow->set_blend(Blend::ADD);
   m_flame_light->set_blend(Blend::ADD);
   set_group(COLGROUP_TOUCHABLE);
 }
 
-void
-Torch::draw(DrawingContext& context)
-{
-  if (m_burning)
-  {
+void Torch::draw(DrawingContext& context) {
+  if (m_burning) {
     m_flame->draw(context.color(), get_pos(), m_layer - 1);
 
     m_flame_light->draw(context.light(), get_pos(), m_layer);
@@ -60,35 +59,27 @@ Torch::draw(DrawingContext& context)
 
   m_torch->draw(context.color(), get_pos(), m_layer - 1);
 
-  if (m_burning)
-  {
+  if (m_burning) {
     m_flame_glow->draw(context.color(), get_pos(), m_layer - 1);
   }
 }
 
-void
-Torch::update(float)
-{
-}
+void Torch::update(float) {}
 
-HitResponse
-Torch::collision(GameObject& other, const CollisionHit& )
-{
+HitResponse Torch::collision(GameObject& other, const CollisionHit&) {
   auto player = dynamic_cast<Player*>(&other);
-  if (player != nullptr && !m_burning)
-  {
+  if (player != nullptr && !m_burning) {
     m_burning = true;
   }
   return ABORT_MOVE;
 }
 
-ObjectSettings
-Torch::get_settings()
-{
+ObjectSettings Torch::get_settings() {
   ObjectSettings result = MovingObject::get_settings();
 
   result.add_bool(_("Burning"), &m_burning, "burning", true);
-  result.add_sprite(_("Sprite"), &sprite_name, "sprite", std::string("images/objects/torch/torch1.sprite"));
+  result.add_sprite(_("Sprite"), &sprite_name, "sprite",
+                    std::string("images/objects/torch/torch1.sprite"));
   result.add_int(_("Layer"), &m_layer, "layer", 0);
 
   result.reorder({"sprite", "layer", "x", "y"});
@@ -96,21 +87,12 @@ Torch::get_settings()
   return result;
 }
 
-void Torch::after_editor_set()
-{
+void Torch::after_editor_set() {
   m_torch = SpriteManager::current()->create(sprite_name);
 }
 
-bool
-Torch::get_burning() const
-{
-  return m_burning;
-}
+bool Torch::get_burning() const { return m_burning; }
 
-void
-Torch::set_burning(bool burning_)
-{
-  m_burning = burning_;
-}
+void Torch::set_burning(bool burning_) { m_burning = burning_; }
 
 /* EOF */

@@ -20,34 +20,26 @@
 
 namespace scripting {
 
-void
-WillOWisp::goto_node(int node_no)
-{
+void WillOWisp::goto_node(int node_no) {
   SCRIPT_GUARD_VOID;
   object.goto_node(node_no);
 }
 
-void
-WillOWisp::set_state(const std::string& state)
-{
+void WillOWisp::set_state(const std::string& state) {
   SCRIPT_GUARD_VOID;
   object.set_state(state);
 }
 
-void
-WillOWisp::start_moving()
-{
+void WillOWisp::start_moving() {
   SCRIPT_GUARD_VOID;
   object.start_moving();
 }
 
-void
-WillOWisp::stop_moving()
-{
+void WillOWisp::stop_moving() {
   SCRIPT_GUARD_VOID;
   object.stop_moving();
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

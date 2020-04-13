@@ -26,8 +26,7 @@
 #include "util/gettext.hpp"
 #include "video/compositor.hpp"
 
-EditorMenu::EditorMenu()
-{
+EditorMenu::EditorMenu() {
   bool worldmap = Editor::current()->get_level()->is_worldmap();
   bool is_world = Editor::current()->get_world() != nullptr;
   std::vector<std::string> snap_grid_sizes;
@@ -43,12 +42,10 @@ EditorMenu::EditorMenu()
 
   if (!worldmap) {
     add_entry(MNID_TESTLEVEL, _("Test Level"));
-  }
-  else
-  {
+  } else {
     add_entry(MNID_TESTLEVEL, _("Test Worldmap"));
   }
-  
+
   add_entry(MNID_SHARE, _("Share Level"));
 
   add_entry(MNID_OPEN_DIR, _("Open Level Directory"));
@@ -58,13 +55,16 @@ EditorMenu::EditorMenu()
   }
 
   add_entry(MNID_LEVELSETSEL, _("Edit Another World"));
-  
+
   add_hl();
 
-  add_string_select(-1, _("Grid Size"), &EditorOverlayWidget::selected_snap_grid_size, snap_grid_sizes);
+  add_string_select(-1, _("Grid Size"),
+                    &EditorOverlayWidget::selected_snap_grid_size,
+                    snap_grid_sizes);
   add_toggle(-1, _("Show Grid"), &EditorOverlayWidget::render_grid);
   add_toggle(-1, _("Grid Snapping"), &EditorOverlayWidget::snap_to_grid);
-  add_toggle(-1, _("Render Background"), &EditorOverlayWidget::render_background);
+  add_toggle(-1, _("Render Background"),
+             &EditorOverlayWidget::render_background);
   add_toggle(-1, _("Render Light"), &Compositor::s_render_lighting);
 
   add_submenu(worldmap ? _("Worldmap Settings") : _("Level Settings"),
@@ -75,8 +75,7 @@ EditorMenu::EditorMenu()
   add_entry(MNID_QUITEDITOR, _("Exit Level Editor"));
 }
 
-EditorMenu::~EditorMenu()
-{
+EditorMenu::~EditorMenu() {
   auto editor = Editor::current();
   if (editor == nullptr) {
     return;
@@ -84,58 +83,54 @@ EditorMenu::~EditorMenu()
   editor->m_reactivate_request = true;
 }
 
-void
-EditorMenu::menu_action(MenuItem& item)
-{
+void EditorMenu::menu_action(MenuItem& item) {
   auto editor = Editor::current();
-  switch (item.get_id())
-  {
+  switch (item.get_id()) {
     case MNID_RETURNTOEDITOR:
       MenuManager::instance().clear_menu_stack();
       break;
 
-    case MNID_SAVELEVEL:
-    {
+    case MNID_SAVELEVEL: {
       editor->check_save_prerequisites([editor]() {
         MenuManager::instance().clear_menu_stack();
         editor->m_save_request = true;
       });
-    }
-      break;
+    } break;
 
     case MNID_OPEN_DIR:
       Editor::current()->open_level_directory();
       break;
 
-    case MNID_TESTLEVEL:
-    {
+    case MNID_TESTLEVEL: {
       editor->check_save_prerequisites([editor]() {
         MenuManager::instance().clear_menu_stack();
         editor->m_test_request = true;
       });
-    }
-      break;
+    } break;
 
-    case MNID_SHARE:
-    {
+    case MNID_SHARE: {
       auto dialog = std::make_unique<Dialog>();
-      dialog->set_text(_("We encourage you to share your levels in the SuperTux forum.\nTo find your level, click the\n\"Open Level directory\" menu item.\nDo you want to go to the forum now?"));
+      dialog->set_text(
+          _("We encourage you to share your levels in the SuperTux forum.\nTo "
+            "find your level, click the\n\"Open Level directory\" menu "
+            "item.\nDo you want to go to the forum now?"));
       dialog->add_default_button(_("Yes"), [] {
-        FileSystem::open_path("https://forum.freegamedev.net/viewforum.php?f=69");
+        FileSystem::open_path(
+            "https://forum.freegamedev.net/viewforum.php?f=69");
       });
       dialog->add_cancel_button(_("No"));
       MenuManager::instance().set_dialog(std::move(dialog));
-    }
-    break;
-	
-	case MNID_HELP:
-    {
+    } break;
+
+    case MNID_HELP: {
       auto dialog = std::make_unique<Dialog>();
-      dialog->set_text(_("Keyboard Shortcuts:\n---------------------\nEsc = Open Menu\nCtrl+S = Save\nCtrl+T = Test\nCtrl+Z = Undo\nCtrl+Y = Redo\nF6 = Render Light\nF7 = Grid Snapping\nF8 = Show Grid"));
+      dialog->set_text(
+          _("Keyboard Shortcuts:\n---------------------\nEsc = Open "
+            "Menu\nCtrl+S = Save\nCtrl+T = Test\nCtrl+Z = Undo\nCtrl+Y = "
+            "Redo\nF6 = Render Light\nF7 = Grid Snapping\nF8 = Show Grid"));
       dialog->add_cancel_button(_("Got it!"));
       MenuManager::instance().set_dialog(std::move(dialog));
-    }
-    break;
+    } break;
 
     case MNID_LEVELSEL:
       editor->check_unsaved_changes([] {
@@ -145,7 +140,8 @@ EditorMenu::menu_action(MenuItem& item)
 
     case MNID_LEVELSETSEL:
       editor->check_unsaved_changes([] {
-        MenuManager::instance().set_menu(MenuStorage::EDITOR_LEVELSET_SELECT_MENU);
+        MenuManager::instance().set_menu(
+            MenuStorage::EDITOR_LEVELSET_SELECT_MENU);
       });
       break;
 

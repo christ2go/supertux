@@ -22,39 +22,30 @@
 
 namespace scripting {
 
-void
-BadGuy::kill()
-{
+void BadGuy::kill() {
   SCRIPT_GUARD_VOID;
   object.kill_fall();
 }
 
-void
-BadGuy::ignite()
-{
+void BadGuy::ignite() {
   SCRIPT_GUARD_VOID;
-  if(!object.is_flammable() || object.is_ignited())
-  {
+  if (!object.is_flammable() || object.is_ignited()) {
     return;
   }
 
   object.ignite();
 }
 
-void
-BadGuy::set_action(const std::string& action, int loops)
-{
+void BadGuy::set_action(const std::string& action, int loops) {
   SCRIPT_GUARD_VOID;
   object.set_sprite_action(action, loops);
 }
 
-void
-BadGuy::set_sprite(const std::string& sprite)
-{
+void BadGuy::set_sprite(const std::string& sprite) {
   SCRIPT_GUARD_VOID;
   object.change_sprite(sprite);
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

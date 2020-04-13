@@ -48,36 +48,28 @@
 #include "video/viewport.hpp"
 
 static const float MENU_REPEAT_INITIAL = 0.4f;
-static const float MENU_REPEAT_RATE    = 0.1f;
+static const float MENU_REPEAT_RATE = 0.1f;
 
-Menu::Menu() :
-  m_pos(Vector(static_cast<float>(SCREEN_WIDTH) / 2.0f,
-               static_cast<float>(SCREEN_HEIGHT) / 2.0f)),
-  m_delete_character(0),
-  m_mn_input_char('\0'),
-  m_menu_repeat_time(),
-  m_menu_width(),
-  m_items(),
-  m_arrange_left(0),
-  m_active_item(-1)
-{
-}
+Menu::Menu()
+    : m_pos(Vector(static_cast<float>(SCREEN_WIDTH) / 2.0f,
+                   static_cast<float>(SCREEN_HEIGHT) / 2.0f)),
+      m_delete_character(0),
+      m_mn_input_char('\0'),
+      m_menu_repeat_time(),
+      m_menu_width(),
+      m_items(),
+      m_arrange_left(0),
+      m_active_item(-1) {}
 
-Menu::~Menu()
-{
-}
+Menu::~Menu() {}
 
-void
-Menu::set_center_pos(float x, float y)
-{
+void Menu::set_center_pos(float x, float y) {
   m_pos.x = x;
   m_pos.y = y;
 }
 
 /* Add an item to a menu */
-MenuItem&
-Menu::add_item(std::unique_ptr<MenuItem> new_item)
-{
+MenuItem& Menu::add_item(std::unique_ptr<MenuItem> new_item) {
   m_items.push_back(std::move(new_item));
   MenuItem& item = *m_items.back();
 
@@ -86,8 +78,7 @@ Menu::add_item(std::unique_ptr<MenuItem> new_item)
    * selectable item added.
    */
 
-  if (m_active_item == -1 && !item.skippable())
-  {
+  if (m_active_item == -1 && !item.skippable()) {
     m_active_item = static_cast<int>(m_items.size()) - 1;
   }
 
@@ -96,17 +87,14 @@ Menu::add_item(std::unique_ptr<MenuItem> new_item)
   return item;
 }
 
-MenuItem&
-Menu::add_item(std::unique_ptr<MenuItem> new_item, int pos_)
-{
-  m_items.insert(m_items.begin()+pos_,std::move(new_item));
+MenuItem& Menu::add_item(std::unique_ptr<MenuItem> new_item, int pos_) {
+  m_items.insert(m_items.begin() + pos_, std::move(new_item));
   MenuItem& item = *m_items[pos_];
 
   // When the item is inserted before the selected item, the
   // same menu item should be still selected.
 
-  if (m_active_item >= pos_)
-  {
+  if (m_active_item >= pos_) {
     m_active_item++;
   }
 
@@ -115,225 +103,190 @@ Menu::add_item(std::unique_ptr<MenuItem> new_item, int pos_)
   return item;
 }
 
-void
-Menu::delete_item(int pos_)
-{
-  m_items.erase(m_items.begin()+pos_);
+void Menu::delete_item(int pos_) {
+  m_items.erase(m_items.begin() + pos_);
 
   // When the item is deleted before the selected item, the
   // same menu item should be still selected.
 
-  if (m_active_item >= pos_)
-  {
+  if (m_active_item >= pos_) {
     do {
       if (m_active_item > 0)
         --m_active_item;
       else
-        m_active_item = int(m_items.size())-1;
+        m_active_item = int(m_items.size()) - 1;
     } while (m_items[m_active_item]->skippable());
   }
 }
 
-ItemHorizontalLine&
-Menu::add_hl()
-{
+ItemHorizontalLine& Menu::add_hl() {
   auto item = std::make_unique<ItemHorizontalLine>();
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemLabel&
-Menu::add_label(const std::string& text)
-{
+ItemLabel& Menu::add_label(const std::string& text) {
   auto item = std::make_unique<ItemLabel>(text);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemControlField&
-Menu::add_controlfield(int id, const std::string& text,
-                       const std::string& mapping)
-{
+ItemControlField& Menu::add_controlfield(int id, const std::string& text,
+                                         const std::string& mapping) {
   auto item = std::make_unique<ItemControlField>(text, mapping, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemTextField&
-Menu::add_textfield(const std::string& text, std::string* input, int id)
-{
+ItemTextField& Menu::add_textfield(const std::string& text, std::string* input,
+                                   int id) {
   auto item = std::make_unique<ItemTextField>(text, input, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemScript&
-Menu::add_script(const std::string& text, std::string* script, int id)
-{
+ItemScript& Menu::add_script(const std::string& text, std::string* script,
+                             int id) {
   auto item = std::make_unique<ItemScript>(text, script, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemScriptLine&
-Menu::add_script_line(std::string* input, int id)
-{
+ItemScriptLine& Menu::add_script_line(std::string* input, int id) {
   auto item = std::make_unique<ItemScriptLine>(input, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemIntField&
-Menu::add_intfield(const std::string& text, int* input, int id)
-{
+ItemIntField& Menu::add_intfield(const std::string& text, int* input, int id) {
   auto item = std::make_unique<ItemIntField>(text, input, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemFloatField&
-Menu::add_floatfield(const std::string& text, float* input, int id)
-{
+ItemFloatField& Menu::add_floatfield(const std::string& text, float* input,
+                                     int id) {
   auto item = std::make_unique<ItemFloatField>(text, input, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemAction&
-Menu::add_entry(int id, const std::string& text)
-{
+ItemAction& Menu::add_entry(int id, const std::string& text) {
   auto item = std::make_unique<ItemAction>(text, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemAction&
-Menu::add_entry(const std::string& text, std::function<void()> callback)
-{
+ItemAction& Menu::add_entry(const std::string& text,
+                            std::function<void()> callback) {
   auto item = std::make_unique<ItemAction>(text, -1, callback);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemInactive&
-Menu::add_inactive(const std::string& text)
-{
+ItemInactive& Menu::add_inactive(const std::string& text) {
   auto item = std::make_unique<ItemInactive>(text);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemToggle&
-Menu::add_toggle(int id, const std::string& text, bool* toggled)
-{
+ItemToggle& Menu::add_toggle(int id, const std::string& text, bool* toggled) {
   auto item = std::make_unique<ItemToggle>(text, toggled, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemToggle&
-Menu::add_toggle(int id, const std::string& text,
-                 std::function<bool()> get_func,
-                 std::function<void(bool)> set_func)
-{
+ItemToggle& Menu::add_toggle(int id, const std::string& text,
+                             std::function<bool()> get_func,
+                             std::function<void(bool)> set_func) {
   auto item = std::make_unique<ItemToggle>(text, get_func, set_func, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemStringSelect&
-Menu::add_string_select(int id, const std::string& text, int* selected, const std::vector<std::string>& strings)
-{
+ItemStringSelect& Menu::add_string_select(
+    int id, const std::string& text, int* selected,
+    const std::vector<std::string>& strings) {
   auto item = std::make_unique<ItemStringSelect>(text, strings, selected, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemFile&
-Menu::add_file(const std::string& text, std::string* input, const std::vector<std::string>& extensions,
-               const std::string& basedir, int id)
-{
+ItemFile& Menu::add_file(const std::string& text, std::string* input,
+                         const std::vector<std::string>& extensions,
+                         const std::string& basedir, int id) {
   auto item = std::make_unique<ItemFile>(text, input, extensions, basedir, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemBack&
-Menu::add_back(const std::string& text, int id)
-{
+ItemBack& Menu::add_back(const std::string& text, int id) {
   auto item = std::make_unique<ItemBack>(text, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemGoTo&
-Menu::add_submenu(const std::string& text, int submenu, int id)
-{
+ItemGoTo& Menu::add_submenu(const std::string& text, int submenu, int id) {
   auto item = std::make_unique<ItemGoTo>(text, submenu, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemColorChannel&
-Menu::add_color_channel(float* input, Color channel, int id, bool is_linear) {
+ItemColorChannel& Menu::add_color_channel(float* input, Color channel, int id,
+                                          bool is_linear) {
   auto item = std::make_unique<ItemColorChannel>(input, channel, id, is_linear);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemColorDisplay&
-Menu::add_color_display(Color* color, int id) {
+ItemColorDisplay& Menu::add_color_display(Color* color, int id) {
   auto item = std::make_unique<ItemColorDisplay>(color, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemColor&
-Menu::add_color(const std::string& text, Color* color, int id) {
+ItemColor& Menu::add_color(const std::string& text, Color* color, int id) {
   auto item = std::make_unique<ItemColor>(text, color, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-ItemBadguySelect&
-Menu::add_badguy_select(const std::string& text, std::vector<std::string>* badguys, int id) {
+ItemBadguySelect& Menu::add_badguy_select(const std::string& text,
+                                          std::vector<std::string>* badguys,
+                                          int id) {
   auto item = std::make_unique<ItemBadguySelect>(text, badguys, id);
   auto item_ptr = item.get();
   add_item(std::move(item));
   return *item_ptr;
 }
 
-void
-Menu::clear()
-{
+void Menu::clear() {
   m_items.clear();
   m_active_item = -1;
 }
 
-void
-Menu::process_input(const Controller& controller)
-{
-  { // Scrolling
+void Menu::process_input(const Controller& controller) {
+  {  // Scrolling
 
     // If a help text is present, make some space at the bottom of the
     // menu so that the last few items don't overlap with the help
@@ -366,16 +319,15 @@ Menu::process_input(const Controller& controller)
     // get_height() doesn't include the border, so we manually add some
     const float menu_height = get_height() + 32.0f;
     const float center_y = menu_area / 2.0f;
-    if (menu_height > menu_area)
-    {
+    if (menu_height > menu_area) {
       const float scroll_range = (menu_height - menu_area) / 2.0f;
-      const float scroll_pos = ((static_cast<float>(m_active_item - first_idx)
-                                 / static_cast<float>(last_idx - first_idx)) - 0.5f) * 2.0f;
+      const float scroll_pos = ((static_cast<float>(m_active_item - first_idx) /
+                                 static_cast<float>(last_idx - first_idx)) -
+                                0.5f) *
+                               2.0f;
 
       m_pos.y = floorf(center_y - scroll_range * scroll_pos);
-    }
-    else
-    {
+    } else {
       if (help_height != 0.0f) {
         m_pos.y = floorf(center_y);
       }
@@ -389,8 +341,8 @@ Menu::process_input(const Controller& controller)
     menuaction = MenuAction::UP;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_INITIAL;
   }
-  if (controller.hold(Control::UP) &&
-     m_menu_repeat_time != 0 && g_real_time > m_menu_repeat_time) {
+  if (controller.hold(Control::UP) && m_menu_repeat_time != 0 &&
+      g_real_time > m_menu_repeat_time) {
     menuaction = MenuAction::UP;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_RATE;
   }
@@ -399,8 +351,8 @@ Menu::process_input(const Controller& controller)
     menuaction = MenuAction::DOWN;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_INITIAL;
   }
-  if (controller.hold(Control::DOWN) &&
-     m_menu_repeat_time != 0 && g_real_time > m_menu_repeat_time) {
+  if (controller.hold(Control::DOWN) && m_menu_repeat_time != 0 &&
+      g_real_time > m_menu_repeat_time) {
     menuaction = MenuAction::DOWN;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_RATE;
   }
@@ -409,8 +361,8 @@ Menu::process_input(const Controller& controller)
     menuaction = MenuAction::LEFT;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_INITIAL;
   }
-  if (controller.hold(Control::LEFT) &&
-     m_menu_repeat_time != 0 && g_real_time > m_menu_repeat_time) {
+  if (controller.hold(Control::LEFT) && m_menu_repeat_time != 0 &&
+      g_real_time > m_menu_repeat_time) {
     menuaction = MenuAction::LEFT;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_RATE;
   }
@@ -419,22 +371,22 @@ Menu::process_input(const Controller& controller)
     menuaction = MenuAction::RIGHT;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_INITIAL;
   }
-  if (controller.hold(Control::RIGHT) &&
-     m_menu_repeat_time != 0 && g_real_time > m_menu_repeat_time) {
+  if (controller.hold(Control::RIGHT) && m_menu_repeat_time != 0 &&
+      g_real_time > m_menu_repeat_time) {
     menuaction = MenuAction::RIGHT;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_RATE;
   }
 
   if (controller.pressed(Control::ACTION) ||
-     controller.pressed(Control::MENU_SELECT) ||
-     (!is_sensitive() && controller.pressed(Control::MENU_SELECT_SPACE))) {
+      controller.pressed(Control::MENU_SELECT) ||
+      (!is_sensitive() && controller.pressed(Control::MENU_SELECT_SPACE))) {
     menuaction = MenuAction::HIT;
   }
 
   if (controller.pressed(Control::ESCAPE) ||
-     controller.pressed(Control::CHEAT_MENU) ||
-     controller.pressed(Control::DEBUG_MENU) ||
-     controller.pressed(Control::MENU_BACK)) {
+      controller.pressed(Control::CHEAT_MENU) ||
+      controller.pressed(Control::DEBUG_MENU) ||
+      controller.pressed(Control::MENU_BACK)) {
     menuaction = MenuAction::BACK;
   }
 
@@ -442,14 +394,13 @@ Menu::process_input(const Controller& controller)
     menuaction = MenuAction::REMOVE;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_INITIAL;
   }
-  if (controller.hold(Control::REMOVE) &&
-     m_menu_repeat_time != 0 && g_real_time > m_menu_repeat_time) {
+  if (controller.hold(Control::REMOVE) && m_menu_repeat_time != 0 &&
+      g_real_time > m_menu_repeat_time) {
     menuaction = MenuAction::REMOVE;
     m_menu_repeat_time = g_real_time + MENU_REPEAT_RATE;
   }
 
-  if (m_items.size() == 0)
-    return;
+  if (m_items.size() == 0) return;
 
   // The menu_action() call can pop() the menu from the stack and thus
   // delete it, so it's important that no further member variables are
@@ -457,9 +408,7 @@ Menu::process_input(const Controller& controller)
   process_action(menuaction);
 }
 
-void
-Menu::process_action(const MenuAction& menuaction)
-{
+void Menu::process_action(const MenuAction& menuaction) {
   const int last_active_item = m_active_item;
 
   switch (menuaction) {
@@ -468,19 +417,19 @@ Menu::process_action(const MenuAction& menuaction)
         if (m_active_item > 0)
           --m_active_item;
         else
-          m_active_item = int(m_items.size())-1;
-      } while (m_items[m_active_item]->skippable()
-               && (m_active_item != last_active_item));
+          m_active_item = int(m_items.size()) - 1;
+      } while (m_items[m_active_item]->skippable() &&
+               (m_active_item != last_active_item));
       break;
 
     case MenuAction::DOWN:
       do {
-        if (m_active_item < int(m_items.size())-1 )
+        if (m_active_item < int(m_items.size()) - 1)
           ++m_active_item;
         else
           m_active_item = 0;
-      } while (m_items[m_active_item]->skippable()
-               && (m_active_item != last_active_item));
+      } while (m_items[m_active_item]->skippable() &&
+               (m_active_item != last_active_item));
       break;
 
     case MenuAction::BACK:
@@ -507,111 +456,94 @@ Menu::process_action(const MenuAction& menuaction)
   }
 }
 
-void
-Menu::draw_item(DrawingContext& context, int index)
-{
+void Menu::draw_item(DrawingContext& context, int index) {
   const float menu_height = get_height();
   const float menu_width = get_width();
 
   MenuItem* pitem = m_items[index].get();
 
   const float x_pos = m_pos.x - menu_width / 2.0f;
-  const float y_pos = m_pos.y + 24.0f * static_cast<float>(index) - menu_height / 2.0f + 12.0f;
+  const float y_pos =
+      m_pos.y + 24.0f * static_cast<float>(index) - menu_height / 2.0f + 12.0f;
 
-  pitem->draw(context, Vector(x_pos, y_pos), static_cast<int>(menu_width), m_active_item == index);
+  pitem->draw(context, Vector(x_pos, y_pos), static_cast<int>(menu_width),
+              m_active_item == index);
 
-  if (m_active_item == index)
-  {
-    float blink = (sinf(g_real_time * math::PI * 1.0f)/2.0f + 0.5f) * 0.5f + 0.25f;
-    context.color().draw_filled_rect(Rectf(Vector(m_pos.x - menu_width/2 + 10 - 2, y_pos - 12 - 2),
-                                           Vector(m_pos.x + menu_width/2 - 10 + 2, y_pos + 12 + 2)),
-                                     Color(1.0f, 1.0f, 1.0f, blink),
-                                     14.0f,
-                                     LAYER_GUI-10);
-    context.color().draw_filled_rect(Rectf(Vector(m_pos.x - menu_width/2 + 10, y_pos - 12),
-                                           Vector(m_pos.x + menu_width/2 - 10, y_pos + 12)),
-                                     Color(1.0f, 1.0f, 1.0f, 0.5f),
-                                     12.0f,
-                                     LAYER_GUI-10);
+  if (m_active_item == index) {
+    float blink =
+        (sinf(g_real_time * math::PI * 1.0f) / 2.0f + 0.5f) * 0.5f + 0.25f;
+    context.color().draw_filled_rect(
+        Rectf(Vector(m_pos.x - menu_width / 2 + 10 - 2, y_pos - 12 - 2),
+              Vector(m_pos.x + menu_width / 2 - 10 + 2, y_pos + 12 + 2)),
+        Color(1.0f, 1.0f, 1.0f, blink), 14.0f, LAYER_GUI - 10);
+    context.color().draw_filled_rect(
+        Rectf(Vector(m_pos.x - menu_width / 2 + 10, y_pos - 12),
+              Vector(m_pos.x + menu_width / 2 - 10, y_pos + 12)),
+        Color(1.0f, 1.0f, 1.0f, 0.5f), 12.0f, LAYER_GUI - 10);
   }
 }
 
-void
-Menu::calculate_width()
-{
+void Menu::calculate_width() {
   /* The width of the menu has to be more than the width of the text
      with the most characters */
   float max_width = 0;
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
+  for (unsigned int i = 0; i < m_items.size(); ++i) {
     float w = static_cast<float>(m_items[i]->get_width());
-    if (w > max_width)
-      max_width = w;
+    if (w > max_width) max_width = w;
   }
   m_menu_width = max_width;
 }
 
-float
-Menu::get_width() const
-{
-  return m_menu_width + 24;
-}
+float Menu::get_width() const { return m_menu_width + 24; }
 
-float
-Menu::get_height() const
-{
+float Menu::get_height() const {
   return static_cast<float>(m_items.size() * 24);
 }
 
-void
-Menu::on_window_resize()
-{
+void Menu::on_window_resize() {
   m_pos.x = static_cast<float>(SCREEN_WIDTH) / 2.0f;
   m_pos.y = static_cast<float>(SCREEN_HEIGHT) / 2.0f;
 }
 
-void
-Menu::draw(DrawingContext& context)
-{
-  for (unsigned int i = 0; i < m_items.size(); ++i)
-  {
+void Menu::draw(DrawingContext& context) {
+  for (unsigned int i = 0; i < m_items.size(); ++i) {
     draw_item(context, i);
   }
 
-  if (!m_items[m_active_item]->get_help().empty())
-  {
-    const int text_width = static_cast<int>(Resources::normal_font->get_text_width(m_items[m_active_item]->get_help()));
-    const int text_height = static_cast<int>(Resources::normal_font->get_text_height(m_items[m_active_item]->get_help()));
+  if (!m_items[m_active_item]->get_help().empty()) {
+    const int text_width =
+        static_cast<int>(Resources::normal_font->get_text_width(
+            m_items[m_active_item]->get_help()));
+    const int text_height =
+        static_cast<int>(Resources::normal_font->get_text_height(
+            m_items[m_active_item]->get_help()));
 
-    const Rectf text_rect(m_pos.x - static_cast<float>(text_width) / 2.0f - 8.0f,
-                          static_cast<float>(SCREEN_HEIGHT) - 48.0f - static_cast<float>(text_height) / 2.0f - 4.0f,
-                          m_pos.x + static_cast<float>(text_width) / 2.0f + 8.0f,
-                          static_cast<float>(SCREEN_HEIGHT) - 48.0f + static_cast<float>(text_height) / 2.0f + 4.0f);
+    const Rectf text_rect(
+        m_pos.x - static_cast<float>(text_width) / 2.0f - 8.0f,
+        static_cast<float>(SCREEN_HEIGHT) - 48.0f -
+            static_cast<float>(text_height) / 2.0f - 4.0f,
+        m_pos.x + static_cast<float>(text_width) / 2.0f + 8.0f,
+        static_cast<float>(SCREEN_HEIGHT) - 48.0f +
+            static_cast<float>(text_height) / 2.0f + 4.0f);
 
-    context.color().draw_filled_rect(Rectf(text_rect.p1() - Vector(4,4),
-                                           text_rect.p2() + Vector(4,4)),
-                                     Color(0.5f, 0.6f, 0.7f, 0.8f),
-                                     16.0f,
-                                     LAYER_GUI);
+    context.color().draw_filled_rect(
+        Rectf(text_rect.p1() - Vector(4, 4), text_rect.p2() + Vector(4, 4)),
+        Color(0.5f, 0.6f, 0.7f, 0.8f), 16.0f, LAYER_GUI);
 
-    context.color().draw_filled_rect(text_rect,
-                                     Color(0.8f, 0.9f, 1.0f, 0.5f),
-                                     16.0f,
-                                     LAYER_GUI);
+    context.color().draw_filled_rect(text_rect, Color(0.8f, 0.9f, 1.0f, 0.5f),
+                                     16.0f, LAYER_GUI);
 
-    context.color().draw_text(Resources::normal_font, m_items[m_active_item]->get_help(),
-                              Vector(m_pos.x, static_cast<float>(SCREEN_HEIGHT) - 48.0f - static_cast<float>(text_height) / 2.0f),
-                              ALIGN_CENTER, LAYER_GUI);
+    context.color().draw_text(
+        Resources::normal_font, m_items[m_active_item]->get_help(),
+        Vector(m_pos.x, static_cast<float>(SCREEN_HEIGHT) - 48.0f -
+                            static_cast<float>(text_height) / 2.0f),
+        ALIGN_CENTER, LAYER_GUI);
   }
 }
 
-MenuItem&
-Menu::get_item_by_id(int id)
-{
-  for (const auto& item : m_items)
-  {
-    if (item->get_id() == id)
-    {
+MenuItem& Menu::get_item_by_id(int id) {
+  for (const auto& item : m_items) {
+    if (item->get_id() == id) {
       return *item;
     }
   }
@@ -619,13 +551,9 @@ Menu::get_item_by_id(int id)
   throw std::runtime_error("MenuItem not found: " + std::to_string(id));
 }
 
-const MenuItem&
-Menu::get_item_by_id(int id) const
-{
-  for (const auto& item : m_items)
-  {
-    if (item->get_id() == id)
-    {
+const MenuItem& Menu::get_item_by_id(int id) const {
+  for (const auto& item : m_items) {
+    if (item->get_id() == id) {
       return *item;
     }
   }
@@ -633,55 +561,47 @@ Menu::get_item_by_id(int id) const
   throw std::runtime_error("MenuItem not found");
 }
 
-int Menu::get_active_item_id() const
-{
+int Menu::get_active_item_id() const {
   return m_items[m_active_item]->get_id();
 }
 
-void
-Menu::event(const SDL_Event& ev)
-{
+void Menu::event(const SDL_Event& ev) {
   m_items[m_active_item]->event(ev);
-  switch (ev.type)
-  {
+  switch (ev.type) {
     case SDL_KEYDOWN:
     case SDL_TEXTINPUT:
       if (((ev.type == SDL_KEYDOWN && ev.key.keysym.sym == SDLK_BACKSPACE) ||
-         ev.type == SDL_TEXTINPUT) && m_items[m_active_item]->changes_width())
-      {
+           ev.type == SDL_TEXTINPUT) &&
+          m_items[m_active_item]->changes_width()) {
         // Changed item value? Let's recalculate width:
         calculate_width();
       }
-    break;
+      break;
 
     case SDL_MOUSEBUTTONDOWN:
-    if (ev.button.button == SDL_BUTTON_LEFT)
-    {
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+      if (ev.button.button == SDL_BUTTON_LEFT) {
+        Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(
+            ev.motion.x, ev.motion.y);
 
-      if (mouse_pos.x > m_pos.x - get_width() / 2.0f &&
-          mouse_pos.x < m_pos.x + get_width() / 2.0f &&
-          mouse_pos.y > m_pos.y - get_height() / 2.0f &&
-          mouse_pos.y < m_pos.y + get_height() / 2.0f)
-      {
-        process_action(MenuAction::HIT);
+        if (mouse_pos.x > m_pos.x - get_width() / 2.0f &&
+            mouse_pos.x < m_pos.x + get_width() / 2.0f &&
+            mouse_pos.y > m_pos.y - get_height() / 2.0f &&
+            mouse_pos.y < m_pos.y + get_height() / 2.0f) {
+          process_action(MenuAction::HIT);
+        }
       }
-    }
-    break;
+      break;
 
-    case SDL_MOUSEMOTION:
-    {
-      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(ev.motion.x, ev.motion.y);
+    case SDL_MOUSEMOTION: {
+      Vector mouse_pos = VideoSystem::current()->get_viewport().to_logical(
+          ev.motion.x, ev.motion.y);
       float x = mouse_pos.x;
       float y = mouse_pos.y;
 
-      if (x > m_pos.x - get_width()/2 &&
-         x < m_pos.x + get_width()/2 &&
-         y > m_pos.y - get_height()/2 &&
-         y < m_pos.y + get_height()/2)
-      {
-        int new_active_item
-          = static_cast<int> ((y - (m_pos.y - get_height()/2)) / 24);
+      if (x > m_pos.x - get_width() / 2 && x < m_pos.x + get_width() / 2 &&
+          y > m_pos.y - get_height() / 2 && y < m_pos.y + get_height() / 2) {
+        int new_active_item =
+            static_cast<int>((y - (m_pos.y - get_height() / 2)) / 24);
 
         /* only change the mouse focus to a selectable item */
         if (!m_items[new_active_item]->skippable())
@@ -689,23 +609,18 @@ Menu::event(const SDL_Event& ev)
 
         if (MouseCursor::current())
           MouseCursor::current()->set_state(MouseCursorState::LINK);
-      }
-      else
-      {
+      } else {
         if (MouseCursor::current())
           MouseCursor::current()->set_state(MouseCursorState::NORMAL);
       }
-    }
-    break;
+    } break;
 
     default:
       break;
   }
 }
 
-void
-Menu::set_active_item(int id)
-{
+void Menu::set_active_item(int id) {
   for (size_t i = 0; i < m_items.size(); ++i) {
     if (m_items[i]->get_id() == id) {
       m_active_item = static_cast<int>(i);
@@ -714,10 +629,6 @@ Menu::set_active_item(int id)
   }
 }
 
-bool
-Menu::is_sensitive() const
-{
-  return false;
-}
+bool Menu::is_sensitive() const { return false; }
 
 /* EOF */

@@ -18,42 +18,36 @@
 
 namespace scripting {
 
-void Thunderstorm::start()
-{
+void Thunderstorm::start() {
   SCRIPT_GUARD_VOID;
   object.start();
 }
 
-void Thunderstorm::stop()
-{
+void Thunderstorm::stop() {
   SCRIPT_GUARD_VOID;
   object.stop();
 }
 
-void Thunderstorm::thunder()
-{
+void Thunderstorm::thunder() {
   SCRIPT_GUARD_VOID;
   object.thunder();
 }
 
-void Thunderstorm::lightning()
-{
+void Thunderstorm::lightning() {
   SCRIPT_GUARD_VOID;
   object.lightning();
 }
 
-void Thunderstorm::flash()
-{
+void Thunderstorm::flash() {
   SCRIPT_GUARD_VOID;
   object.flash();
 }
 
-void Thunderstorm::electrify()
-{
+void Thunderstorm::electrify() {
   SCRIPT_GUARD_VOID;
   object.electrify();
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

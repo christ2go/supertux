@@ -21,14 +21,10 @@
 
 static const float YT_SHAKE_TIME = .8f;
 
-YetiStalactite::YetiStalactite(const ReaderMapping& mapping) :
-  Stalactite(mapping)
-{
-}
+YetiStalactite::YetiStalactite(const ReaderMapping& mapping)
+    : Stalactite(mapping) {}
 
-void
-YetiStalactite::start_shaking()
-{
+void YetiStalactite::start_shaking() {
   timer.start(YT_SHAKE_TIME);
   state = STALACTITE_SHAKING;
   if ((static_cast<int>(get_pos().x) / 32) % 2 == 0) {
@@ -36,24 +32,15 @@ YetiStalactite::start_shaking()
   }
 }
 
-bool
-YetiStalactite::is_hanging() const
-{
-  return state == STALACTITE_HANGING;
-}
+bool YetiStalactite::is_hanging() const { return state == STALACTITE_HANGING; }
 
-void
-YetiStalactite::active_update(float dt_sec)
-{
-  if (state == STALACTITE_HANGING)
-    return;
+void YetiStalactite::active_update(float dt_sec) {
+  if (state == STALACTITE_HANGING) return;
 
   Stalactite::active_update(dt_sec);
 }
 
-void
-YetiStalactite::update(float dt_sec)
-{
+void YetiStalactite::update(float dt_sec) {
   // Respawn instead of removing once squished
   if (get_state() == STATE_SQUISHED && check_state_timer()) {
     set_state(STATE_ACTIVE);
@@ -68,27 +55,17 @@ YetiStalactite::update(float dt_sec)
   BadGuy::update(dt_sec);
 }
 
-void
-YetiStalactite::draw(DrawingContext& context)
-{
-  if (Editor::is_active() &&
-      m_sprite->get_action() != "yeti-stalactite" &&
-      m_sprite->has_action("yeti-stalactite"))
-  {
+void YetiStalactite::draw(DrawingContext& context) {
+  if (Editor::is_active() && m_sprite->get_action() != "yeti-stalactite" &&
+      m_sprite->has_action("yeti-stalactite")) {
     m_sprite->set_action("yeti-stalactite");
     BadGuy::draw(context);
     return;
-  }
-  else
-  {
+  } else {
     Stalactite::draw(context);
   }
 }
 
-bool
-YetiStalactite::is_flammable() const
-{
-  return false;
-}
+bool YetiStalactite::is_flammable() const { return false; }
 
 /* EOF */

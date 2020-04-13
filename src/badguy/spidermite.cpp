@@ -22,44 +22,35 @@
 static const float FLYTIME = 1.2f;
 static const float MOVE_SPEED = -100.0f;
 
-SpiderMite::SpiderMite(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/spidermite/spidermite.sprite"),
-  mode(),
-  timer()
-{
+SpiderMite::SpiderMite(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/spidermite/spidermite.sprite"),
+      mode(),
+      timer() {
   m_physic.enable_gravity(false);
 }
 
-void
-SpiderMite::initialize()
-{
+void SpiderMite::initialize() {
   m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right");
   mode = FLY_UP;
   m_physic.set_velocity_y(MOVE_SPEED);
-  timer.start(FLYTIME/2);
+  timer.start(FLYTIME / 2);
 }
 
-bool
-SpiderMite::collision_squished(GameObject& object)
-{
-  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
+bool SpiderMite::collision_squished(GameObject& object) {
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left"
+                                                : "squished-right");
   kill_squished(object);
   return true;
 }
 
-void
-SpiderMite::collision_solid(const CollisionHit& hit)
-{
-  if (hit.top || hit.bottom) { // hit floor or roof?
+void SpiderMite::collision_solid(const CollisionHit& hit) {
+  if (hit.top || hit.bottom) {  // hit floor or roof?
     m_physic.set_velocity_y(0);
   }
 }
 
-void
-SpiderMite::active_update(float dt_sec)
-{
-  if (m_frozen)
-  {
+void SpiderMite::active_update(float dt_sec) {
+  if (m_frozen) {
     BadGuy::active_update(dt_sec);
     return;
   }
@@ -77,30 +68,23 @@ SpiderMite::active_update(float dt_sec)
 
   auto player = get_nearest_player();
   if (player) {
-    m_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT : Direction::LEFT;
+    m_dir = (player->get_pos().x > get_pos().x) ? Direction::RIGHT
+                                                : Direction::LEFT;
     m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right");
   }
 }
 
-void
-SpiderMite::freeze()
-{
+void SpiderMite::freeze() {
   m_physic.enable_gravity(true);
   BadGuy::freeze();
 }
 
-void
-SpiderMite::unfreeze()
-{
+void SpiderMite::unfreeze() {
   BadGuy::unfreeze();
   m_physic.enable_gravity(false);
   initialize();
 }
 
-bool
-SpiderMite::is_freezable() const
-{
-  return true;
-}
+bool SpiderMite::is_freezable() const { return true; }
 
 /* EOF */

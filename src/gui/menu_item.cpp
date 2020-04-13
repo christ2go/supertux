@@ -21,47 +21,36 @@
 #include "supertux/resources.hpp"
 #include "video/drawing_context.hpp"
 
-//static const float FLICK_CURSOR_TIME = 0.5f;
+// static const float FLICK_CURSOR_TIME = 0.5f;
 
-MenuItem::MenuItem(const std::string& text, int id) :
-  m_id(id),
-  m_text(text),
-  m_help()
-{
-}
+MenuItem::MenuItem(const std::string& text, int id)
+    : m_id(id), m_text(text), m_help() {}
 
-MenuItem::~MenuItem() {
+MenuItem::~MenuItem() {}
 
-}
-
-void
-MenuItem::set_help(const std::string& help_text)
-{
+void MenuItem::set_help(const std::string& help_text) {
   std::string overflow;
   m_help = Resources::normal_font->wrap_to_width(help_text, 600, &overflow);
-  while (!overflow.empty())
-  {
+  while (!overflow.empty()) {
     m_help += "\n";
     m_help += Resources::normal_font->wrap_to_width(overflow, 600, &overflow);
   }
 }
 
-void
-MenuItem::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active)
-{
-  context.color().draw_text(Resources::normal_font, m_text,
-                            Vector( pos.x + static_cast<float>(menu_width) / 2.0f,
-                                    pos.y - static_cast<float>(Resources::normal_font->get_height()) / 2.0f ),
-                            ALIGN_CENTER, LAYER_GUI, active ? ColorScheme::Menu::active_color : get_color());
+void MenuItem::draw(DrawingContext& context, const Vector& pos, int menu_width,
+                    bool active) {
+  context.color().draw_text(
+      Resources::normal_font, m_text,
+      Vector(pos.x + static_cast<float>(menu_width) / 2.0f,
+             pos.y - static_cast<float>(Resources::normal_font->get_height()) /
+                         2.0f),
+      ALIGN_CENTER, LAYER_GUI,
+      active ? ColorScheme::Menu::active_color : get_color());
 }
 
-Color
-MenuItem::get_color() const {
-  return ColorScheme::Menu::default_color;
-}
+Color MenuItem::get_color() const { return ColorScheme::Menu::default_color; }
 
-int
-MenuItem::get_width() const {
+int MenuItem::get_width() const {
   return static_cast<int>(Resources::normal_font->get_text_width(m_text)) + 16;
 }
 

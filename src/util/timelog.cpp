@@ -21,19 +21,13 @@
 
 #include "util/log.hpp"
 
-Timelog::Timelog() :
-  m_last_ticks(0),
-  m_last_component(nullptr)
-{
-}
+Timelog::Timelog() : m_last_ticks(0), m_last_component(nullptr) {}
 
-void
-Timelog::log(const char* component)
-{
+void Timelog::log(const char* component) {
   Uint32 current_ticks = SDL_GetTicks();
 
   if (m_last_component != nullptr) {
-    log_info << "Component '" << m_last_component <<  "' finished after "
+    log_info << "Component '" << m_last_component << "' finished after "
              << (current_ticks - m_last_ticks) / 1000.0 << " seconds"
              << std::endl;
   }

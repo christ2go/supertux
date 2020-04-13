@@ -46,29 +46,20 @@
 
 MenuStorage* MenuStorage::s_instance = nullptr;
 
-MenuStorage&
-MenuStorage::instance()
-{
+MenuStorage& MenuStorage::instance() {
   assert(s_instance);
   return *s_instance;
 }
 
-MenuStorage::MenuStorage()
-{
+MenuStorage::MenuStorage() {
   assert(!s_instance);
   s_instance = this;
 }
 
-MenuStorage::~MenuStorage()
-{
-  s_instance = nullptr;
-}
+MenuStorage::~MenuStorage() { s_instance = nullptr; }
 
-std::unique_ptr<Menu>
-MenuStorage::create(MenuId menu_id)
-{
-  switch (menu_id)
-  {
+std::unique_ptr<Menu> MenuStorage::create(MenuId menu_id) {
+  switch (menu_id) {
     case MAIN_MENU:
       return std::make_unique<MainMenu>();
 
@@ -115,7 +106,7 @@ MenuStorage::create(MenuId menu_id)
       return std::make_unique<ContribMenu>();
 
     case CONTRIB_WORLD_MENU:
-      return nullptr; //return new ContribWorldMenu();
+      return nullptr;  // return new ContribWorldMenu();
 
     case ADDON_MENU:
       return std::make_unique<AddonMenu>();

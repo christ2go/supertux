@@ -18,29 +18,19 @@
 
 #include "editor/resize_marker.hpp"
 
-ResizeMarker::ResizeMarker(Rectf* rect, Side vert, Side horz) :
-  m_rect(rect),
-  m_vert(vert),
-  m_horz(horz)
-{
+ResizeMarker::ResizeMarker(Rectf* rect, Side vert, Side horz)
+    : m_rect(rect), m_vert(vert), m_horz(horz) {
   editor_update();
 }
 
-void
-ResizeMarker::editor_update()
-{
-  refresh_pos();
-}
+void ResizeMarker::editor_update() { refresh_pos(); }
 
-void
-ResizeMarker::refresh_pos()
-{
+void ResizeMarker::refresh_pos() {
   Vector new_pos;
 
-  switch (m_vert)
-  {
+  switch (m_vert) {
     case Side::NONE:
-      new_pos.y = (m_rect->get_top() + m_rect->get_bottom())/2 - 8;
+      new_pos.y = (m_rect->get_top() + m_rect->get_bottom()) / 2 - 8;
       break;
 
     case Side::LEFT_UP:
@@ -52,10 +42,9 @@ ResizeMarker::refresh_pos()
       break;
   }
 
-  switch (m_horz)
-  {
+  switch (m_horz) {
     case Side::NONE:
-      new_pos.x = (m_rect->get_left() + m_rect->get_right())/2 - 8;
+      new_pos.x = (m_rect->get_left() + m_rect->get_right()) / 2 - 8;
       break;
 
     case Side::LEFT_UP:
@@ -70,9 +59,7 @@ ResizeMarker::refresh_pos()
   set_pos(new_pos);
 }
 
-void
-ResizeMarker::move_to(const Vector& pos)
-{
+void ResizeMarker::move_to(const Vector& pos) {
   switch (m_vert) {
     case Side::NONE:
       break;
@@ -98,9 +85,7 @@ ResizeMarker::move_to(const Vector& pos)
   refresh_pos();
 }
 
-Vector
-ResizeMarker::get_point_vector() const
-{
+Vector ResizeMarker::get_point_vector() const {
   Vector result;
 
   switch (m_vert) {
@@ -130,10 +115,9 @@ ResizeMarker::get_point_vector() const
   return result;
 }
 
-Vector
-ResizeMarker::get_offset() const
-{
-  return Vector((m_horz == Side::LEFT_UP) ? 16.0f : 0.0f, (m_vert == Side::LEFT_UP) ? 16.0f : 0.0f);
+Vector ResizeMarker::get_offset() const {
+  return Vector((m_horz == Side::LEFT_UP) ? 16.0f : 0.0f,
+                (m_vert == Side::LEFT_UP) ? 16.0f : 0.0f);
 }
 
 /* EOF */

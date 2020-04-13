@@ -25,26 +25,18 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-//FIXME: Sometimes both ghosts have the same image
+// FIXME: Sometimes both ghosts have the same image
 //       Ghosts don't change their movement pattern - not random
-GhostParticleSystem::GhostParticleSystem()
-{
+GhostParticleSystem::GhostParticleSystem() { init(); }
+
+GhostParticleSystem::GhostParticleSystem(const ReaderMapping& reader)
+    : ParticleSystem(reader) {
   init();
 }
 
-GhostParticleSystem::GhostParticleSystem(const ReaderMapping& reader) :
-  ParticleSystem(reader)
-{
-  init();
-}
+GhostParticleSystem::~GhostParticleSystem() {}
 
-GhostParticleSystem::~GhostParticleSystem()
-{
-}
-
-void
-GhostParticleSystem::init()
-{
+void GhostParticleSystem::init() {
   ghosts[0] = Surface::from_file("images/objects/particles/ghost0.png");
   ghosts[1] = Surface::from_file("images/objects/particles/ghost1.png");
 
@@ -52,30 +44,28 @@ GhostParticleSystem::init()
 
   // create two ghosts
   size_t ghostcount = 2;
-  for (size_t i=0; i<ghostcount; ++i) {
+  for (size_t i = 0; i < ghostcount; ++i) {
     auto particle = std::make_unique<GhostParticle>();
     particle->pos.x = graphicsRandom.randf(virtual_width);
     particle->pos.y = graphicsRandom.randf(static_cast<float>(SCREEN_HEIGHT));
     int size = graphicsRandom.rand(2);
     particle->texture = ghosts[size];
-    particle->speed = graphicsRandom.randf(std::max(50.0f, static_cast<float>(size) * 10.0f),
-                                           180.0f + static_cast<float>(size) * 10.0f);
+    particle->speed =
+        graphicsRandom.randf(std::max(50.0f, static_cast<float>(size) * 10.0f),
+                             180.0f + static_cast<float>(size) * 10.0f);
     particles.push_back(std::move(particle));
   }
 }
 
-void
-GhostParticleSystem::update(float dt_sec)
-{
-  if (!enabled)
-    return;
+void GhostParticleSystem::update(float dt_sec) {
+  if (!enabled) return;
 
   for (const auto& part : particles) {
     const auto& particle = dynamic_cast<GhostParticle*>(part.get());
     particle->pos.y -= particle->speed * dt_sec;
     particle->pos.x -= particle->speed * dt_sec;
     if (particle->pos.y > static_cast<float>(SCREEN_HEIGHT)) {
-      particle->pos.y = fmodf(particle->pos.y , virtual_height);
+      particle->pos.y = fmodf(particle->pos.y, virtual_height);
       particle->pos.x = graphicsRandom.randf(virtual_width);
     }
   }

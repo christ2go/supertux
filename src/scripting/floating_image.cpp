@@ -23,102 +23,76 @@
 
 namespace scripting {
 
-FloatingImage::FloatingImage(const std::string& spritefile) :
-  GameObject(get_game_object_manager().add<::FloatingImage>(spritefile).get_uid())
-{
-}
+FloatingImage::FloatingImage(const std::string& spritefile)
+    : GameObject(get_game_object_manager()
+                     .add<::FloatingImage>(spritefile)
+                     .get_uid()) {}
 
-void
-FloatingImage::set_layer(int layer)
-{
+void FloatingImage::set_layer(int layer) {
   SCRIPT_GUARD_VOID;
   object.set_layer(layer);
 }
 
-int
-FloatingImage::get_layer() const
-{
+int FloatingImage::get_layer() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_layer();
 }
 
-void
-FloatingImage::set_pos(float x, float y)
-{
+void FloatingImage::set_pos(float x, float y) {
   SCRIPT_GUARD_VOID;
   object.set_pos(Vector(x, y));
 }
 
-float
-FloatingImage::get_pos_x() const
-{
+float FloatingImage::get_pos_x() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos().x;
 }
 
-float
-FloatingImage::get_pos_y() const
-{
+float FloatingImage::get_pos_y() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos().y;
 }
 
-void
-FloatingImage::set_anchor_point(int anchor)
-{
+void FloatingImage::set_anchor_point(int anchor) {
   SCRIPT_GUARD_VOID;
   object.set_anchor_point(static_cast<AnchorPoint>(anchor));
 }
 
-int
-FloatingImage::get_anchor_point() const
-{
+int FloatingImage::get_anchor_point() const {
   SCRIPT_GUARD_DEFAULT;
   return static_cast<int>(object.get_anchor_point());
 }
 
-bool
-FloatingImage::get_visible() const
-{
+bool FloatingImage::get_visible() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_visible();
 }
 
-void
-FloatingImage::set_visible(bool visible)
-{
+void FloatingImage::set_visible(bool visible) {
   SCRIPT_GUARD_VOID;
   object.set_visible(visible);
 }
 
-void
-FloatingImage::set_action(const std::string& action)
-{
+void FloatingImage::set_action(const std::string& action) {
   SCRIPT_GUARD_VOID;
   object.set_action(action);
 }
 
-std::string
-FloatingImage::get_action() const
-{
+std::string FloatingImage::get_action() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_action();
 }
 
-void
-FloatingImage::fade_in(float fadetime)
-{
+void FloatingImage::fade_in(float fadetime) {
   SCRIPT_GUARD_VOID;
   object.fade_in(fadetime);
 }
 
-void
-FloatingImage::fade_out(float fadetime)
-{
+void FloatingImage::fade_out(float fadetime) {
   SCRIPT_GUARD_VOID;
   object.fade_out(fadetime);
 }
 
-} // scripting
+}  // namespace scripting
 
 /* EOF */

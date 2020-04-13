@@ -23,31 +23,20 @@
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
 
-VerticalStripes::VerticalStripes() :
-  m_visible(false),
-  m_layer(LAYER_FOREGROUND1 + 10),
-  m_left_stripe(0,0,0,0),
-  m_right_stripe(0,0,0,0)
-{
-}
+VerticalStripes::VerticalStripes()
+    : m_visible(false),
+      m_layer(LAYER_FOREGROUND1 + 10),
+      m_left_stripe(0, 0, 0, 0),
+      m_right_stripe(0, 0, 0, 0) {}
 
-VerticalStripes::~VerticalStripes()
-{
-}
+VerticalStripes::~VerticalStripes() {}
 
-void
-VerticalStripes::update(float dt_sec)
-{
-  m_visible = !Editor::is_active();
-}
+void VerticalStripes::update(float dt_sec) { m_visible = !Editor::is_active(); }
 
-void
-VerticalStripes::draw(DrawingContext& context)
-{
+void VerticalStripes::draw(DrawingContext& context) {
   float screen_width = static_cast<float>(context.get_width());
   float level_width = Sector::get().get_width();
-  if (m_visible && level_width < screen_width)
-  {
+  if (m_visible && level_width < screen_width) {
     // Drawing two black stripes at each side of a screen
     float screen_height = static_cast<float>(context.get_height());
     float level_height = Sector::get().get_height();
@@ -60,9 +49,10 @@ VerticalStripes::draw(DrawingContext& context)
     float rect_top = -screen_height;
     float rect_bottom = level_height + screen_height;
     Rectf left_stripe = Rectf(screen_left, rect_top, 0, rect_bottom);
-    Rectf right_stripe = Rectf(level_width, rect_top, screen_right, rect_bottom);
-    canvas.draw_filled_rect(left_stripe, Color(0,0,0), m_layer);
-    canvas.draw_filled_rect(right_stripe, Color(0,0,0), m_layer);
+    Rectf right_stripe =
+        Rectf(level_width, rect_top, screen_right, rect_bottom);
+    canvas.draw_filled_rect(left_stripe, Color(0, 0, 0), m_layer);
+    canvas.draw_filled_rect(right_stripe, Color(0, 0, 0), m_layer);
   }
 }
 

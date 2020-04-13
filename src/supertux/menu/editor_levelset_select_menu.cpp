@@ -32,21 +32,17 @@
 #include "util/gettext.hpp"
 #include "util/log.hpp"
 
-EditorLevelsetSelectMenu::EditorLevelsetSelectMenu() :
-  m_contrib_worlds()
-{
+EditorLevelsetSelectMenu::EditorLevelsetSelectMenu() : m_contrib_worlds() {
   Editor::current()->m_deactivate_request = true;
   // Generating contrib levels list by making use of Level Subset
   std::vector<std::string> level_worlds;
 
-  std::unique_ptr<char*, decltype(&PHYSFS_freeList)>
-    files(PHYSFS_enumerateFiles("levels"),
-          PHYSFS_freeList);
-  for (const char* const* filename = files.get(); *filename != nullptr; ++filename)
-  {
+  std::unique_ptr<char*, decltype(&PHYSFS_freeList)> files(
+      PHYSFS_enumerateFiles("levels"), PHYSFS_freeList);
+  for (const char* const* filename = files.get(); *filename != nullptr;
+       ++filename) {
     std::string filepath = FileSystem::join("levels", *filename);
-    if (physfsutil::is_directory(filepath))
-    {
+    if (physfsutil::is_directory(filepath)) {
       level_worlds.push_back(filepath);
     }
   }
@@ -55,49 +51,42 @@ EditorLevelsetSelectMenu::EditorLevelsetSelectMenu() :
   add_hl();
 
   int i = 0;
-  for (const auto& level_world : level_worlds)
-  {
-    try
-    {
+  for (const auto& level_world : level_worlds) {
+    try {
       std::unique_ptr<World> world = World::from_directory(level_world);
-      if (world->hide_from_contribs())
-      {
+      if (world->hide_from_contribs()) {
         continue;
       }
-      if (!world->is_levelset() && !world->is_worldmap())
-      {
+      if (!world->is_levelset() && !world->is_worldmap()) {
         log_warning << level_world << ": unknown World type" << std::endl;
         continue;
       }
       auto title = world->get_title();
-      if (title.empty())
-      {
+      if (title.empty()) {
         continue;
       }
       auto levelset = std::unique_ptr<Levelset>(
-                          new Levelset(level_world, /* recursively = */ true));
+          new Levelset(level_world, /* recursively = */ true));
       int level_count = levelset->get_num_levels();
       std::ostringstream level_title;
-      level_title << title << " (" <<
-        boost::format(__("%d level", "%d levels", level_count)) % level_count <<
-        ")";
+      level_title << title << " ("
+                  << boost::format(__("%d level", "%d levels", level_count)) %
+                         level_count
+                  << ")";
       add_entry(i++, level_title.str());
       m_contrib_worlds.push_back(level_world);
-    }
-    catch(std::exception& e)
-    {
-      log_info << "Couldn't parse levelset info for '" << level_world << "': "
-               << e.what() << std::endl;
+    } catch (std::exception& e) {
+      log_info << "Couldn't parse levelset info for '" << level_world
+               << "': " << e.what() << std::endl;
     }
   }
 
   add_hl();
   add_submenu(_("Create World"), MenuStorage::EDITOR_NEW_LEVELSET_MENU);
-  add_back(_("Back"),-2);
+  add_back(_("Back"), -2);
 }
 
-EditorLevelsetSelectMenu::~EditorLevelsetSelectMenu()
-{
+EditorLevelsetSelectMenu::~EditorLevelsetSelectMenu() {
   auto editor = Editor::current();
   if (editor == nullptr) {
     return;
@@ -109,13 +98,11 @@ EditorLevelsetSelectMenu::~EditorLevelsetSelectMenu()
   }
 }
 
-void
-EditorLevelsetSelectMenu::menu_action(MenuItem& item)
-{
-  if (item.get_id() >= 0)
-  {
-    std::unique_ptr<Menu> menu = std::unique_ptr<Menu>(new EditorLevelSelectMenu(
-                                 World::from_directory(m_contrib_worlds[item.get_id()])));
+void EditorLevelsetSelectMenu::menu_action(MenuItem& item) {
+  if (item.get_id() >= 0) {
+    std::unique_ptr<Menu> menu =
+        std::unique_ptr<Menu>(new EditorLevelSelectMenu(
+            World::from_directory(m_contrib_worlds[item.get_id()])));
     MenuManager::instance().push_menu(std::move(menu));
   }
 }

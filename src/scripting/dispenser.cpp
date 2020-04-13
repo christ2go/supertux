@@ -19,18 +19,16 @@
 
 namespace scripting {
 
-void Dispenser::activate()
-{
+void Dispenser::activate() {
   SCRIPT_GUARD_VOID;
   object.activate();
 }
 
-void Dispenser::deactivate()
-{
+void Dispenser::deactivate() {
   SCRIPT_GUARD_VOID;
   object.deactivate();
 }
 
-}
+}  // namespace scripting
 
 /* EOF */

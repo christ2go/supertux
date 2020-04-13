@@ -21,16 +21,12 @@
 #include "editor/object_option.hpp"
 #include "util/gettext.hpp"
 
-std::ostream& operator<<(std::ostream& o, const Direction& dir)
-{
+std::ostream& operator<<(std::ostream& o, const Direction& dir) {
   return o << dir_to_string(dir);
 }
 
-std::string
-dir_to_string(const Direction& dir)
-{
-  switch (dir)
-  {
+std::string dir_to_string(const Direction& dir) {
+  switch (dir) {
     case Direction::LEFT:
       return "left";
     case Direction::RIGHT:
@@ -45,9 +41,7 @@ dir_to_string(const Direction& dir)
   }
 }
 
-Direction
-string_to_dir(const std::string& dir_str)
-{
+Direction string_to_dir(const std::string& dir_str) {
   if (dir_str == "left")
     return Direction::LEFT;
   else if (dir_str == "right")

@@ -22,41 +22,25 @@
 
 namespace worldmap {
 
-WorldMapScreen::WorldMapScreen(std::unique_ptr<WorldMap> worldmap) :
-  m_worldmap(std::move(worldmap))
-{
-}
+WorldMapScreen::WorldMapScreen(std::unique_ptr<WorldMap> worldmap)
+    : m_worldmap(std::move(worldmap)) {}
 
-WorldMapScreen::~WorldMapScreen()
-{
-}
+WorldMapScreen::~WorldMapScreen() {}
 
-void
-WorldMapScreen::setup()
-{
-  m_worldmap->setup();
-}
+void WorldMapScreen::setup() { m_worldmap->setup(); }
 
-void
-WorldMapScreen::leave()
-{
-  m_worldmap->leave();
-}
+void WorldMapScreen::leave() { m_worldmap->leave(); }
 
-void
-WorldMapScreen::draw(Compositor& compositor)
-{
+void WorldMapScreen::draw(Compositor& compositor) {
   auto& context = compositor.make_context();
   m_worldmap->draw(context);
 }
 
-void
-WorldMapScreen::update(float dt_sec, const Controller& controller)
-{
+void WorldMapScreen::update(float dt_sec, const Controller& controller) {
   m_worldmap->process_input(controller);
   m_worldmap->update(dt_sec);
 }
 
-} // namespace worldmap
+}  // namespace worldmap
 
 /* EOF */

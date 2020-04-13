@@ -19,44 +19,32 @@
 #include "supertux/globals.hpp"
 #include "video/drawing_context.hpp"
 
-FadeToBlack::FadeToBlack(Direction direction, float fade_time, Color color) :
-  m_direction(direction),
-  m_fade_time(fade_time),
-  m_color(color),
-  m_accum_time(0)
-{
-}
+FadeToBlack::FadeToBlack(Direction direction, float fade_time, Color color)
+    : m_direction(direction),
+      m_fade_time(fade_time),
+      m_color(color),
+      m_accum_time(0) {}
 
-void
-FadeToBlack::update(float dt_sec)
-{
+void FadeToBlack::update(float dt_sec) {
   m_accum_time += dt_sec;
-  if (m_accum_time > m_fade_time)
-    m_accum_time = m_fade_time;
+  if (m_accum_time > m_fade_time) m_accum_time = m_fade_time;
 }
 
-void
-FadeToBlack::draw(DrawingContext& context)
-{
+void FadeToBlack::draw(DrawingContext& context) {
   Color col = m_color;
   col.alpha = m_accum_time / m_fade_time;
-  if (m_direction != FADEOUT)
-    col.alpha = 1.0f - col.alpha;
+  if (m_direction != FADEOUT) col.alpha = 1.0f - col.alpha;
 
   // The colours are mixed directly in sRGB space, so change alpha for a more
   // linear fading (it may only work correctly with black)
   col.alpha = Color::remove_gamma(col.alpha);
 
-  context.color().draw_filled_rect(Rectf(0, 0,
-                                         static_cast<float>(context.get_width()),
-                                         static_cast<float>(context.get_height())),
-                                   col, LAYER_GUI + 1);
+  context.color().draw_filled_rect(
+      Rectf(0, 0, static_cast<float>(context.get_width()),
+            static_cast<float>(context.get_height())),
+      col, LAYER_GUI + 1);
 }
 
-bool
-FadeToBlack::done() const
-{
-  return m_accum_time >= m_fade_time;
-}
+bool FadeToBlack::done() const { return m_accum_time >= m_fade_time; }
 
 /* EOF */

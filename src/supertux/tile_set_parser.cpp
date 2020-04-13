@@ -30,16 +30,10 @@
 #include "util/file_system.hpp"
 #include "video/surface.hpp"
 
-TileSetParser::TileSetParser(TileSet& tileset, const std::string& filename) :
-  m_tileset(tileset),
-  m_filename(filename),
-  m_tiles_path()
-{
-}
+TileSetParser::TileSetParser(TileSet& tileset, const std::string& filename)
+    : m_tileset(tileset), m_filename(filename), m_tiles_path() {}
 
-void
-TileSetParser::parse()
-{
+void TileSetParser::parse() {
   m_tiles_path = FileSystem::dirname(m_filename);
 
   auto doc = ReaderDocument::from_file(m_filename);
@@ -50,83 +44,58 @@ TileSetParser::parse()
   }
 
   auto iter = root.get_mapping().get_iter();
-  while (iter.next())
-  {
-    if (iter.get_key() == "tile")
-    {
+  while (iter.next()) {
+    if (iter.get_key() == "tile") {
       ReaderMapping tile_mapping = iter.as_mapping();
       parse_tile(tile_mapping);
-    }
-    else if (iter.get_key() == "tilegroup")
-    {
+    } else if (iter.get_key() == "tilegroup") {
       /* tilegroups are only interesting for the editor */
       ReaderMapping reader = iter.as_mapping();
       Tilegroup tilegroup;
       reader.get("name", tilegroup.name);
       reader.get("tiles", tilegroup.tiles);
       m_tileset.add_tilegroup(tilegroup);
-    }
-    else if (iter.get_key() == "tiles")
-    {
+    } else if (iter.get_key() == "tiles") {
       ReaderMapping tiles_mapping = iter.as_mapping();
       parse_tiles(tiles_mapping);
-    }
-    else
-    {
-      log_warning << "Unknown symbol '" << iter.get_key() << "' in tileset file" << std::endl;
+    } else {
+      log_warning << "Unknown symbol '" << iter.get_key() << "' in tileset file"
+                  << std::endl;
     }
   }
-  if (g_config->developer_mode)
-  {
+  if (g_config->developer_mode) {
     m_tileset.add_unassigned_tilegroup();
   }
 }
 
-void
-TileSetParser::parse_tile(const ReaderMapping& reader)
-{
+void TileSetParser::parse_tile(const ReaderMapping& reader) {
   uint32_t id;
-  if (!reader.get("id", id))
-  {
+  if (!reader.get("id", id)) {
     throw std::runtime_error("Missing tile-id.");
   }
 
   uint32_t attributes = 0;
 
   bool value = false;
-  if (reader.get("solid", value) && value)
-    attributes |= Tile::SOLID;
+  if (reader.get("solid", value) && value) attributes |= Tile::SOLID;
   if (reader.get("unisolid", value) && value)
     attributes |= Tile::UNISOLID | Tile::SOLID;
-  if (reader.get("brick", value) && value)
-    attributes |= Tile::BRICK;
-  if (reader.get("ice", value) && value)
-    attributes |= Tile::ICE;
-  if (reader.get("water", value) && value)
-    attributes |= Tile::WATER;
-  if (reader.get("hurts", value) && value)
-    attributes |= Tile::HURTS;
-  if (reader.get("fire", value) && value)
-    attributes |= Tile::FIRE;
-  if (reader.get("fullbox", value) && value)
-    attributes |= Tile::FULLBOX;
-  if (reader.get("coin", value) && value)
-    attributes |= Tile::COIN;
-  if (reader.get("goal", value) && value)
-    attributes |= Tile::GOAL;
+  if (reader.get("brick", value) && value) attributes |= Tile::BRICK;
+  if (reader.get("ice", value) && value) attributes |= Tile::ICE;
+  if (reader.get("water", value) && value) attributes |= Tile::WATER;
+  if (reader.get("hurts", value) && value) attributes |= Tile::HURTS;
+  if (reader.get("fire", value) && value) attributes |= Tile::FIRE;
+  if (reader.get("fullbox", value) && value) attributes |= Tile::FULLBOX;
+  if (reader.get("coin", value) && value) attributes |= Tile::COIN;
+  if (reader.get("goal", value) && value) attributes |= Tile::GOAL;
 
   uint32_t data = 0;
 
-  if (reader.get("north", value) && value)
-    data |= Tile::WORLDMAP_NORTH;
-  if (reader.get("south", value) && value)
-    data |= Tile::WORLDMAP_SOUTH;
-  if (reader.get("west", value) && value)
-    data |= Tile::WORLDMAP_WEST;
-  if (reader.get("east", value) && value)
-    data |= Tile::WORLDMAP_EAST;
-  if (reader.get("stop", value) && value)
-    data |= Tile::WORLDMAP_STOP;
+  if (reader.get("north", value) && value) data |= Tile::WORLDMAP_NORTH;
+  if (reader.get("south", value) && value) data |= Tile::WORLDMAP_SOUTH;
+  if (reader.get("west", value) && value) data |= Tile::WORLDMAP_WEST;
+  if (reader.get("east", value) && value) data |= Tile::WORLDMAP_EAST;
+  if (reader.get("stop", value) && value) data |= Tile::WORLDMAP_STOP;
 
   reader.get("data", data);
 
@@ -137,8 +106,7 @@ TileSetParser::parse_tile(const ReaderMapping& reader)
   reader.get("object-name", object_name);
   reader.get("object-data", object_data);
 
-  if (reader.get("slope-type", data))
-  {
+  if (reader.get("slope-type", data)) {
     attributes |= Tile::SOLID | Tile::SLOPE;
   }
 
@@ -157,15 +125,13 @@ TileSetParser::parse_tile(const ReaderMapping& reader)
   bool deprecated = false;
   reader.get("deprecated", deprecated);
 
-  auto tile = std::make_unique<Tile>(surfaces, editor_surfaces,
-                                     attributes, data, fps,
-                                     object_name, object_data, deprecated);
+  auto tile =
+      std::make_unique<Tile>(surfaces, editor_surfaces, attributes, data, fps,
+                             object_name, object_data, deprecated);
   m_tileset.add_tile(id, std::move(tile));
 }
 
-void
-TileSetParser::parse_tiles(const ReaderMapping& reader)
-{
+void TileSetParser::parse_tiles(const ReaderMapping& reader) {
   // List of ids (use 0 if the tile should be ignored)
   std::vector<uint32_t> ids;
   // List of attributes of the tile
@@ -180,10 +146,10 @@ TileSetParser::parse_tiles(const ReaderMapping& reader)
   //  ie. enlarging the image won't break the tile id mapping
   // FIXME: height is actually not used, since width might be enough for
   // all purposes, still feels somewhat more natural this way
-  unsigned int width  = 0;
+  unsigned int width = 0;
   unsigned int height = 0;
 
-  bool has_ids = reader.get("ids",        ids);
+  bool has_ids = reader.get("ids", ids);
   bool has_attributes = reader.get("attributes", attributes);
   bool has_datas = reader.get("datas", datas);
 
@@ -194,50 +160,38 @@ TileSetParser::parse_tiles(const ReaderMapping& reader)
   reader.get("shared-surface", shared_surface);
 
   float fps = 10;
-  reader.get("fps",     fps);
+  reader.get("fps", fps);
 
-  if (ids.empty() || !has_ids)
-  {
+  if (ids.empty() || !has_ids) {
     throw std::runtime_error("No IDs specified.");
   }
-  if (width == 0)
-  {
+  if (width == 0) {
     throw std::runtime_error("Width is zero.");
-  }
-  else if (height == 0)
-  {
+  } else if (height == 0) {
     throw std::runtime_error("Height is zero.");
-  }
-  else if (fps < 0)
-  {
+  } else if (fps < 0) {
     throw std::runtime_error("Negative fps.");
-  }
-  else if (ids.size() != width*height)
-  {
+  } else if (ids.size() != width * height) {
     std::ostringstream err;
-    err << "Number of ids (" << ids.size() <<  ") and "
-      "dimensions of image (" << width << "x" << height << " = " << width*height << ") "
-      "differ";
+    err << "Number of ids (" << ids.size()
+        << ") and "
+           "dimensions of image ("
+        << width << "x" << height << " = " << width * height
+        << ") "
+           "differ";
     throw std::runtime_error(err.str());
-  }
-  else if (has_attributes && (ids.size() != attributes.size()))
-  {
+  } else if (has_attributes && (ids.size() != attributes.size())) {
     std::ostringstream err;
-    err << "Number of ids (" << ids.size() <<  ") and attributes (" << attributes.size()
+    err << "Number of ids (" << ids.size() << ") and attributes ("
+        << attributes.size() << ") mismatch, but must be equal";
+    throw std::runtime_error(err.str());
+  } else if (has_datas && ids.size() != datas.size()) {
+    std::ostringstream err;
+    err << "Number of ids (" << ids.size() << ") and datas (" << datas.size()
         << ") mismatch, but must be equal";
     throw std::runtime_error(err.str());
-  }
-  else if (has_datas && ids.size() != datas.size())
-  {
-    std::ostringstream err;
-    err << "Number of ids (" << ids.size() <<  ") and datas (" << datas.size()
-        << ") mismatch, but must be equal";
-    throw std::runtime_error(err.str());
-  }
-  else
-  {
-    if (shared_surface)
-    {
+  } else {
+    if (shared_surface) {
       std::vector<SurfacePtr> editor_surfaces;
       boost::optional<ReaderMapping> editor_surfaces_mapping;
       if (reader.get("editor-images", editor_surfaces_mapping)) {
@@ -247,68 +201,63 @@ TileSetParser::parse_tiles(const ReaderMapping& reader)
       std::vector<SurfacePtr> surfaces;
       boost::optional<ReaderMapping> surfaces_mapping;
       if (reader.get("image", surfaces_mapping) ||
-         reader.get("images", surfaces_mapping)) {
+          reader.get("images", surfaces_mapping)) {
         surfaces = parse_imagespecs(*surfaces_mapping);
       }
 
-      for (size_t i = 0; i < ids.size(); ++i)
-      {
-        if (ids[i] != 0)
-        {
+      for (size_t i = 0; i < ids.size(); ++i) {
+        if (ids[i] != 0) {
           const int x = static_cast<int>(32 * (i % width));
           const int y = static_cast<int>(32 * (i / width));
 
           std::vector<SurfacePtr> regions;
           regions.reserve(surfaces.size());
-          std::transform(surfaces.begin(), surfaces.end(), std::back_inserter(regions),
-              [x, y] (const SurfacePtr& surface) { 
-                return surface->region(Rect(x, y, Size(32, 32)));
-              });
+          std::transform(surfaces.begin(), surfaces.end(),
+                         std::back_inserter(regions),
+                         [x, y](const SurfacePtr& surface) {
+                           return surface->region(Rect(x, y, Size(32, 32)));
+                         });
 
           std::vector<SurfacePtr> editor_regions;
           editor_regions.reserve(editor_surfaces.size());
-          std::transform(editor_surfaces.begin(), editor_surfaces.end(), std::back_inserter(editor_regions),
-              [x, y] (const SurfacePtr& surface) { 
-                return surface->region(Rect(x, y, Size(32, 32)));
-              });
+          std::transform(editor_surfaces.begin(), editor_surfaces.end(),
+                         std::back_inserter(editor_regions),
+                         [x, y](const SurfacePtr& surface) {
+                           return surface->region(Rect(x, y, Size(32, 32)));
+                         });
 
-          auto tile = std::make_unique<Tile>(regions,
-                                             editor_regions,
-                                             (has_attributes ? attributes[i] : 0),
-                                             (has_datas ? datas[i] : 0),
-                                             fps);
+          auto tile = std::make_unique<Tile>(
+              regions, editor_regions, (has_attributes ? attributes[i] : 0),
+              (has_datas ? datas[i] : 0), fps);
 
           m_tileset.add_tile(ids[i], std::move(tile));
         }
       }
-    }
-    else // (!shared_surface)
+    } else  // (!shared_surface)
     {
-      for (size_t i = 0; i < ids.size(); ++i)
-      {
-        if (ids[i] != 0)
-        {
+      for (size_t i = 0; i < ids.size(); ++i) {
+        if (ids[i] != 0) {
           int x = static_cast<int>(32 * (i % width));
           int y = static_cast<int>(32 * (i / width));
 
           std::vector<SurfacePtr> surfaces;
           boost::optional<ReaderMapping> surfaces_mapping;
           if (reader.get("image", surfaces_mapping) ||
-             reader.get("images", surfaces_mapping)) {
-            surfaces = parse_imagespecs(*surfaces_mapping, Rect(x, y, Size(32, 32)));
+              reader.get("images", surfaces_mapping)) {
+            surfaces =
+                parse_imagespecs(*surfaces_mapping, Rect(x, y, Size(32, 32)));
           }
 
           std::vector<SurfacePtr> editor_surfaces;
           boost::optional<ReaderMapping> editor_surfaces_mapping;
           if (reader.get("editor-images", editor_surfaces_mapping)) {
-            editor_surfaces = parse_imagespecs(*editor_surfaces_mapping, Rect(x, y, Size(32, 32)));
+            editor_surfaces = parse_imagespecs(*editor_surfaces_mapping,
+                                               Rect(x, y, Size(32, 32)));
           }
 
-          auto tile = std::make_unique<Tile>(surfaces,
-                                             editor_surfaces,
-                                             (has_attributes ? attributes[i] : 0),
-                                             (has_datas ? datas[i] : 0),
-                                             fps);
+          auto tile = std::make_unique<Tile>(
+              surfaces, editor_surfaces, (has_attributes ? attributes[i] : 0),
+              (has_datas ? datas[i] : 0), fps);
 
           m_tileset.add_tile(ids[i], std::move(tile));
         }
@@ -317,36 +266,29 @@ TileSetParser::parse_tiles(const ReaderMapping& reader)
   }
 }
 
-std::vector<SurfacePtr>
-  TileSetParser::parse_imagespecs(const ReaderMapping& images_mapping,
-                                  const boost::optional<Rect>& surface_region) const
-{
+std::vector<SurfacePtr> TileSetParser::parse_imagespecs(
+    const ReaderMapping& images_mapping,
+    const boost::optional<Rect>& surface_region) const {
   std::vector<SurfacePtr> surfaces;
 
   // (images "foo.png" "foo.bar" ...)
   // (images (region "foo.png" 0 0 32 32))
   auto iter = images_mapping.get_iter();
-  while (iter.next())
-  {
-    if (iter.is_string())
-    {
+  while (iter.next()) {
+    if (iter.is_string()) {
       std::string file = iter.as_string_item();
-      surfaces.push_back(Surface::from_file(FileSystem::join(m_tiles_path, file), surface_region));
-    }
-    else if (iter.is_pair() && iter.get_key() == "surface")
-    {
-      surfaces.push_back(Surface::from_reader(iter.as_mapping(), surface_region));
-    }
-    else if (iter.is_pair() && iter.get_key() == "region")
-    {
+      surfaces.push_back(Surface::from_file(
+          FileSystem::join(m_tiles_path, file), surface_region));
+    } else if (iter.is_pair() && iter.get_key() == "surface") {
+      surfaces.push_back(
+          Surface::from_reader(iter.as_mapping(), surface_region));
+    } else if (iter.is_pair() && iter.get_key() == "region") {
       auto const& sx = iter.as_mapping().get_sexp();
       auto const& arr = sx.as_array();
-      if (arr.size() != 6)
-      {
-        log_warning << "(region X Y WIDTH HEIGHT) tag malformed: " << sx << std::endl;
-      }
-      else
-      {
+      if (arr.size() != 6) {
+        log_warning << "(region X Y WIDTH HEIGHT) tag malformed: " << sx
+                    << std::endl;
+      } else {
         const std::string file = arr[1].as_string();
         const int x = arr[2].as_int();
         const int y = arr[3].as_int();
@@ -355,8 +297,7 @@ std::vector<SurfacePtr>
 
         Rect rect(x, y, x + w, y + h);
 
-        if (surface_region)
-        {
+        if (surface_region) {
           rect.left += surface_region->left;
           rect.top += surface_region->top;
 
@@ -364,12 +305,10 @@ std::vector<SurfacePtr>
           rect.bottom = rect.top + surface_region->get_height();
         }
 
-        surfaces.push_back(Surface::from_file(FileSystem::join(m_tiles_path, file),
-                                              rect));
+        surfaces.push_back(
+            Surface::from_file(FileSystem::join(m_tiles_path, file), rect));
       }
-    }
-    else
-    {
+    } else {
       log_warning << "Expected string or list in images tag" << std::endl;
     }
   }

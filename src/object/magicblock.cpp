@@ -37,29 +37,29 @@ const float MIN_INTENSITY = 0.8f;
 const float ALPHA_SOLID = 0.7f;
 const float ALPHA_NONSOLID = 0.3f;
 const float MIN_SOLIDTIME = 1.0f;
-const float SWITCH_DELAY = 0.06f; /**< seconds to wait for stable conditions until switching solidity */
+const float SWITCH_DELAY = 0.06f; /**< seconds to wait for stable conditions
+                                     until switching solidity */
 
-} // namespace
+}  // namespace
 
-MagicBlock::MagicBlock(const ReaderMapping& mapping) :
-  MovingSprite(mapping, "images/objects/magicblock/magicblock.sprite"),
-  m_is_solid(false),
-  m_trigger_red(),
-  m_trigger_green(),
-  m_trigger_blue(),
-  m_solid_time(0),
-  m_switch_delay(0),
-  m_solid_box(),
-  m_color(),
-  m_light(std::make_shared<Color>(1.0f,1.0f,1.0f)),
-  m_center(),
-  m_black()
-{
+MagicBlock::MagicBlock(const ReaderMapping& mapping)
+    : MovingSprite(mapping, "images/objects/magicblock/magicblock.sprite"),
+      m_is_solid(false),
+      m_trigger_red(),
+      m_trigger_green(),
+      m_trigger_blue(),
+      m_solid_time(0),
+      m_switch_delay(0),
+      m_solid_box(),
+      m_color(),
+      m_light(std::make_shared<Color>(1.0f, 1.0f, 1.0f)),
+      m_center(),
+      m_black() {
   set_group(COLGROUP_STATIC);
 
   std::vector<float> vColor;
-  if (mapping.get("color", vColor )) {
-    m_color = Color( vColor );
+  if (mapping.get("color", vColor)) {
+    m_color = Color(vColor);
   } else {
     m_color = Color(0, 0, 0);
   }
@@ -69,7 +69,8 @@ MagicBlock::MagicBlock(const ReaderMapping& mapping) :
     m_color.alpha = ALPHA_SOLID;
 
     // set trigger
-    if (m_color.red == 0 && m_color.green == 0 && m_color.blue == 0) { // is it black?
+    if (m_color.red == 0 && m_color.green == 0 &&
+        m_color.blue == 0) {  // is it black?
       m_black = true;
       m_trigger_red = MIN_INTENSITY;
       m_trigger_green = MIN_INTENSITY;
@@ -83,12 +84,13 @@ MagicBlock::MagicBlock(const ReaderMapping& mapping) :
   }
 
   m_center = m_col.m_bbox.get_middle();
-  m_solid_box = Rectf(m_col.m_bbox.get_left() + SHIFT_DELTA, m_col.m_bbox.get_top() + SHIFT_DELTA, m_col.m_bbox.get_right() - SHIFT_DELTA, m_col.m_bbox.get_bottom() - SHIFT_DELTA);
+  m_solid_box = Rectf(m_col.m_bbox.get_left() + SHIFT_DELTA,
+                      m_col.m_bbox.get_top() + SHIFT_DELTA,
+                      m_col.m_bbox.get_right() - SHIFT_DELTA,
+                      m_col.m_bbox.get_bottom() - SHIFT_DELTA);
 }
 
-ObjectSettings
-MagicBlock::get_settings()
-{
+ObjectSettings MagicBlock::get_settings() {
   ObjectSettings result = MovingSprite::get_settings();
 
   result.add_rgb(_("Color"), &m_color, "color", Color::BLACK);
@@ -98,10 +100,9 @@ MagicBlock::get_settings()
   return result;
 }
 
-void
-MagicBlock::after_editor_set()
-{
-  if (m_color.red == 0 && m_color.green == 0 && m_color.blue == 0) { //is it black?
+void MagicBlock::after_editor_set() {
+  if (m_color.red == 0 && m_color.green == 0 &&
+      m_color.blue == 0) {  // is it black?
     m_black = true;
     m_trigger_red = MIN_INTENSITY;
     m_trigger_green = MIN_INTENSITY;
@@ -115,16 +116,14 @@ MagicBlock::after_editor_set()
   m_sprite->set_color(m_color);
 }
 
-void
-MagicBlock::update(float dt_sec)
-{
+void MagicBlock::update(float dt_sec) {
   // Check if center of this block is on screen.
   // Don't update if not, because there is no light off screen.
   float screen_left = Sector::get().get_camera().get_translation().x;
   float screen_top = Sector::get().get_camera().get_translation().y;
   float screen_right = screen_left + static_cast<float>(SCREEN_WIDTH);
   float screen_bottom = screen_top + static_cast<float>(SCREEN_HEIGHT);
-  if ((m_center.x > screen_right ) || (m_center.y > screen_bottom) ||
+  if ((m_center.x > screen_right) || (m_center.y > screen_bottom) ||
       (m_center.x < screen_left) || (m_center.y < screen_top)) {
     m_switch_delay = SWITCH_DELAY;
     return;
@@ -132,13 +131,13 @@ MagicBlock::update(float dt_sec)
 
   bool lighting_ok;
   if (m_black) {
-    lighting_ok = (m_light->red >= m_trigger_red ||
-                   m_light->green >= m_trigger_green ||
-                   m_light->blue >= m_trigger_blue);
+    lighting_ok =
+        (m_light->red >= m_trigger_red || m_light->green >= m_trigger_green ||
+         m_light->blue >= m_trigger_blue);
   } else {
-    lighting_ok = (m_light->red >= m_trigger_red &&
-                   m_light->green >= m_trigger_green &&
-                   m_light->blue >= m_trigger_blue);
+    lighting_ok =
+        (m_light->red >= m_trigger_red && m_light->green >= m_trigger_green &&
+         m_light->blue >= m_trigger_blue);
   }
 
   // overrule lighting_ok if switch_delay has not yet passed
@@ -164,14 +163,14 @@ MagicBlock::update(float dt_sec)
   } else {
     // lighting suggests going nonsolid
 
-    if ( m_solid_time >= MIN_SOLIDTIME ){
+    if (m_solid_time >= MIN_SOLIDTIME) {
       m_is_solid = false;
     }
   }
 
   // Update Sprite.
   if (m_is_solid) {
-    m_solid_time+=dt_sec;
+    m_solid_time += dt_sec;
     m_color.alpha = ALPHA_SOLID;
     m_sprite->set_action("solid");
     set_group(COLGROUP_STATIC);
@@ -182,9 +181,7 @@ MagicBlock::update(float dt_sec)
   }
 }
 
-void
-MagicBlock::draw(DrawingContext& context)
-{
+void MagicBlock::draw(DrawingContext& context) {
   // Ask for update about lightmap at center of this block
   context.light().get_pixel(m_center, m_light);
 
@@ -192,15 +189,13 @@ MagicBlock::draw(DrawingContext& context)
   context.color().draw_filled_rect(m_col.m_bbox, m_color, m_layer);
 }
 
-bool
-MagicBlock::collides(GameObject& /*other*/, const CollisionHit& /*hit*/) const
-{
+bool MagicBlock::collides(GameObject& /*other*/,
+                          const CollisionHit& /*hit*/) const {
   return m_is_solid;
 }
 
-HitResponse
-MagicBlock::collision(GameObject& /*other*/, const CollisionHit& /*hit*/)
-{
+HitResponse MagicBlock::collision(GameObject& /*other*/,
+                                  const CollisionHit& /*hit*/) {
   return FORCE_MOVE;
 }
 

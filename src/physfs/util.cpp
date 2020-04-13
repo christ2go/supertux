@@ -22,20 +22,18 @@
 
 namespace physfsutil {
 
-std::string realpath(const std::string& path)
-{
+std::string realpath(const std::string& path) {
   std::string result = FileSystem::normalize(path);
   if (result.empty()) {
     return "/";
   } else if (result[0] != '/') {
     return '/' + result;
-  } else  {
+  } else {
     return result;
   }
 }
 
-bool is_directory(const std::string& path)
-{
+bool is_directory(const std::string& path) {
   PHYSFS_Stat statbuf;
   if (!PHYSFS_stat(path.c_str(), &statbuf)) {
     return false;
@@ -55,11 +53,10 @@ bool is_directory(const std::string& path)
   }
 }
 
-bool remove(const std::string& filename)
-{
+bool remove(const std::string& filename) {
   return PHYSFS_delete(filename.c_str()) == 0;
 }
 
-} // namespace physfsutil
+}  // namespace physfsutil
 
 /* EOF */

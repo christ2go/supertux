@@ -29,16 +29,15 @@
 static const int START_COINS = 100;
 static const int MAX_COINS = 9999;
 
-PlayerStatus::PlayerStatus() :
-  coins(START_COINS),
-  bonus(NO_BONUS),
-  max_fire_bullets(0),
-  max_ice_bullets(0),
-  max_air_time(0),
-  max_earth_time(0),
-  worldmap_sprite("images/worldmap/common/tux.sprite"),
-  last_worldmap()
-{
+PlayerStatus::PlayerStatus()
+    : coins(START_COINS),
+      bonus(NO_BONUS),
+      max_fire_bullets(0),
+      max_ice_bullets(0),
+      max_air_time(0),
+      max_earth_time(0),
+      worldmap_sprite("images/worldmap/common/tux.sprite"),
+      last_worldmap() {
   reset();
 
   // FIXME: Move sound handling into PlayerStatusHUD
@@ -48,32 +47,22 @@ PlayerStatus::PlayerStatus() :
   }
 }
 
-void PlayerStatus::reset()
-{
+void PlayerStatus::reset() {
   coins = START_COINS;
   bonus = NO_BONUS;
 }
 
-int
-PlayerStatus::get_max_coins() const
-{
-  return MAX_COINS;
+int PlayerStatus::get_max_coins() const { return MAX_COINS; }
+
+bool PlayerStatus::can_reach_checkpoint() const {
+  return coins >= 25 &&
+         !GameSession::current()->get_reset_point_sectorname().empty();
 }
 
-bool
-PlayerStatus::can_reach_checkpoint() const
-{
-  return coins >= 25
-    && !GameSession::current()->get_reset_point_sectorname().empty();
-}
-
-void
-PlayerStatus::add_coins(int count, bool play_sound)
-{
+void PlayerStatus::add_coins(int count, bool play_sound) {
   coins = std::min(coins + count, MAX_COINS);
 
-  if (!play_sound)
-    return;
+  if (!play_sound) return;
 
   static float sound_played_time = 0;
   if (count >= 100)
@@ -84,9 +73,7 @@ PlayerStatus::add_coins(int count, bool play_sound)
   }
 }
 
-void
-PlayerStatus::write(Writer& writer)
-{
+void PlayerStatus::write(Writer& writer) {
   switch (bonus) {
     case NO_BONUS:
       writer.write("bonus", "none");
@@ -121,9 +108,7 @@ PlayerStatus::write(Writer& writer)
   writer.write("last-worldmap", last_worldmap, false);
 }
 
-void
-PlayerStatus::read(const ReaderMapping& mapping)
-{
+void PlayerStatus::read(const ReaderMapping& mapping) {
   reset();
 
   std::string bonusname;
@@ -141,7 +126,8 @@ PlayerStatus::read(const ReaderMapping& mapping)
     } else if (bonusname == "earthflower") {
       bonus = EARTH_BONUS;
     } else {
-      log_warning << "Unknown bonus '" << bonusname << "' in savefile" << std::endl;
+      log_warning << "Unknown bonus '" << bonusname << "' in savefile"
+                  << std::endl;
       bonus = NO_BONUS;
     }
   }
@@ -156,22 +142,21 @@ PlayerStatus::read(const ReaderMapping& mapping)
   mapping.get("last-worldmap", last_worldmap);
 }
 
-std::string PlayerStatus::get_bonus_prefix() const
-{
+std::string PlayerStatus::get_bonus_prefix() const {
   switch (bonus) {
-  default:
-  case NO_BONUS:
-    return "small";
-  case GROWUP_BONUS:
-    return "big";
-  case FIRE_BONUS:
-    return "fire";
-  case ICE_BONUS:
-    return "ice";
-  case AIR_BONUS:
-    return "air";
-  case EARTH_BONUS:
-    return "earth";
+    default:
+    case NO_BONUS:
+      return "small";
+    case GROWUP_BONUS:
+      return "big";
+    case FIRE_BONUS:
+      return "fire";
+    case ICE_BONUS:
+      return "ice";
+    case AIR_BONUS:
+      return "air";
+    case EARTH_BONUS:
+      return "earth";
   }
 }
 

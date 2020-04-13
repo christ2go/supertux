@@ -24,10 +24,8 @@
 
 namespace {
 
-std::string colour_value_to_string(float v, bool is_linear)
-{
-  if (!is_linear)
-    v = Color::remove_gamma(v);
+std::string colour_value_to_string(float v, bool is_linear) {
+  if (!is_linear) v = Color::remove_gamma(v);
   v *= 100.0f;
   // not using std::to_string() as it padds the end with '0's
   v = 0.01f * floorf(v * 100.0f + 0.5f);
@@ -36,37 +34,31 @@ std::string colour_value_to_string(float v, bool is_linear)
   return os.str();
 }
 
-} // namespace
+}  // namespace
 
 ItemColorChannel::ItemColorChannel(float* input, Color channel, int id,
-    bool is_linear) :
-  MenuItem(colour_value_to_string(*input, is_linear), id),
-  m_number(input),
-  m_is_linear(is_linear),
-  m_flickw(static_cast<int>(Resources::normal_font->get_text_width("_"))),
-  m_channel(channel)
-{
-}
+                                   bool is_linear)
+    : MenuItem(colour_value_to_string(*input, is_linear), id),
+      m_number(input),
+      m_is_linear(is_linear),
+      m_flickw(static_cast<int>(Resources::normal_font->get_text_width("_"))),
+      m_channel(channel) {}
 
-void
-ItemColorChannel::draw(DrawingContext& context, const Vector& pos, int menu_width, bool active)
-{
+void ItemColorChannel::draw(DrawingContext& context, const Vector& pos,
+                            int menu_width, bool active) {
   MenuItem::draw(context, pos, menu_width, active);
   const float lw = float(menu_width - 32) * (*m_number);
-  context.color().draw_filled_rect(Rectf(pos + Vector(16, -4),
-                                         pos + Vector(16 + lw, 4)),
-                                   m_channel, 0.0f, LAYER_GUI-1);
+  context.color().draw_filled_rect(
+      Rectf(pos + Vector(16, -4), pos + Vector(16 + lw, 4)), m_channel, 0.0f,
+      LAYER_GUI - 1);
 }
 
-int
-ItemColorChannel::get_width() const
-{
-  return static_cast<int>(Resources::normal_font->get_text_width(get_text()) + 16 + static_cast<float>(m_flickw));
+int ItemColorChannel::get_width() const {
+  return static_cast<int>(Resources::normal_font->get_text_width(get_text()) +
+                          16 + static_cast<float>(m_flickw));
 }
 
-void
-ItemColorChannel::event(const SDL_Event& ev)
-{
+void ItemColorChannel::event(const SDL_Event& ev) {
   if (ev.type == SDL_TEXTINPUT) {
     std::string txt = ev.text.text;
     for (auto& c : txt) {
@@ -75,29 +67,21 @@ ItemColorChannel::event(const SDL_Event& ev)
   }
 }
 
-void
-ItemColorChannel::add_char(char c)
-{
+void ItemColorChannel::add_char(char c) {
   std::string text = get_text();
 
-  if (c == '.' || c == ',')
-  {
+  if (c == '.' || c == ',') {
     const bool has_comma = (text.find('.') != std::string::npos);
-    if (!has_comma)
-    {
+    if (!has_comma) {
       if (text.empty()) {
         text = "0.";
       } else {
         text.push_back('.');
       }
     }
-  }
-  else if (isdigit(c))
-  {
+  } else if (isdigit(c)) {
     text.push_back(c);
-  }
-  else
-  {
+  } else {
     return;
   }
 
@@ -108,17 +92,12 @@ ItemColorChannel::add_char(char c)
   }
 }
 
-void
-ItemColorChannel::remove_char()
-{
+void ItemColorChannel::remove_char() {
   std::string text = get_text();
 
-  if (text.empty())
-  {
+  if (text.empty()) {
     *m_number = 0.0f;
-  }
-  else
-  {
+  } else {
     text.pop_back();
 
     if (!text.empty()) {
@@ -131,11 +110,8 @@ ItemColorChannel::remove_char()
   set_text(text);
 }
 
-void
-ItemColorChannel::process_action(const MenuAction& action)
-{
-  switch (action)
-  {
+void ItemColorChannel::process_action(const MenuAction& action) {
+  switch (action) {
     case MenuAction::REMOVE:
       remove_char();
       break;
@@ -146,7 +122,6 @@ ItemColorChannel::process_action(const MenuAction& action)
       *m_number = math::clamp(*m_number, 0.0f, 1.0f);
       set_text(colour_value_to_string(*m_number, m_is_linear));
       break;
-
 
     case MenuAction::RIGHT:
       *m_number = roundf(*m_number * 10.0f) / 10.0f;
@@ -160,10 +135,6 @@ ItemColorChannel::process_action(const MenuAction& action)
   }
 }
 
-Color
-ItemColorChannel::get_color() const
-{
-  return m_channel;
-}
+Color ItemColorChannel::get_color() const { return m_channel; }
 
 /* EOF */

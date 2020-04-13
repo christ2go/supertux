@@ -21,24 +21,17 @@
 
 #include "supertux/game_object.hpp"
 
-ObjectFactory::ObjectFactory() :
-  factories()
-{
-}
+ObjectFactory::ObjectFactory() : factories() {}
 
-std::unique_ptr<GameObject>
-ObjectFactory::create(const std::string& name, const ReaderMapping& reader) const
-{
+std::unique_ptr<GameObject> ObjectFactory::create(
+    const std::string& name, const ReaderMapping& reader) const {
   auto it = factories.find(name);
 
-  if (it == factories.end())
-  {
+  if (it == factories.end()) {
     std::stringstream msg;
     msg << "No factory for object '" << name << "' found.";
     throw std::runtime_error(msg.str());
-  }
-  else
-  {
+  } else {
     return it->second(reader);
   }
 }

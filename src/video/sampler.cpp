@@ -16,20 +16,17 @@
 
 #include "video/sampler.hpp"
 
-Sampler::Sampler() :
-  m_filter(GL_LINEAR),
-  m_wrap_s(GL_CLAMP_TO_EDGE),
-  m_wrap_t(GL_CLAMP_TO_EDGE),
-  m_animate()
-{
-}
+Sampler::Sampler()
+    : m_filter(GL_LINEAR),
+      m_wrap_s(GL_CLAMP_TO_EDGE),
+      m_wrap_t(GL_CLAMP_TO_EDGE),
+      m_animate() {}
 
-Sampler::Sampler(GLenum filter, GLenum wrap_s, GLenum wrap_t, const Vector& animate) :
-  m_filter(filter),
-  m_wrap_s(wrap_s),
-  m_wrap_t(wrap_t),
-  m_animate(animate)
-{
-}
+Sampler::Sampler(GLenum filter, GLenum wrap_s, GLenum wrap_t,
+                 const Vector& animate)
+    : m_filter(filter),
+      m_wrap_s(wrap_s),
+      m_wrap_t(wrap_t),
+      m_animate(animate) {}
 
 /* EOF */

@@ -29,26 +29,20 @@
 
 bool ReaderMapping::s_translations_enabled = true;
 
-ReaderMapping::ReaderMapping(const ReaderDocument& doc, const sexp::Value& sx) :
-  m_doc(doc),
-  m_sx(sx),
-  m_arr([this]() -> decltype(m_arr){ assert_is_array(m_doc, m_sx); return m_sx.as_array();}())
-{
-}
+ReaderMapping::ReaderMapping(const ReaderDocument& doc, const sexp::Value& sx)
+    : m_doc(doc), m_sx(sx), m_arr([this]() -> decltype(m_arr) {
+        assert_is_array(m_doc, m_sx);
+        return m_sx.as_array();
+      }()) {}
 
-ReaderIterator
-ReaderMapping::get_iter() const
-{
+ReaderIterator ReaderMapping::get_iter() const {
   assert_is_array(m_doc, m_sx);
 
   return ReaderIterator(m_doc, m_sx);
 }
 
-const sexp::Value*
-ReaderMapping::get_item(const char* key) const
-{
-  for (size_t i = 1; i < m_arr.size(); ++i)
-  {
+const sexp::Value* ReaderMapping::get_item(const char* key) const {
+  for (size_t i = 1; i < m_arr.size(); ++i) {
     auto const& pair = m_arr[i];
 
     // size should be >=2 not >=1, but we have to allow smaller once
@@ -57,57 +51,52 @@ ReaderMapping::get_item(const char* key) const
 
     assert_is_symbol(m_doc, pair.as_array()[0]);
 
-    if (pair.as_array()[0].as_string() == key)
-    {
+    if (pair.as_array()[0].as_string() == key) {
       return &pair;
     }
   }
   return nullptr;
 }
 
-#define GET_VALUE_MACRO(type, checker, getter)                          \
-  auto const sx = get_item(key);                                        \
-  if (!sx) {                                                            \
-    if (default_value) {                                                \
-      value = *default_value;                                           \
-    }                                                                   \
-    return false;                                                       \
-  } else {                                                              \
-    assert_array_size_eq(m_doc, *sx, 2);                                \
-    assert_##checker(m_doc, sx->as_array()[1]);                         \
-    value = sx->as_array()[1].getter();                                 \
-    return true;                                                        \
+#define GET_VALUE_MACRO(type, checker, getter)  \
+  auto const sx = get_item(key);                \
+  if (!sx) {                                    \
+    if (default_value) {                        \
+      value = *default_value;                   \
+    }                                           \
+    return false;                               \
+  } else {                                      \
+    assert_array_size_eq(m_doc, *sx, 2);        \
+    assert_##checker(m_doc, sx->as_array()[1]); \
+    value = sx->as_array()[1].getter();         \
+    return true;                                \
   }
 
-bool
-ReaderMapping::get(const char* key, bool& value, const boost::optional<bool>& default_value) const
-{
+bool ReaderMapping::get(const char* key, bool& value,
+                        const boost::optional<bool>& default_value) const {
   GET_VALUE_MACRO("bool", is_boolean, as_bool);
 }
 
-bool
-ReaderMapping::get(const char* key, int& value, const boost::optional<int>& default_value) const
-{
+bool ReaderMapping::get(const char* key, int& value,
+                        const boost::optional<int>& default_value) const {
   GET_VALUE_MACRO("int", is_integer, as_int);
 }
 
-bool
-ReaderMapping::get(const char* key, uint32_t& value, const boost::optional<uint32_t>& default_value) const
-{
+bool ReaderMapping::get(const char* key, uint32_t& value,
+                        const boost::optional<uint32_t>& default_value) const {
   GET_VALUE_MACRO("uint32_t", is_integer, as_int);
 }
 
-bool
-ReaderMapping::get(const char* key, float& value, const boost::optional<float>& default_value) const
-{
+bool ReaderMapping::get(const char* key, float& value,
+                        const boost::optional<float>& default_value) const {
   GET_VALUE_MACRO("float", is_real, as_float);
 }
 
 #undef GET_VALUE_MACRO
 
-bool
-ReaderMapping::get(const char* key, std::string& value, const boost::optional<const char*>& default_value) const
-{
+bool ReaderMapping::get(
+    const char* key, std::string& value,
+    const boost::optional<const char*>& default_value) const {
   auto const sx = get_item(key);
   if (!sx) {
     if (default_value) {
@@ -122,8 +111,7 @@ ReaderMapping::get(const char* key, std::string& value, const boost::optional<co
     if (item[1].is_string()) {
       value = item[1].as_string();
       return true;
-    } else if (item[1].is_array() &&
-               item[1].as_array().size() == 2 &&
+    } else if (item[1].is_array() && item[1].as_array().size() == 2 &&
                item[1].as_array()[0].is_symbol() &&
                item[1].as_array()[0].as_string() == "_" &&
                item[1].as_array()[1].is_string()) {
@@ -139,62 +127,51 @@ ReaderMapping::get(const char* key, std::string& value, const boost::optional<co
   }
 }
 
-#define GET_VALUES_MACRO(type, checker, getter)                         \
-  auto const sx = get_item(key);                                        \
-  if (!sx) {                                                            \
-    return false;                                                       \
-  } else {                                                              \
-    assert_is_array(m_doc, *sx);                                        \
-    auto const& item = sx->as_array();                                  \
-    for (size_t i = 1; i < item.size(); ++i)                             \
-    {                                                                   \
-      assert_##checker(m_doc, item[i]);                                 \
-      value.emplace_back(item[i].getter());                             \
-    }                                                                   \
-    return true;                                                        \
+#define GET_VALUES_MACRO(type, checker, getter) \
+  auto const sx = get_item(key);                \
+  if (!sx) {                                    \
+    return false;                               \
+  } else {                                      \
+    assert_is_array(m_doc, *sx);                \
+    auto const& item = sx->as_array();          \
+    for (size_t i = 1; i < item.size(); ++i) {  \
+      assert_##checker(m_doc, item[i]);         \
+      value.emplace_back(item[i].getter());     \
+    }                                           \
+    return true;                                \
   }
 
-bool
-ReaderMapping::get(const char* key, std::vector<bool>& value) const
-{
+bool ReaderMapping::get(const char* key, std::vector<bool>& value) const {
   value.clear();
   GET_VALUES_MACRO("bool", is_boolean, as_bool);
 }
 
-bool
-ReaderMapping::get(const char* key, std::vector<int>& value) const
-{
+bool ReaderMapping::get(const char* key, std::vector<int>& value) const {
   value.clear();
   GET_VALUES_MACRO("int", is_integer, as_int);
 }
 
-
-bool
-ReaderMapping::get(const char* key, std::vector<float>& value) const
-{
+bool ReaderMapping::get(const char* key, std::vector<float>& value) const {
   value.clear();
   GET_VALUES_MACRO("float", is_real, as_float);
 }
 
-bool
-ReaderMapping::get(const char* key, std::vector<std::string>& value) const
-{
+bool ReaderMapping::get(const char* key,
+                        std::vector<std::string>& value) const {
   value.clear();
   GET_VALUES_MACRO("string", is_string, as_string);
 }
 
-bool
-ReaderMapping::get(const char* key, std::vector<unsigned int>& value) const
-{
+bool ReaderMapping::get(const char* key,
+                        std::vector<unsigned int>& value) const {
   value.clear();
   GET_VALUES_MACRO("unsigned int", is_integer, as_int);
 }
 
 #undef GET_VALUES_MACRO
 
-bool
-ReaderMapping::get(const char* key, boost::optional<ReaderMapping>& value) const
-{
+bool ReaderMapping::get(const char* key,
+                        boost::optional<ReaderMapping>& value) const {
   auto const sx = get_item(key);
   if (sx) {
     value = boost::in_place<ReaderMapping>(boost::ref(m_doc), boost::ref(*sx));
@@ -204,21 +181,19 @@ ReaderMapping::get(const char* key, boost::optional<ReaderMapping>& value) const
   }
 }
 
-bool
-ReaderMapping::get(const char* key, boost::optional<ReaderCollection>& value) const
-{
+bool ReaderMapping::get(const char* key,
+                        boost::optional<ReaderCollection>& value) const {
   auto const sx = get_item(key);
   if (sx) {
-    value = boost::in_place<ReaderCollection>(boost::ref(m_doc), boost::ref(*sx));
+    value =
+        boost::in_place<ReaderCollection>(boost::ref(m_doc), boost::ref(*sx));
     return true;
   } else {
     return false;
   }
 }
 
-bool
-ReaderMapping::get(const char* key, sexp::Value& value) const
-{
+bool ReaderMapping::get(const char* key, sexp::Value& value) const {
   auto const sx = get_item(key);
   if (!sx) {
     return false;

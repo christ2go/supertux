@@ -25,9 +25,7 @@
 #include "object/tilemap.hpp"
 #include "supertux/sector.hpp"
 
-void
-FlipLevelTransformer::transform_sector(Sector& sector)
-{
+void FlipLevelTransformer::transform_sector(Sector& sector) {
   float height = sector.get_height();
 
   for (auto& object : sector.get_objects()) {
@@ -67,9 +65,7 @@ FlipLevelTransformer::transform_sector(Sector& sector)
   sector.get_camera().reset(sector.get_player().get_pos());
 }
 
-Flip
-FlipLevelTransformer::transform_flip(Flip flip)
-{
+Flip FlipLevelTransformer::transform_flip(Flip flip) {
   if (flip & VERTICAL_FLIP) {
     return flip & ~VERTICAL_FLIP;
   } else {
@@ -77,22 +73,19 @@ FlipLevelTransformer::transform_flip(Flip flip)
   }
 }
 
-void
-FlipLevelTransformer::transform_path(float height, float obj_height, Path& path)
-{
+void FlipLevelTransformer::transform_path(float height, float obj_height,
+                                          Path& path) {
   for (auto& node : path.m_nodes) {
     Vector& pos = node.position;
     pos.y = height - pos.y - obj_height;
   }
 }
 
-void
-FlipLevelTransformer::transform_tilemap(float height, TileMap& tilemap)
-{
+void FlipLevelTransformer::transform_tilemap(float height, TileMap& tilemap) {
   for (int x = 0; x < tilemap.get_width(); ++x) {
-    for (int y = 0; y < tilemap.get_height()/2; ++y) {
+    for (int y = 0; y < tilemap.get_height() / 2; ++y) {
       // swap tiles
-      int y2 = tilemap.get_height()-1-y;
+      int y2 = tilemap.get_height() - 1 - y;
       uint32_t t1 = tilemap.get_tile_id(x, y);
       uint32_t t2 = tilemap.get_tile_id(x, y2);
       tilemap.change(x, y, t2);
@@ -104,42 +97,36 @@ FlipLevelTransformer::transform_tilemap(float height, TileMap& tilemap)
   offset.y = height - offset.y - tilemap.get_bbox().get_height();
   tilemap.set_offset(offset);
   auto path = tilemap.get_path();
-  if (path)
-    transform_path(height, tilemap.get_bbox().get_height(), *path);
+  if (path) transform_path(height, tilemap.get_bbox().get_height(), *path);
 }
 
-void
-FlipLevelTransformer::transform_badguy(float height, BadGuy& badguy)
-{
+void FlipLevelTransformer::transform_badguy(float height, BadGuy& badguy) {
   Vector pos = badguy.get_start_position();
   pos.y = height - pos.y;
   badguy.set_start_position(pos);
 }
 
-void
-FlipLevelTransformer::transform_moving_object(float height, MovingObject& object)
-{
+void FlipLevelTransformer::transform_moving_object(float height,
+                                                   MovingObject& object) {
   Vector pos = object.get_pos();
   pos.y = height - pos.y - object.get_bbox().get_height();
   object.set_pos(pos);
 }
 
-void
-FlipLevelTransformer::transform_flower(Flower& flower)
-{
+void FlipLevelTransformer::transform_flower(Flower& flower) {
   flower.flip = transform_flip(flower.flip);
 }
 
-void
-FlipLevelTransformer::transform_platform(float height, Platform& platform)
-{
-  transform_path(height, platform.get_bbox().get_height(), *(platform.get_path()));
+void FlipLevelTransformer::transform_platform(float height,
+                                              Platform& platform) {
+  transform_path(height, platform.get_bbox().get_height(),
+                 *(platform.get_path()));
 }
 
-void
-FlipLevelTransformer::transform_block(float height, Block& block)
-{
-  if (block.m_original_y != -1) block.m_original_y = height - block.m_original_y - block.get_bbox().get_height();
+void FlipLevelTransformer::transform_block(float height, Block& block) {
+  if (block.m_original_y != -1)
+    block.m_original_y =
+        height - block.m_original_y - block.get_bbox().get_height();
 }
 
 /* EOF */

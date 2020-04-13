@@ -19,30 +19,26 @@
 
 namespace scripting {
 
-void LevelTime::start()
-{
+void LevelTime::start() {
   SCRIPT_GUARD_VOID;
   object.start();
 }
 
-void LevelTime::stop()
-{
+void LevelTime::stop() {
   SCRIPT_GUARD_VOID;
   object.stop();
 }
 
-float LevelTime::get_time() const
-{
+float LevelTime::get_time() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_time();
 }
 
-void LevelTime::set_time(float time_left)
-{
+void LevelTime::set_time(float time_left) {
   SCRIPT_GUARD_VOID;
   object.set_time(time_left);
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

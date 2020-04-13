@@ -22,44 +22,37 @@
 #include "physfs/ofile_stream.hpp"
 #include "util/log.hpp"
 
-Writer::Writer(const std::string& filename) :
-  m_filename(filename),
-  out(new OFileStream(filename)),
-  out_owned(true),
-  indent_depth(0),
-  lists()
-{
+Writer::Writer(const std::string& filename)
+    : m_filename(filename),
+      out(new OFileStream(filename)),
+      out_owned(true),
+      indent_depth(0),
+      lists() {
   out->precision(7);
 }
 
-Writer::Writer(std::ostream& newout) :
-  m_filename("<stream>"),
-  out(&newout),
-  out_owned(false),
-  indent_depth(0),
-  lists()
-{
+Writer::Writer(std::ostream& newout)
+    : m_filename("<stream>"),
+      out(&newout),
+      out_owned(false),
+      indent_depth(0),
+      lists() {
   out->precision(7);
 }
 
-Writer::~Writer()
-{
+Writer::~Writer() {
   if (lists.size() > 0) {
-    log_warning << m_filename << ": Not all sections closed in Writer" << std::endl;
+    log_warning << m_filename << ": Not all sections closed in Writer"
+                << std::endl;
   }
-  if (out_owned)
-    delete out;
+  if (out_owned) delete out;
 }
 
-void
-Writer::write_comment(const std::string& comment)
-{
+void Writer::write_comment(const std::string& comment) {
   *out << "; " << comment << "\n";
 }
 
-void
-Writer::start_list(const std::string& listname, bool string)
-{
+void Writer::start_list(const std::string& listname, bool string) {
   indent();
   *out << '(';
   if (string)
@@ -72,15 +65,15 @@ Writer::start_list(const std::string& listname, bool string)
   lists.push_back(listname);
 }
 
-void
-Writer::end_list(const std::string& listname)
-{
+void Writer::end_list(const std::string& listname) {
   if (lists.size() == 0) {
-    log_warning << m_filename << ": Trying to close list '" << listname << "', which is not open" << std::endl;
+    log_warning << m_filename << ": Trying to close list '" << listname
+                << "', which is not open" << std::endl;
     return;
   }
   if (lists.back() != listname) {
-    log_warning << m_filename << ": trying to close list '" << listname << "' while list '" << lists.back() << "' is open" << std::endl;
+    log_warning << m_filename << ": trying to close list '" << listname
+                << "' while list '" << lists.back() << "' is open" << std::endl;
     return;
   }
   lists.pop_back();
@@ -90,16 +83,12 @@ Writer::end_list(const std::string& listname)
   *out << ")\n";
 }
 
-void
-Writer::write(const std::string& name, int value)
-{
+void Writer::write(const std::string& name, int value) {
   indent();
   *out << '(' << name << ' ' << value << ")\n";
 }
 
-void
-Writer::write(const std::string& name, float value)
-{
+void Writer::write(const std::string& name, float value) {
   indent();
   *out << '(' << name << ' ' << value << ")\n";
 }
@@ -107,16 +96,12 @@ Writer::write(const std::string& name, float value)
 /** This function is needed to properly resolve the overloaded write()
     function, without it the call write("foo", "bar") would call
     write(name, bool), not write(name, string, bool) */
-void
-Writer::write(const std::string& name, const char* value)
-{
+void Writer::write(const std::string& name, const char* value) {
   write(name, value, false);
 }
 
-void
-Writer::write(const std::string& name, const std::string& value,
-              bool translatable)
-{
+void Writer::write(const std::string& name, const std::string& value,
+                   bool translatable) {
   indent();
   *out << '(' << name;
   if (translatable) {
@@ -130,38 +115,25 @@ Writer::write(const std::string& name, const std::string& value,
   }
 }
 
-void
-Writer::write(const std::string& name, bool value)
-{
+void Writer::write(const std::string& name, bool value) {
   indent();
   *out << '(' << name << ' ' << (value ? "#t" : "#f") << ")\n";
 }
 
-void
-Writer::write(const std::string& name,
-              const std::vector<int>& value)
-{
+void Writer::write(const std::string& name, const std::vector<int>& value) {
   indent();
   *out << '(' << name;
-  for (const auto& i : value)
-    *out << " " << i;
+  for (const auto& i : value) *out << " " << i;
   *out << ")\n";
 }
 
-void
-Writer::write(const std::string& name,
-              const std::vector<unsigned int>& value,
-              int width)
-{
+void Writer::write(const std::string& name,
+                   const std::vector<unsigned int>& value, int width) {
   indent();
   *out << '(' << name;
-  if (!width)
-  {
-    for (const auto& i : value)
-      *out << " " << i;
-  }
-  else
-  {
+  if (!width) {
+    for (const auto& i : value) *out << " " << i;
+  } else {
     *out << "\n";
     indent();
     int count = 0;
@@ -180,21 +152,15 @@ Writer::write(const std::string& name,
   *out << ")\n";
 }
 
-void
-Writer::write(const std::string& name,
-              const std::vector<float>& value)
-{
+void Writer::write(const std::string& name, const std::vector<float>& value) {
   indent();
   *out << '(' << name;
-  for (const auto& i : value)
-    *out << " " << i;
+  for (const auto& i : value) *out << " " << i;
   *out << ")\n";
 }
 
-void
-Writer::write(const std::string& name,
-              const std::vector<std::string>& value)
-{
+void Writer::write(const std::string& name,
+                   const std::vector<std::string>& value) {
   indent();
   *out << '(' << name;
   for (const auto& i : value) {
@@ -204,9 +170,7 @@ Writer::write(const std::string& name,
   *out << ")\n";
 }
 
-void
-Writer::write_sexp(const sexp::Value& value, bool fudge)
-{
+void Writer::write_sexp(const sexp::Value& value, bool fudge) {
   if (value.is_array()) {
     if (fudge) {
       indent_depth -= 1;
@@ -217,7 +181,7 @@ Writer::write_sexp(const sexp::Value& value, bool fudge)
     }
     *out << "(";
     auto& arr = value.as_array();
-    for(size_t i = 0; i < arr.size(); ++i) {
+    for (size_t i = 0; i < arr.size(); ++i) {
       write_sexp(arr[i], false);
       if (i != arr.size() - 1) {
         *out << " ";
@@ -229,9 +193,7 @@ Writer::write_sexp(const sexp::Value& value, bool fudge)
   }
 }
 
-void
-Writer::write(const std::string& name, const sexp::Value& value)
-{
+void Writer::write(const std::string& name, const sexp::Value& value) {
   indent();
   *out << '(' << name << "\n";
   indent_depth += 4;
@@ -241,9 +203,7 @@ Writer::write(const std::string& name, const sexp::Value& value)
   *out << ")\n";
 }
 
-void
-Writer::write_escaped_string(const std::string& str)
-{
+void Writer::write_escaped_string(const std::string& str) {
   *out << '"';
   for (const char* c = str.c_str(); *c != 0; ++c) {
     if (*c == '\"')
@@ -256,11 +216,8 @@ Writer::write_escaped_string(const std::string& str)
   *out << '"';
 }
 
-void
-Writer::indent()
-{
-  for (int i = 0; i<indent_depth; ++i)
-    *out << ' ';
+void Writer::indent() {
+  for (int i = 0; i < indent_depth; ++i) *out << ' ';
 }
 
 /* EOF */

@@ -20,83 +20,61 @@
 
 namespace scripting {
 
-void
-Text::set_text(const std::string& text)
-{
+void Text::set_text(const std::string& text) {
   SCRIPT_GUARD_VOID;
   object.set_text(text);
 }
 
-void
-Text::set_font(const std::string& fontname)
-{
+void Text::set_font(const std::string& fontname) {
   SCRIPT_GUARD_VOID;
   object.set_font(fontname);
 }
 
-void
-Text::fade_in(float fadetime)
-{
+void Text::fade_in(float fadetime) {
   SCRIPT_GUARD_VOID;
   object.fade_in(fadetime);
 }
 
-void
-Text::fade_out(float fadetime)
-{
+void Text::fade_out(float fadetime) {
   SCRIPT_GUARD_VOID;
   object.fade_out(fadetime);
 }
 
-void
-Text::set_visible(bool visible)
-{
+void Text::set_visible(bool visible) {
   SCRIPT_GUARD_VOID;
   object.set_visible(visible);
 }
 
-void
-Text::set_centered(bool centered)
-{
+void Text::set_centered(bool centered) {
   SCRIPT_GUARD_VOID;
   object.set_centered(centered);
 }
 
-void
-Text::set_pos(float x, float y)
-{
+void Text::set_pos(float x, float y) {
   SCRIPT_GUARD_VOID;
   object.set_pos(Vector(x, y));
 }
 
-float
-Text::get_pos_x() const
-{
+float Text::get_pos_x() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos().x;
 }
 
-float
-Text::get_pos_y() const
-{
+float Text::get_pos_y() const {
   SCRIPT_GUARD_DEFAULT;
   return object.get_pos().y;
 }
 
-void
-Text::set_anchor_point(int anchor)
-{
+void Text::set_anchor_point(int anchor) {
   SCRIPT_GUARD_VOID;
   object.set_anchor_point(static_cast<AnchorPoint>(anchor));
 }
 
-int
-Text::get_anchor_point() const
-{
+int Text::get_anchor_point() const {
   SCRIPT_GUARD_DEFAULT;
   return static_cast<int>(object.get_anchor_point());
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

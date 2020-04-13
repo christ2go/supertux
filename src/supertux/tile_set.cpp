@@ -25,16 +25,9 @@
 #include "video/drawing_context.hpp"
 #include "video/surface.hpp"
 
-Tilegroup::Tilegroup() :
-  developers_group(),
-  name(),
-  tiles()
-{
-}
+Tilegroup::Tilegroup() : developers_group(), name(), tiles() {}
 
-std::unique_ptr<TileSet>
-TileSet::from_file(const std::string& filename)
-{
+std::unique_ptr<TileSet> TileSet::from_file(const std::string& filename) {
   auto tileset = std::make_unique<TileSet>();
 
   TileSetParser parser(*tileset, filename);
@@ -45,16 +38,11 @@ TileSet::from_file(const std::string& filename)
   return tileset;
 }
 
-TileSet::TileSet() :
-  m_tiles(1),
-  m_tilegroups()
-{
+TileSet::TileSet() : m_tiles(1), m_tilegroups() {
   m_tiles[0] = std::make_unique<Tile>();
 }
 
-void
-TileSet::add_tile(int id, std::unique_ptr<Tile> tile)
-{
+void TileSet::add_tile(int id, std::unique_ptr<Tile> tile) {
   if (id >= static_cast<int>(m_tiles.size())) {
     m_tiles.resize(id + 1);
   }
@@ -66,11 +54,9 @@ TileSet::add_tile(int id, std::unique_ptr<Tile> tile)
   }
 }
 
-const Tile&
-TileSet::get(const uint32_t id) const
-{
+const Tile& TileSet::get(const uint32_t id) const {
   if (id >= m_tiles.size()) {
-//    log_warning << "Invalid tile: " << id << std::endl;
+    //    log_warning << "Invalid tile: " << id << std::endl;
     return *m_tiles[0];
   } else {
     assert(id < m_tiles.size());
@@ -78,31 +64,25 @@ TileSet::get(const uint32_t id) const
     if (tile) {
       return *tile;
     } else {
-//      log_warning << "Invalid tile: " << id << std::endl;
+      //      log_warning << "Invalid tile: " << id << std::endl;
       return *m_tiles[0];
     }
   }
 }
 
-void
-TileSet::add_unassigned_tilegroup()
-{
+void TileSet::add_unassigned_tilegroup() {
   Tilegroup unassigned_group;
 
   unassigned_group.name = _("Others");
   unassigned_group.developers_group = true;
 
-  for (auto tile = 0; tile < static_cast<int>(m_tiles.size()); tile++)
-  {
+  for (auto tile = 0; tile < static_cast<int>(m_tiles.size()); tile++) {
     bool found = false;
-    for (const auto& group : m_tilegroups)
-    {
-      found = std::any_of(group.tiles.begin(), group.tiles.end(),
-        [tile](const int& tile_in_group) {
-          return tile_in_group == tile;
-        });
-      if(found)
-      {
+    for (const auto& group : m_tilegroups) {
+      found = std::any_of(
+          group.tiles.begin(), group.tiles.end(),
+          [tile](const int& tile_in_group) { return tile_in_group == tile; });
+      if (found) {
         break;
       }
     }
@@ -110,40 +90,30 @@ TileSet::add_unassigned_tilegroup()
     // Weed out all the tiles that have an ID
     // but no image (mostly tiles that act as
     // spacing between other tiles).
-    if (found == false && m_tiles[tile].get())
-    {
+    if (found == false && m_tiles[tile].get()) {
       unassigned_group.tiles.push_back(tile);
     }
   }
 
-  if (!unassigned_group.tiles.empty())
-  {
+  if (!unassigned_group.tiles.empty()) {
     m_tilegroups.push_back(unassigned_group);
   }
 }
 
-void
-TileSet::add_tilegroup(const Tilegroup& tilegroup)
-{
+void TileSet::add_tilegroup(const Tilegroup& tilegroup) {
   m_tilegroups.push_back(tilegroup);
 }
 
-void
-TileSet::print_debug_info(const std::string& filename)
-{
-  if (false)
-  { // enable this if you want to see a list of free tiles
-    log_info << "Last Tile ID is " << m_tiles.size()-1 << std::endl;
+void TileSet::print_debug_info(const std::string& filename) {
+  if (false) {  // enable this if you want to see a list of free tiles
+    log_info << "Last Tile ID is " << m_tiles.size() - 1 << std::endl;
     int last = -1;
-    for (int i = 0; i < int(m_tiles.size()); ++i)
-    {
-      if (m_tiles[i] == nullptr && last == -1)
-      {
+    for (int i = 0; i < int(m_tiles.size()); ++i) {
+      if (m_tiles[i] == nullptr && last == -1) {
         last = i;
-      }
-      else if (m_tiles[i] && last != -1)
-      {
-        log_info << "Free Tile IDs (" << i - last << "): " << last << " - " << i-1 << std::endl;
+      } else if (m_tiles[i] && last != -1) {
+        log_info << "Free Tile IDs (" << i - last << "): " << last << " - "
+                 << i - 1 << std::endl;
         last = -1;
       }
     }

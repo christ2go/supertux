@@ -23,46 +23,37 @@
 
 bool GameObjectManager::s_draw_solids_only = false;
 
-GameObjectManager::GameObjectManager() :
-  m_uid_generator(),
-  m_gameobjects(),
-  m_gameobjects_new(),
-  m_solid_tilemaps(),
-  m_objects_by_name(),
-  m_objects_by_uid(),
-  m_objects_by_type_index(),
-  m_name_resolve_requests()
-{
-}
+GameObjectManager::GameObjectManager()
+    : m_uid_generator(),
+      m_gameobjects(),
+      m_gameobjects_new(),
+      m_solid_tilemaps(),
+      m_objects_by_name(),
+      m_objects_by_uid(),
+      m_objects_by_type_index(),
+      m_name_resolve_requests() {}
 
-GameObjectManager::~GameObjectManager()
-{
+GameObjectManager::~GameObjectManager() {
   // clear_objects() must be called before destructing the GameObjectManager
   assert(m_gameobjects.size() == 0);
   assert(m_gameobjects_new.size() == 0);
 }
 
-void
-GameObjectManager::request_name_resolve(const std::string& name, std::function<void (UID)> callback)
-{
+void GameObjectManager::request_name_resolve(
+    const std::string& name, std::function<void(UID)> callback) {
   m_name_resolve_requests.push_back({name, std::move(callback)});
 }
 
-void
-GameObjectManager::process_resolve_requests()
-{
+void GameObjectManager::process_resolve_requests() {
   assert(m_gameobjects_new.empty());
 
-  for (const auto& request : m_name_resolve_requests)
-  {
+  for (const auto& request : m_name_resolve_requests) {
     GameObject* object = get_object_by_name<GameObject>(request.name);
-    if (!object)
-    {
-      log_warning << "GameObjectManager: name resolve for '" << request.name << "' failed" << std::endl;
+    if (!object) {
+      log_warning << "GameObjectManager: name resolve for '" << request.name
+                  << "' failed" << std::endl;
       request.callback({});
-    }
-    else
-    {
+    } else {
       request.callback(object->get_uid());
     }
   }
@@ -70,20 +61,17 @@ GameObjectManager::process_resolve_requests()
 }
 
 const std::vector<std::unique_ptr<GameObject> >&
-GameObjectManager::get_objects() const
-{
+GameObjectManager::get_objects() const {
   return m_gameobjects;
 }
 
-GameObject&
-GameObjectManager::add_object(std::unique_ptr<GameObject> object)
-{
+GameObject& GameObjectManager::add_object(std::unique_ptr<GameObject> object) {
   assert(object);
   assert(!object->get_uid());
 
   object->set_uid(m_uid_generator.next());
 
-  // make sure the object isn't already in the list
+// make sure the object isn't already in the list
 #ifndef NDEBUG
   for (const auto& game_object : m_gameobjects) {
     assert(game_object != object);
@@ -98,76 +86,59 @@ GameObjectManager::add_object(std::unique_ptr<GameObject> object)
   return tmp;
 }
 
-void
-GameObjectManager::clear_objects()
-{
+void GameObjectManager::clear_objects() {
   flush_game_objects();
 
-  for (const auto& obj: m_gameobjects) {
+  for (const auto& obj : m_gameobjects) {
     before_object_remove(*obj);
   }
   m_gameobjects.clear();
 }
 
-void
-GameObjectManager::update(float dt_sec)
-{
-  for (const auto& object : m_gameobjects)
-  {
-    if (!object->is_valid())
-      continue;
+void GameObjectManager::update(float dt_sec) {
+  for (const auto& object : m_gameobjects) {
+    if (!object->is_valid()) continue;
 
     object->update(dt_sec);
   }
 }
 
-void
-GameObjectManager::draw(DrawingContext& context)
-{
-  for (const auto& object : m_gameobjects)
-  {
-    if (!object->is_valid())
-      continue;
+void GameObjectManager::draw(DrawingContext& context) {
+  for (const auto& object : m_gameobjects) {
+    if (!object->is_valid()) continue;
 
-    if (s_draw_solids_only)
-    {
+    if (s_draw_solids_only) {
       auto tm = dynamic_cast<TileMap*>(object.get());
-      if (tm && !tm->is_solid())
-        continue;
+      if (tm && !tm->is_solid()) continue;
     }
 
     object->draw(context);
   }
 }
 
-void
-GameObjectManager::flush_game_objects()
-{
-  { // cleanup marked objects
+void GameObjectManager::flush_game_objects() {
+  {  // cleanup marked objects
     m_gameobjects.erase(
-      std::remove_if(m_gameobjects.begin(), m_gameobjects.end(),
-                     [this](const std::unique_ptr<GameObject>& obj) {
-                       if (!obj->is_valid())
-                       {
-                         this_before_object_remove(*obj);
-                         before_object_remove(*obj);
-                         return true;
-                       } else {
-                         return false;
-                       }
-                     }),
-      m_gameobjects.end());
+        std::remove_if(m_gameobjects.begin(), m_gameobjects.end(),
+                       [this](const std::unique_ptr<GameObject>& obj) {
+                         if (!obj->is_valid()) {
+                           this_before_object_remove(*obj);
+                           before_object_remove(*obj);
+                           return true;
+                         } else {
+                           return false;
+                         }
+                       }),
+        m_gameobjects.end());
   }
 
-  { // add newly created objects
+  {  // add newly created objects
     // Objects might add new objects in finish_construction(), so we
     // loop until no new objects show up.
     while (!m_gameobjects_new.empty()) {
       auto new_objects = std::move(m_gameobjects_new);
-      for (auto& object : new_objects)
-      {
-        if (before_object_add(*object))
-        {
+      for (auto& object : new_objects) {
+        if (before_object_add(*object)) {
           this_before_object_add(*object);
           m_gameobjects.push_back(std::move(object));
         }
@@ -175,53 +146,46 @@ GameObjectManager::flush_game_objects()
     }
   }
 
-  { // update solid_tilemaps list
+  {  // update solid_tilemaps list
     m_solid_tilemaps.clear();
-    for (auto tilemap : get_objects_by_type_index(typeid(TileMap)))
-    {
+    for (auto tilemap : get_objects_by_type_index(typeid(TileMap))) {
       TileMap* tm = static_cast<TileMap*>(tilemap);
       if (tm->is_solid()) m_solid_tilemaps.push_back(tm);
     }
   }
 }
 
-void
-GameObjectManager::this_before_object_add(GameObject& object)
-{
-  { // by_name
-    if (!object.get_name().empty())
-    {
+void GameObjectManager::this_before_object_add(GameObject& object) {
+  {  // by_name
+    if (!object.get_name().empty()) {
       m_objects_by_name[object.get_name()] = &object;
     }
   }
 
-  { // by_id
+  {  // by_id
     assert(object.get_uid());
 
     m_objects_by_uid[object.get_uid()] = &object;
   }
 
-  { // by_type_index
+  {  // by_type_index
     m_objects_by_type_index[std::type_index(typeid(object))].push_back(&object);
   }
 }
 
-void
-GameObjectManager::this_before_object_remove(GameObject& object)
-{
-  { // by_name
+void GameObjectManager::this_before_object_remove(GameObject& object) {
+  {  // by_name
     const std::string& name = object.get_name();
-    if (!name.empty())
-    {
+    if (!name.empty()) {
       m_objects_by_name.erase(name);
     }
   }
 
-  { // by_id
+  {  // by_id
     m_objects_by_uid.erase(object.get_uid());
   }
 
-  { // by_type_index
+  {  // by_type_index
     auto& vec = m_objects_by_type_index[std::type_index(typeid(object))];
     auto it = std::find(vec.begin(), vec.end(), &object);
     assert(it != vec.end());
@@ -229,31 +193,25 @@ GameObjectManager::this_before_object_remove(GameObject& object)
   }
 }
 
-float
-GameObjectManager::get_width() const
-{
+float GameObjectManager::get_width() const {
   float width = 0;
-  for (auto& solids: get_solid_tilemaps()) {
+  for (auto& solids : get_solid_tilemaps()) {
     width = std::max(width, solids->get_bbox().get_right());
   }
 
   return width;
 }
 
-float
-GameObjectManager::get_height() const
-{
+float GameObjectManager::get_height() const {
   float height = 0;
-  for (const auto& solids: get_solid_tilemaps()) {
+  for (const auto& solids : get_solid_tilemaps()) {
     height = std::max(height, solids->get_bbox().get_bottom());
   }
 
   return height;
 }
 
-float
-GameObjectManager::get_tiles_width() const
-{
+float GameObjectManager::get_tiles_width() const {
   float width = 0;
   for (const auto& solids : get_solid_tilemaps()) {
     if (static_cast<float>(solids->get_width()) > width)
@@ -262,9 +220,7 @@ GameObjectManager::get_tiles_width() const
   return width;
 }
 
-float
-GameObjectManager::get_tiles_height() const
-{
+float GameObjectManager::get_tiles_height() const {
   float height = 0;
   for (const auto& solids : get_solid_tilemaps()) {
     if (static_cast<float>(solids->get_height()) > height)

@@ -27,35 +27,21 @@
 
 MouseCursor* MouseCursor::current_ = nullptr;
 
-MouseCursor::MouseCursor(SpritePtr sprite) :
-  m_state(MouseCursorState::NORMAL),
-  m_applied_state(MouseCursorState::HIDE),
-  m_sprite(std::move(sprite)),
-  m_icon()
-{
-}
+MouseCursor::MouseCursor(SpritePtr sprite)
+    : m_state(MouseCursorState::NORMAL),
+      m_applied_state(MouseCursorState::HIDE),
+      m_sprite(std::move(sprite)),
+      m_icon() {}
 
-void
-MouseCursor::set_state(MouseCursorState state)
-{
-  m_state = state;
-}
+void MouseCursor::set_state(MouseCursorState state) { m_state = state; }
 
-void
-MouseCursor::set_icon(SurfacePtr icon)
-{
-  m_icon = std::move(icon);
-}
+void MouseCursor::set_icon(SurfacePtr icon) { m_icon = std::move(icon); }
 
-void
-MouseCursor::apply_state(MouseCursorState state)
-{
-  if (m_applied_state != state)
-  {
+void MouseCursor::apply_state(MouseCursorState state) {
+  if (m_applied_state != state) {
     m_applied_state = state;
 
-    switch(state)
-    {
+    switch (state) {
       case MouseCursorState::NORMAL:
         m_sprite->set_action("normal");
         break;
@@ -74,20 +60,14 @@ MouseCursor::apply_state(MouseCursorState state)
   }
 }
 
-void
-MouseCursor::draw(DrawingContext& context)
-{
-  if (m_state != MouseCursorState::HIDE)
-  {
+void MouseCursor::draw(DrawingContext& context) {
+  if (m_state != MouseCursorState::HIDE) {
     int x, y;
     Uint32 ispressed = SDL_GetMouseState(&x, &y);
 
-    if (ispressed & SDL_BUTTON(1) || ispressed & SDL_BUTTON(2))
-    {
+    if (ispressed & SDL_BUTTON(1) || ispressed & SDL_BUTTON(2)) {
       apply_state(MouseCursorState::CLICK);
-    }
-    else
-    {
+    } else {
       apply_state(m_state);
     }
 
@@ -96,10 +76,11 @@ MouseCursor::draw(DrawingContext& context)
     m_sprite->draw(context.color(), mouse_pos, LAYER_GUI + 100);
 
     if (m_icon) {
-      context.color().draw_surface(m_icon,
-                                   Vector(mouse_pos.x,
-                                          mouse_pos.y - static_cast<float>(m_icon->get_height())),
-                                   LAYER_GUI + 100);
+      context.color().draw_surface(
+          m_icon,
+          Vector(mouse_pos.x,
+                 mouse_pos.y - static_cast<float>(m_icon->get_height())),
+          LAYER_GUI + 100);
     }
   }
 }

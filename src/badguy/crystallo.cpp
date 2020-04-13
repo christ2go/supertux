@@ -18,19 +18,17 @@
 
 #include "util/reader_mapping.hpp"
 
-Crystallo::Crystallo(const ReaderMapping& reader) :
-  WalkingBadguy(reader, "images/creatures/crystallo/crystallo.sprite", "left", "right"),
-  m_radius()
-{
+Crystallo::Crystallo(const ReaderMapping& reader)
+    : WalkingBadguy(reader, "images/creatures/crystallo/crystallo.sprite",
+                    "left", "right"),
+      m_radius() {
   walk_speed = 80;
   max_drop_height = 16;
 
   reader.get("radius", m_radius, 100.0f);
 }
 
-ObjectSettings
-Crystallo::get_settings()
-{
+ObjectSettings Crystallo::get_settings() {
   ObjectSettings result = WalkingBadguy::get_settings();
 
   result.add_float(_("Radius"), &m_radius, "radius", 100.0f);
@@ -40,17 +38,15 @@ Crystallo::get_settings()
   return result;
 }
 
-void
-Crystallo::active_update(float dt_sec)
-{
+void Crystallo::active_update(float dt_sec) {
   if (get_pos().x > (m_start_position.x + m_radius)) {
-    if (m_dir != Direction::LEFT){
+    if (m_dir != Direction::LEFT) {
       turn_around();
     }
   }
 
   if (get_pos().x < (m_start_position.x - m_radius)) {
-    if (m_dir != Direction::RIGHT){
+    if (m_dir != Direction::RIGHT) {
       turn_around();
     }
   }
@@ -58,18 +54,13 @@ Crystallo::active_update(float dt_sec)
   BadGuy::active_update(dt_sec);
 }
 
-bool
-Crystallo::collision_squished(GameObject& object)
-{
-  set_action(m_dir == Direction::LEFT ? "shattered-left" : "shattered-right", /* loops = */ -1, ANCHOR_BOTTOM);
+bool Crystallo::collision_squished(GameObject& object) {
+  set_action(m_dir == Direction::LEFT ? "shattered-left" : "shattered-right",
+             /* loops = */ -1, ANCHOR_BOTTOM);
   kill_squished(object);
   return true;
 }
 
-bool
-Crystallo::is_flammable() const
-{
-  return false;
-}
+bool Crystallo::is_flammable() const { return false; }
 
 /* EOF */

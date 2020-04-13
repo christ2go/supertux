@@ -19,30 +19,25 @@
 #include "math/random.hpp"
 #include "video/surface.hpp"
 
-CloudParticleSystem::CloudParticleSystem() :
-  ParticleSystem(128),
-  cloudimage(Surface::from_file("images/objects/particles/cloud.png"))
-{
+CloudParticleSystem::CloudParticleSystem()
+    : ParticleSystem(128),
+      cloudimage(Surface::from_file("images/objects/particles/cloud.png")) {
   init();
 }
 
-CloudParticleSystem::CloudParticleSystem(const ReaderMapping& reader) :
-  ParticleSystem(reader, 128),
-  cloudimage(Surface::from_file("images/objects/particles/cloud.png"))
-{
+CloudParticleSystem::CloudParticleSystem(const ReaderMapping& reader)
+    : ParticleSystem(reader, 128),
+      cloudimage(Surface::from_file("images/objects/particles/cloud.png")) {
   init();
 }
 
-CloudParticleSystem::~CloudParticleSystem()
-{
-}
+CloudParticleSystem::~CloudParticleSystem() {}
 
-void CloudParticleSystem::init()
-{
+void CloudParticleSystem::init() {
   virtual_width = 2000.0;
 
   // create some random clouds
-  for (size_t i=0; i<15; ++i) {
+  for (size_t i = 0; i < 15; ++i) {
     auto particle = std::make_unique<CloudParticle>();
     particle->pos.x = graphicsRandom.randf(virtual_width);
     particle->pos.y = graphicsRandom.randf(virtual_height);
@@ -53,15 +48,12 @@ void CloudParticleSystem::init()
   }
 }
 
-void CloudParticleSystem::update(float dt_sec)
-{
-  if (!enabled)
-    return;
+void CloudParticleSystem::update(float dt_sec) {
+  if (!enabled) return;
 
   for (auto& particle : particles) {
     auto cloudParticle = dynamic_cast<CloudParticle*>(particle.get());
-    if (!cloudParticle)
-      continue;
+    if (!cloudParticle) continue;
     cloudParticle->pos.x += cloudParticle->speed * dt_sec;
   }
 }

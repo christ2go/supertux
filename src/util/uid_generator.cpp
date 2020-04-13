@@ -20,23 +20,16 @@
 
 uint8_t UIDGenerator::s_magic_counter = 1;
 
-UIDGenerator::UIDGenerator() :
-  m_magic(s_magic_counter++),
-  m_id_counter()
-{
-  if (s_magic_counter == 0)
-  {
+UIDGenerator::UIDGenerator() : m_magic(s_magic_counter++), m_id_counter() {
+  if (s_magic_counter == 0) {
     s_magic_counter = 1;
   }
 }
 
-UID
-UIDGenerator::next()
-{
+UID UIDGenerator::next() {
   m_id_counter += 1;
 
-  if (m_id_counter > 0xffffff)
-  {
+  if (m_id_counter > 0xffffff) {
     log_warning << "UIDGenerator overflow" << std::endl;
     m_id_counter = 0;
   }

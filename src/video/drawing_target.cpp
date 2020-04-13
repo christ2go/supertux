@@ -18,27 +18,19 @@
 
 #include "util/log.hpp"
 
-DrawingTarget DrawingTarget_from_string(const std::string& text)
-{
-  if (text == "lightmap")
-  {
+DrawingTarget DrawingTarget_from_string(const std::string& text) {
+  if (text == "lightmap") {
     return DrawingTarget::LIGHTMAP;
-  }
-  else if (text == "colormap")
-  {
+  } else if (text == "colormap") {
     return DrawingTarget::COLORMAP;
-  }
-  else
-  {
+  } else {
     log_warning << "unknown drawing target: " << text << std::endl;
     return DrawingTarget::COLORMAP;
   }
 }
 
-std::string to_string(DrawingTarget value)
-{
-  switch (value)
-  {
+std::string to_string(DrawingTarget value) {
+  switch (value) {
     case DrawingTarget::LIGHTMAP:
       return "lightmap";
 

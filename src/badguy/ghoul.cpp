@@ -24,67 +24,50 @@
 #include "util/writer.hpp"
 
 static const float FLYSPEED = 80.0f; /**< speed in px per second */
-static const float TRACK_RANGE = 2500.0f; /**< at what distance to start tracking the player */
+static const float TRACK_RANGE =
+    2500.0f; /**< at what distance to start tracking the player */
 
-Ghoul::Ghoul(const ReaderMapping& reader) :
-  BadGuy(reader, "images/creatures/ghoul/ghoul.sprite"),
-  PathObject(),
-  m_mystate(STATE_IDLE),
-  m_flyspeed(),
-  m_track_range()
-{
+Ghoul::Ghoul(const ReaderMapping& reader)
+    : BadGuy(reader, "images/creatures/ghoul/ghoul.sprite"),
+      PathObject(),
+      m_mystate(STATE_IDLE),
+      m_flyspeed(),
+      m_track_range() {
   reader.get("flyspeed", m_flyspeed, FLYSPEED);
   reader.get("track-range", m_track_range, TRACK_RANGE);
-  
+
   bool running;
   reader.get("running", running, false);
 
   init_path(reader, running);
-  
-  m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right", /* loops = */ -1);
+
+  m_sprite->set_action(m_dir == Direction::LEFT ? "left" : "right",
+                       /* loops = */ -1);
 }
 
-bool
-Ghoul::collision_squished(GameObject& object)
-{
+bool Ghoul::collision_squished(GameObject& object) {
   auto player = Sector::get().get_nearest_player(m_col.m_bbox);
-  if (player)
-    player->bounce (*this);
+  if (player) player->bounce(*this);
   m_sprite->set_action("squished", 1);
   kill_fall();
   return true;
 }
 
-bool
-Ghoul::is_freezable() const
-{
-  return false;
-}
+bool Ghoul::is_freezable() const { return false; }
 
-bool
-Ghoul::is_flammable() const
-{
-  return false;
-}
+bool Ghoul::is_flammable() const { return false; }
 
-void
-Ghoul::finish_construction()
-{
+void Ghoul::finish_construction() {
   if (get_walker() && get_walker()->is_running()) {
     m_mystate = STATE_PATHMOVING_TRACK;
   }
 }
 
-void
-Ghoul::activate()
-{
-  if (Editor::is_active())
-    return;
+void Ghoul::activate() {
+  if (Editor::is_active()) return;
 }
 
-void
-Ghoul::deactivate()
-{
+void Ghoul::deactivate() {
   switch (m_mystate) {
     case STATE_TRACKING:
       m_mystate = STATE_IDLE;
@@ -94,9 +77,7 @@ Ghoul::deactivate()
   }
 }
 
-void
-Ghoul::active_update(float dt_sec)
-{
+void Ghoul::active_update(float dt_sec) {
   if (Editor::is_active() && get_path() && get_path()->is_valid()) {
     get_walker()->update(dt_sec);
     set_pos(get_walker()->get_pos());
@@ -104,18 +85,17 @@ Ghoul::active_update(float dt_sec)
   }
 
   auto player = get_nearest_player();
-  if (!player) 
-  return;
+  if (!player) return;
   Vector p1 = m_col.m_bbox.get_middle();
   Vector p2 = player->get_bbox().get_middle();
   Vector dist = (p2 - p1);
-  
+
   const Rectf& player_bbox = player->get_bbox();
-  
+
   if (player_bbox.get_right() < m_col.m_bbox.get_left()) {
     m_sprite->set_action("left", -1);
   }
-  
+
   if (player_bbox.get_left() > m_col.m_bbox.get_right()) {
     m_sprite->set_action("right", -1);
   }
@@ -142,8 +122,7 @@ Ghoul::active_update(float dt_sec)
 
     case STATE_PATHMOVING:
     case STATE_PATHMOVING_TRACK:
-      if (get_walker() == nullptr)
-        return;
+      if (get_walker() == nullptr) return;
       get_walker()->update(dt_sec);
       m_col.m_movement = get_walker()->get_pos() - get_pos();
       if (m_mystate == STATE_PATHMOVING_TRACK && dist.norm() <= m_track_range) {
@@ -156,30 +135,18 @@ Ghoul::active_update(float dt_sec)
   }
 }
 
-void
-Ghoul::goto_node(int node_no)
-{
+void Ghoul::goto_node(int node_no) {
   get_walker()->goto_node(node_no);
   if (m_mystate != STATE_PATHMOVING && m_mystate != STATE_PATHMOVING_TRACK) {
     m_mystate = STATE_PATHMOVING;
   }
 }
 
-void
-Ghoul::start_moving()
-{
-  get_walker()->start_moving();
-}
+void Ghoul::start_moving() { get_walker()->start_moving(); }
 
-void
-Ghoul::stop_moving()
-{
-  get_walker()->stop_moving();
-}
+void Ghoul::stop_moving() { get_walker()->stop_moving(); }
 
-void
-Ghoul::set_state(const std::string& new_state)
-{
+void Ghoul::set_state(const std::string& new_state) {
   if (new_state == "stopped") {
     m_mystate = STATE_STOPPED;
   } else if (new_state == "idle") {
@@ -197,9 +164,7 @@ Ghoul::set_state(const std::string& new_state)
   }
 }
 
-void
-Ghoul::move_to(const Vector& pos)
-{
+void Ghoul::move_to(const Vector& pos) {
   Vector shift = pos - m_col.m_bbox.p1();
   if (get_path()) {
     get_path()->move_by(shift);

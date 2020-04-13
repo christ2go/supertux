@@ -25,27 +25,22 @@
 #include "supertux/sector.hpp"
 
 PoisonIvy::PoisonIvy(const ReaderMapping& reader)
-  : WalkingBadguy(reader, "images/creatures/poison_ivy/poison_ivy.sprite", "left", "right")
-{
+    : WalkingBadguy(reader, "images/creatures/poison_ivy/poison_ivy.sprite",
+                    "left", "right") {
   walk_speed = 80;
 }
 
 PoisonIvy::PoisonIvy(const Vector& pos, Direction d)
-  : WalkingBadguy(pos, d, "images/creatures/poison_ivy/poison_ivy.sprite", "left", "right")
-{
+    : WalkingBadguy(pos, d, "images/creatures/poison_ivy/poison_ivy.sprite",
+                    "left", "right") {
   walk_speed = 80;
 }
 
-bool
-PoisonIvy::is_freezable() const
-{
-  return true;
-}
+bool PoisonIvy::is_freezable() const { return true; }
 
-bool
-PoisonIvy::collision_squished(GameObject& object)
-{
-  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left" : "squished-right");
+bool PoisonIvy::collision_squished(GameObject& object) {
+  m_sprite->set_action(m_dir == Direction::LEFT ? "squished-left"
+                                                : "squished-right");
   // Spawn death particles
   spawn_explosion_sprites(3, "images/objects/particles/poisonivy.sprite");
   kill_squished(object);

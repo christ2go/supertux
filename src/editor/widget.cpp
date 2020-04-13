@@ -16,11 +16,8 @@
 
 #include "editor/widget.hpp"
 
-bool
-Widget::event(const SDL_Event& ev)
-{
-  switch (ev.type)
-  {
+bool Widget::event(const SDL_Event& ev) {
+  switch (ev.type) {
     case SDL_MOUSEBUTTONDOWN:
       return on_mouse_button_down(ev.button);
 

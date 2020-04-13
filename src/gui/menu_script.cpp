@@ -19,10 +19,8 @@
 #include "gui/item_script_line.hpp"
 #include "util/gettext.hpp"
 
-ScriptMenu::ScriptMenu(std::string* script_) :
-  base_script(script_),
-  script_strings()
-{
+ScriptMenu::ScriptMenu(std::string* script_)
+    : base_script(script_), script_strings() {
   script_strings.clear();
 
   add_label(_("Edit script"));
@@ -41,29 +39,25 @@ ScriptMenu::ScriptMenu(std::string* script_) :
   }
   push_string(script);
 
-  //add_script_line(base_script);
+  // add_script_line(base_script);
 
   add_hl();
   add_back(_("OK"));
 }
 
-ScriptMenu::~ScriptMenu()
-{
+ScriptMenu::~ScriptMenu() {
   *base_script = *(script_strings[0]);
-  for (auto i = script_strings.begin()+1; i != script_strings.end(); ++i) {
+  for (auto i = script_strings.begin() + 1; i != script_strings.end(); ++i) {
     *base_script += "\n" + **i;
   }
 }
 
-void
-ScriptMenu::push_string(const std::string& new_line)
-{
+void ScriptMenu::push_string(const std::string& new_line) {
   script_strings.push_back(std::make_unique<std::string>(new_line));
-  add_script_line( (script_strings.end()-1)->get() );
+  add_script_line((script_strings.end() - 1)->get());
 }
 
-void
-ScriptMenu::remove_line() {
+void ScriptMenu::remove_line() {
   // The script should have at least one line.
   if (script_strings.size() <= 1) {
     return;
@@ -73,26 +67,19 @@ ScriptMenu::remove_line() {
   delete_item(m_active_item);
 }
 
-void
-ScriptMenu::add_line() {
+void ScriptMenu::add_line() {
   auto new_line = std::make_unique<std::string>();
-  script_strings.insert(script_strings.begin() + (m_active_item - 1), move(new_line));
+  script_strings.insert(script_strings.begin() + (m_active_item - 1),
+                        move(new_line));
 
-  auto line_item = std::unique_ptr<ItemScriptLine>(
-        new ItemScriptLine( (script_strings.begin()+(m_active_item-1))->get() ));
-  add_item(std::move(line_item), m_active_item+1);
+  auto line_item = std::unique_ptr<ItemScriptLine>(new ItemScriptLine(
+      (script_strings.begin() + (m_active_item - 1))->get()));
+  add_item(std::move(line_item), m_active_item + 1);
   m_active_item++;
 }
 
-void
-ScriptMenu::menu_action(MenuItem& item)
-{
+void ScriptMenu::menu_action(MenuItem& item) {}
 
-}
-
-bool
-ScriptMenu::is_sensitive() const {
-  return true;
-}
+bool ScriptMenu::is_sensitive() const { return true; }
 
 /* EOF */

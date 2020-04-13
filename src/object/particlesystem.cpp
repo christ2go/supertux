@@ -27,35 +27,35 @@
 #include "video/video_system.hpp"
 #include "video/viewport.hpp"
 
-ParticleSystem::ParticleSystem(const ReaderMapping& reader, float max_particle_size_) :
-  GameObject(reader),
-  ExposedObject<ParticleSystem, scripting::ParticleSystem>(this),
-  max_particle_size(max_particle_size_),
-  z_pos(LAYER_BACKGROUND1),
-  particles(),
-  virtual_width(static_cast<float>(SCREEN_WIDTH) + max_particle_size * 2.0f),
-  virtual_height(static_cast<float>(SCREEN_HEIGHT) + max_particle_size * 2.0f),
-  enabled(true)
-{
+ParticleSystem::ParticleSystem(const ReaderMapping& reader,
+                               float max_particle_size_)
+    : GameObject(reader),
+      ExposedObject<ParticleSystem, scripting::ParticleSystem>(this),
+      max_particle_size(max_particle_size_),
+      z_pos(LAYER_BACKGROUND1),
+      particles(),
+      virtual_width(static_cast<float>(SCREEN_WIDTH) +
+                    max_particle_size * 2.0f),
+      virtual_height(static_cast<float>(SCREEN_HEIGHT) +
+                     max_particle_size * 2.0f),
+      enabled(true) {
   reader.get("enabled", enabled, true);
   z_pos = reader_get_layer(reader, LAYER_BACKGROUND1);
 }
 
-ParticleSystem::ParticleSystem(float max_particle_size_) :
-  GameObject(),
-  ExposedObject<ParticleSystem, scripting::ParticleSystem>(this),
-  max_particle_size(max_particle_size_),
-  z_pos(LAYER_BACKGROUND1),
-  particles(),
-  virtual_width(static_cast<float>(SCREEN_WIDTH) + max_particle_size * 2.0f),
-  virtual_height(static_cast<float>(SCREEN_HEIGHT) + max_particle_size * 2.0f),
-  enabled(true)
-{
-}
+ParticleSystem::ParticleSystem(float max_particle_size_)
+    : GameObject(),
+      ExposedObject<ParticleSystem, scripting::ParticleSystem>(this),
+      max_particle_size(max_particle_size_),
+      z_pos(LAYER_BACKGROUND1),
+      particles(),
+      virtual_width(static_cast<float>(SCREEN_WIDTH) +
+                    max_particle_size * 2.0f),
+      virtual_height(static_cast<float>(SCREEN_HEIGHT) +
+                     max_particle_size * 2.0f),
+      enabled(true) {}
 
-ObjectSettings
-ParticleSystem::get_settings()
-{
+ObjectSettings ParticleSystem::get_settings() {
   ObjectSettings result = GameObject::get_settings();
 
   result.add_bool(_("Enabled"), &enabled, "enabled", true);
@@ -68,25 +68,19 @@ ParticleSystem::get_settings()
   return result;
 }
 
-ParticleSystem::~ParticleSystem()
-{
-}
+ParticleSystem::~ParticleSystem() {}
 
-void
-ParticleSystem::draw(DrawingContext& context)
-{
-  if (!enabled)
-    return;
+void ParticleSystem::draw(DrawingContext& context) {
+  if (!enabled) return;
 
   float scrollx = context.get_translation().x;
   float scrolly = context.get_translation().y;
 
   context.push_transform();
-  context.set_translation(Vector(max_particle_size,max_particle_size));
+  context.set_translation(Vector(max_particle_size, max_particle_size));
 
   std::unordered_map<SurfacePtr, SurfaceBatch> batches;
-  for (const auto& particle : particles)
-  {
+  for (const auto& particle : particles) {
     // remap x,y coordinates onto screencoordinates
     Vector pos;
 
@@ -96,41 +90,32 @@ ParticleSystem::draw(DrawingContext& context)
     pos.y = fmodf(particle->pos.y - scrolly, virtual_height);
     if (pos.y < 0) pos.y += virtual_height;
 
-    //if(pos.x > virtual_width) pos.x -= virtual_width;
-    //if(pos.y > virtual_height) pos.y -= virtual_height;
+    // if(pos.x > virtual_width) pos.x -= virtual_width;
+    // if(pos.y > virtual_height) pos.y -= virtual_height;
 
     auto it = batches.find(particle->texture);
     if (it == batches.end()) {
-      const auto& batch_it = batches.emplace(particle->texture, SurfaceBatch(particle->texture));
+      const auto& batch_it =
+          batches.emplace(particle->texture, SurfaceBatch(particle->texture));
       batch_it.first->second.draw(pos, particle->angle);
     } else {
       it->second.draw(pos, particle->angle);
     }
   }
 
-  for(auto& it : batches) {
+  for (auto& it : batches) {
     auto& surface = it.first;
     auto& batch = it.second;
-    context.color().draw_surface_batch(surface,
-                                       batch.move_srcrects(),
-                                       batch.move_dstrects(),
-                                       batch.move_angles(),
-                                       Color::WHITE, z_pos);
+    context.color().draw_surface_batch(
+        surface, batch.move_srcrects(), batch.move_dstrects(),
+        batch.move_angles(), Color::WHITE, z_pos);
   }
 
   context.pop_transform();
 }
 
-void
-ParticleSystem::set_enabled(bool enabled_)
-{
-  enabled = enabled_;
-}
+void ParticleSystem::set_enabled(bool enabled_) { enabled = enabled_; }
 
-bool
-ParticleSystem::get_enabled() const
-{
-  return enabled;
-}
+bool ParticleSystem::get_enabled() const { return enabled; }
 
 /* EOF */

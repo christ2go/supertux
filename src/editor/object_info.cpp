@@ -18,31 +18,30 @@
 #include "util/reader_mapping.hpp"
 #include "util/reader_document.hpp"
 
-ObjectInfo::ObjectInfo() :
-  m_groups()
-{
+ObjectInfo::ObjectInfo() : m_groups() {
   auto doc = ReaderDocument::from_file("images/engine/editor/objects.stoi");
   auto root = doc.get_root();
 
   if (root.get_name() != "supertux-objectinfo") {
-    throw std::runtime_error("file images/engine/editor/objects.stoi is not a supertux-objectinfo file.");
-  } // Bombenfest und Idioten sicher :DDDDD
+    throw std::runtime_error(
+        "file images/engine/editor/objects.stoi is not a supertux-objectinfo "
+        "file.");
+  }  // Bombenfest und Idioten sicher :DDDDD
 
   auto reader = root.get_mapping();
 
   /*const lisp::Lisp* info = root->get_lisp("supertux-objectinfo");
   if (!info) {
     throw std::runtime_error("file images/engine/editor/objects.stoi is not a supertux-objectinfo file.");
-  }*/ // Bombenfest und Idioten sicher :DDDDD
+  }*/  // Bombenfest und Idioten sicher :DDDDD
 
   auto iter = reader.get_iter();
   while (iter.next()) {
     const std::string& token = iter.get_key();
     if (token == "objectgroup") {
-      m_groups.push_back( ObjectGroup( iter.as_mapping() ) );
+      m_groups.push_back(ObjectGroup(iter.as_mapping()));
     }
   }
-
 }
 
 /* EOF */

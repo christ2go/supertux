@@ -23,59 +23,41 @@
 
 namespace scripting {
 
-Sector::Sector(::Sector* parent) :
-  m_parent(parent)
-{
-}
+Sector::Sector(::Sector* parent) : m_parent(parent) {}
 
-void
-Sector::fade_to_ambient_light(float red, float green, float blue, float fadetime)
-{
+void Sector::fade_to_ambient_light(float red, float green, float blue,
+                                   float fadetime) {
   auto& ambient_light = m_parent->get_singleton_by_type<AmbientLight>();
   ambient_light.fade_to_ambient_light(red, green, blue, fadetime);
 }
 
-void
-Sector::set_ambient_light(float red, float green, float blue)
-{
+void Sector::set_ambient_light(float red, float green, float blue) {
   auto& ambient_light = m_parent->get_singleton_by_type<AmbientLight>();
   ambient_light.set_ambient_light(Color(red, green, blue));
 }
 
-float
-Sector::get_ambient_red() const
-{
+float Sector::get_ambient_red() const {
   auto& ambient_light = m_parent->get_singleton_by_type<AmbientLight>();
   return ambient_light.get_ambient_light().red;
 }
 
-float
-Sector::get_ambient_green() const
-{
+float Sector::get_ambient_green() const {
   auto& ambient_light = m_parent->get_singleton_by_type<AmbientLight>();
   return ambient_light.get_ambient_light().green;
 }
 
-float
-Sector::get_ambient_blue() const
-{
+float Sector::get_ambient_blue() const {
   auto& ambient_light = m_parent->get_singleton_by_type<AmbientLight>();
   return ambient_light.get_ambient_light().blue;
 }
 
-void
-Sector::set_gravity(float gravity)
-{
-  m_parent->set_gravity(gravity);
-}
+void Sector::set_gravity(float gravity) { m_parent->set_gravity(gravity); }
 
-void
-Sector::set_music(const std::string& filename)
-{
+void Sector::set_music(const std::string& filename) {
   auto& music = m_parent->get_singleton_by_type<MusicObject>();
   music.set_music(filename);
 }
 
-} // namespace scripting
+}  // namespace scripting
 
 /* EOF */

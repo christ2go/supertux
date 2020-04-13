@@ -35,50 +35,45 @@
 
 namespace {
 
-bool vline_empty(const SDLSurfacePtr& surface, int x, int start_y, int end_y, Uint8 threshold)
-{
+bool vline_empty(const SDLSurfacePtr& surface, int x, int start_y, int end_y,
+                 Uint8 threshold) {
   Uint8* pixels = static_cast<Uint8*>(surface->pixels);
 
-  for (int y = start_y; y < end_y; ++y)
-  {
-    const Uint8& p = pixels[surface->pitch*y + x*surface->format->BytesPerPixel + 3];
-    if (p > threshold)
-    {
+  for (int y = start_y; y < end_y; ++y) {
+    const Uint8& p =
+        pixels[surface->pitch * y + x * surface->format->BytesPerPixel + 3];
+    if (p > threshold) {
       return false;
     }
   }
   return true;
 }
 
-} // namespace
+}  // namespace
 
-BitmapFont::BitmapFont(GlyphWidth glyph_width_,
-           const std::string& filename,
-           int shadowsize_) :
-  glyph_width(glyph_width_),
-  glyph_surfaces(),
-  shadow_surfaces(),
-  char_height(),
-  shadowsize(shadowsize_),
-  border(0),
-  rtl(false),
-  glyphs(65536)
-{
-  for (unsigned int i=0; i<65536;i++) glyphs[i].surface_idx = -1;
+BitmapFont::BitmapFont(GlyphWidth glyph_width_, const std::string& filename,
+                       int shadowsize_)
+    : glyph_width(glyph_width_),
+      glyph_surfaces(),
+      shadow_surfaces(),
+      char_height(),
+      shadowsize(shadowsize_),
+      border(0),
+      rtl(false),
+      glyphs(65536) {
+  for (unsigned int i = 0; i < 65536; i++) glyphs[i].surface_idx = -1;
 
   const std::string fontdir = FileSystem::dirname(filename);
   const std::string fontname = FileSystem::basename(filename);
 
   // scan for prefix-filename in addons search path
-  char **rc = PHYSFS_enumerateFiles(fontdir.c_str());
-  for (char **i = rc; *i != nullptr; i++) {
+  char** rc = PHYSFS_enumerateFiles(fontdir.c_str());
+  for (char** i = rc; *i != nullptr; i++) {
     std::string filename_(*i);
-    if ( filename_.rfind(fontname) != std::string::npos ) {
+    if (filename_.rfind(fontname) != std::string::npos) {
       try {
         loadFontFile(fontdir + filename_);
-      }
-      catch(const std::exception& e)
-      {
+      } catch (const std::exception& e) {
         log_fatal << "Couldn't load font file: " << e.what() << std::endl;
       }
     }
@@ -86,9 +81,7 @@ BitmapFont::BitmapFont(GlyphWidth glyph_width_,
   PHYSFS_freeList(rc);
 }
 
-void
-BitmapFont::loadFontFile(const std::string &filename)
-{
+void BitmapFont::loadFontFile(const std::string& filename) {
   // FIXME: Workaround for a crash on MSYS2 when starting with --debug
   log_debug_ << "Loading font: " << filename << std::endl;
   auto doc = ReaderDocument::from_file(filename);
@@ -101,13 +94,14 @@ BitmapFont::loadFontFile(const std::string &filename)
 
   auto config_l = root.get_mapping();
 
-  int def_char_width=0;
+  int def_char_width = 0;
 
-  if ( !config_l.get("glyph-width",def_char_width) ) {
-    log_warning << "Font:"<< filename << ": misses default glyph-width" << std::endl;
+  if (!config_l.get("glyph-width", def_char_width)) {
+    log_warning << "Font:" << filename << ": misses default glyph-width"
+                << std::endl;
   }
 
-  if ( !config_l.get("glyph-height",char_height) ) {
+  if (!config_l.get("glyph-height", char_height)) {
     std::ostringstream msg;
     msg << "Font:" << filename << ": misses glyph-height";
     throw std::runtime_error(msg.str());
@@ -119,7 +113,7 @@ BitmapFont::loadFontFile(const std::string &filename)
   auto iter = config_l.get_iter();
   while (iter.next()) {
     const std::string& token = iter.get_key();
-    if ( token == "surface" ) {
+    if (token == "surface") {
       auto glyphs_val = iter.as_mapping();
       int local_char_width;
       bool monospaced;
@@ -127,53 +121,53 @@ BitmapFont::loadFontFile(const std::string &filename)
       std::string glyph_image;
       std::string shadow_image;
       std::vector<std::string> chars;
-      if ( ! glyphs_val.get("glyph-width", local_char_width) ) {
+      if (!glyphs_val.get("glyph-width", local_char_width)) {
         local_char_width = def_char_width;
       }
-      if ( ! glyphs_val.get("monospace", monospaced ) ) {
+      if (!glyphs_val.get("monospace", monospaced)) {
         local_glyph_width = glyph_width;
+      } else {
+        if (monospaced)
+          local_glyph_width = FIXED;
+        else
+          local_glyph_width = VARIABLE;
       }
-      else {
-        if ( monospaced ) local_glyph_width = FIXED;
-        else local_glyph_width = VARIABLE;
-      }
-      if ( ! glyphs_val.get("glyphs", glyph_image) ) {
+      if (!glyphs_val.get("glyphs", glyph_image)) {
         std::ostringstream msg;
         msg << "Font:" << filename << ": missing glyphs image";
         throw std::runtime_error(msg.str());
       }
-      if ( ! glyphs_val.get("shadows", shadow_image) ) {
+      if (!glyphs_val.get("shadows", shadow_image)) {
         std::ostringstream msg;
         msg << "Font:" << filename << ": missing shadows image";
         throw std::runtime_error(msg.str());
       }
-      if ( ! glyphs_val.get("chars", chars) || chars.size() == 0) {
+      if (!glyphs_val.get("chars", chars) || chars.size() == 0) {
         std::ostringstream msg;
         msg << "Font:" << filename << ": missing chars definition";
         throw std::runtime_error(msg.str());
       }
 
-      if ( local_char_width==0 ) {
+      if (local_char_width == 0) {
         std::ostringstream msg;
         msg << "Font:" << filename << ": misses glyph-width for some surface";
         throw std::runtime_error(msg.str());
       }
 
-      loadFontSurface(glyph_image, shadow_image, chars,
-                      local_glyph_width, local_char_width);
+      loadFontSurface(glyph_image, shadow_image, chars, local_glyph_width,
+                      local_char_width);
     }
   }
 }
 
-void
-BitmapFont::loadFontSurface(const std::string& glyphimage,
-                      const std::string& shadowimage,
-                      const std::vector<std::string>& chars,
-                      GlyphWidth glyph_width_,
-                      int char_width)
-{
-  SurfacePtr glyph_surface  = Surface::from_file("images/engine/fonts/" + glyphimage);
-  SurfacePtr shadow_surface = Surface::from_file("images/engine/fonts/" + shadowimage);
+void BitmapFont::loadFontSurface(const std::string& glyphimage,
+                                 const std::string& shadowimage,
+                                 const std::vector<std::string>& chars,
+                                 GlyphWidth glyph_width_, int char_width) {
+  SurfacePtr glyph_surface =
+      Surface::from_file("images/engine/fonts/" + glyphimage);
+  SurfacePtr shadow_surface =
+      Surface::from_file("images/engine/fonts/" + shadowimage);
 
   int surface_idx = static_cast<int>(glyph_surfaces.size());
   glyph_surfaces.push_back(glyph_surface);
@@ -185,66 +179,68 @@ BitmapFont::loadFontSurface(const std::string& glyphimage,
 
   SDLSurfacePtr surface;
 
-  if ( glyph_width_ == VARIABLE )
-  {
+  if (glyph_width_ == VARIABLE) {
     surface = SDLSurface::from_file("images/engine/fonts/" + glyphimage);
     SDL_LockSurface(surface.get());
   }
 
   for (unsigned int i = 0; i < chars.size(); ++i) {
     for (UTF8Iterator chr(chars[i]); !chr.done(); ++chr) {
-      int y = row * (char_height + 2*border) + border;
-      int x = col * (char_width + 2*border) + border;
-      if ( ++col == wrap ) { col=0; row++; }
-      if ( *chr == 0x0020 && glyphs[0x20].surface_idx != -1) continue;
+      int y = row * (char_height + 2 * border) + border;
+      int x = col * (char_width + 2 * border) + border;
+      if (++col == wrap) {
+        col = 0;
+        row++;
+      }
+      if (*chr == 0x0020 && glyphs[0x20].surface_idx != -1) continue;
 
       Glyph glyph;
-      glyph.surface_idx   = surface_idx;
+      glyph.surface_idx = surface_idx;
 
-      if ( glyph_width_ == FIXED || (*chr <= 255 && isdigit(*chr)) )
-      {
-        glyph.rect    = Rectf(static_cast<float>(x),
-                              static_cast<float>(y),
-                              static_cast<float>(x + char_width),
-                              static_cast<float>(y + char_height));
-        glyph.offset  = Vector(0, 0);
+      if (glyph_width_ == FIXED || (*chr <= 255 && isdigit(*chr))) {
+        glyph.rect = Rectf(static_cast<float>(x), static_cast<float>(y),
+                           static_cast<float>(x + char_width),
+                           static_cast<float>(y + char_height));
+        glyph.offset = Vector(0, 0);
         glyph.advance = static_cast<float>(char_width);
-      }
-      else
-      {
-        if (y + char_height > surface->h)
-        {
-          log_warning << "error: font definition contains more letter then the images: " << glyphimage << std::endl;
+      } else {
+        if (y + char_height > surface->h) {
+          log_warning
+              << "error: font definition contains more letter then the images: "
+              << glyphimage << std::endl;
           goto abort;
         }
 
         int left = x;
-        while (left < x + char_width && vline_empty(surface, left, y, y + char_height, 64))
+        while (left < x + char_width &&
+               vline_empty(surface, left, y, y + char_height, 64))
           left += 1;
         int right = x + char_width - 1;
-        while (right > left && vline_empty(surface, right, y, y + char_height, 64))
+        while (right > left &&
+               vline_empty(surface, right, y, y + char_height, 64))
           right -= 1;
 
-        if (left <= right)
-        {
-          glyph.offset  = Vector(static_cast<float>(x) - static_cast<float>(left), 0.0f);
-          glyph.advance = static_cast<float>(right - left + 1 + 1); // FIXME: might be useful to make spacing configurable
-        }
-        else
-        { // glyph is completly transparent
-          glyph.offset  = Vector(0, 0);
-          glyph.advance = static_cast<float>(char_width + 1); // FIXME: might be useful to make spacing configurable
+        if (left <= right) {
+          glyph.offset =
+              Vector(static_cast<float>(x) - static_cast<float>(left), 0.0f);
+          glyph.advance = static_cast<float>(
+              right - left + 1 +
+              1);  // FIXME: might be useful to make spacing configurable
+        } else {   // glyph is completly transparent
+          glyph.offset = Vector(0, 0);
+          glyph.advance = static_cast<float>(
+              char_width +
+              1);  // FIXME: might be useful to make spacing configurable
         }
 
-        glyph.rect = Rectf(static_cast<float>(x),
-                           static_cast<float>(y),
+        glyph.rect = Rectf(static_cast<float>(x), static_cast<float>(y),
                            static_cast<float>(x + char_width),
                            static_cast<float>(y + char_height));
       }
 
       glyphs[*chr] = glyph;
     }
-    if ( col>0 && col <= wrap ) {
+    if (col > 0 && col <= wrap) {
       col = 0;
       row++;
     }
@@ -256,26 +252,18 @@ abort:
   }
 }
 
-BitmapFont::~BitmapFont()
-{
-}
+BitmapFont::~BitmapFont() {}
 
-float
-BitmapFont::get_text_width(const std::string& text) const
-{
+float BitmapFont::get_text_width(const std::string& text) const {
   float curr_width = 0;
   float last_width = 0;
 
-  for (UTF8Iterator it(text); !it.done(); ++it)
-  {
-    if (*it == '\n')
-    {
+  for (UTF8Iterator it(text); !it.done(); ++it) {
+    if (*it == '\n') {
       last_width = std::max(last_width, curr_width);
       curr_width = 0;
-    }
-    else
-    {
-      if ( glyphs.at(*it).surface_idx != -1 )
+    } else {
+      if (glyphs.at(*it).surface_idx != -1)
         curr_width += glyphs[*it].advance;
       else
         curr_width += glyphs[0x20].advance;
@@ -285,31 +273,23 @@ BitmapFont::get_text_width(const std::string& text) const
   return std::max(curr_width, last_width);
 }
 
-float
-BitmapFont::get_text_height(const std::string& text) const
-{
+float BitmapFont::get_text_height(const std::string& text) const {
   std::string::size_type text_height = char_height;
 
-  for (std::string::const_iterator it = text.begin(); it != text.end(); ++it)
-  { // since UTF8 multibyte characters are decoded with values
+  for (std::string::const_iterator it = text.begin(); it != text.end();
+       ++it) {  // since UTF8 multibyte characters are decoded with values
     // outside the ASCII range there is no risk of overlapping and
     // thus we don't need to decode the utf-8 string
-    if (*it == '\n')
-      text_height += char_height + 2;
+    if (*it == '\n') text_height += char_height + 2;
   }
 
   return static_cast<float>(text_height);
 }
 
-float
-BitmapFont::get_height() const
-{
-  return static_cast<float>(char_height);
-}
+float BitmapFont::get_height() const { return static_cast<float>(char_height); }
 
-std::string
-BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overflow)
-{
+std::string BitmapFont::wrap_to_width(const std::string& s_, float width,
+                                      std::string* overflow) {
   std::string s = s_;
 
   // if text is already smaller, return full text
@@ -318,12 +298,13 @@ BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overf
     return s;
   }
 
-  // if we can find a whitespace character to break at, return text up to this character
+  // if we can find a whitespace character to break at, return text up to this
+  // character
   for (int i = static_cast<int>(s.length()) - 1; i >= 0; i--) {
-    std::string s2 = s.substr(0,i);
+    std::string s2 = s.substr(0, i);
     if (s[i] != ' ') continue;
     if (get_text_width(s2) <= width) {
-      if (overflow) *overflow = s.substr(i+1);
+      if (overflow) *overflow = s.substr(i + 1);
       return s.substr(0, i);
     }
   }
@@ -331,11 +312,10 @@ BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overf
   // hard-wrap at width, taking care of multibyte characters
   unsigned int char_bytes = 1;
   for (int i = 0; i < static_cast<int>(s.length()); i += char_bytes) {
-
     // calculate the number of bytes in the character
     char_bytes = 1;
-    auto iter = s.begin() + i + 1; // iter points to next byte
-    while ( iter != s.end() && (*iter & 128) && !(*iter & 64) ) {
+    auto iter = s.begin() + i + 1;  // iter points to next byte
+    while (iter != s.end() && (*iter & 128) && !(*iter & 64)) {
       // this is a "continuation" byte in the form 10xxxxxx
       ++iter;
       ++char_bytes;
@@ -343,9 +323,9 @@ BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overf
 
     // check whether text now goes over allowed width, and if so
     // return everything up to the character and put the rest in the overflow
-    std::string s2 = s.substr(0,i+char_bytes);
+    std::string s2 = s.substr(0, i + char_bytes);
     if (get_text_width(s2) > width) {
-      if (i == 0) i += char_bytes; // edge case when even one char is too wide
+      if (i == 0) i += char_bytes;  // edge case when even one char is too wide
       if (overflow) *overflow = s.substr(i);
       return s.substr(0, i);
     }
@@ -356,19 +336,15 @@ BitmapFont::wrap_to_width(const std::string& s_, float width, std::string* overf
   return s;
 }
 
-
-void
-BitmapFont::draw_text(Canvas& canvas, const std::string& text,
-                      const Vector& pos_, FontAlignment alignment, int layer, const Color& color)
-{
+void BitmapFont::draw_text(Canvas& canvas, const std::string& text,
+                           const Vector& pos_, FontAlignment alignment,
+                           int layer, const Color& color) {
   float x = pos_.x;
   float y = pos_.y;
 
   std::string::size_type last = 0;
-  for (std::string::size_type i = 0;; ++i)
-  {
-    if (text[i] == '\n' || i == text.size())
-    {
+  for (std::string::size_type i = 0;; ++i) {
+    if (text[i] == '\n' || i == text.size()) {
       std::string temp = text.substr(last, i - last);
 
       // calculate X positions based on the alignment type
@@ -385,8 +361,7 @@ BitmapFont::draw_text(Canvas& canvas, const std::string& text,
 
       draw_text(canvas, temp, pos, layer, color);
 
-      if (i == text.size())
-        break;
+      if (i == text.size()) break;
 
       y += static_cast<float>(char_height) + 2.0f;
       last = i + 1;
@@ -394,49 +369,43 @@ BitmapFont::draw_text(Canvas& canvas, const std::string& text,
   }
 }
 
-void
-BitmapFont::draw_text(Canvas& canvas, const std::string& text, const Vector& pos, int layer, Color color) const
-{
+void BitmapFont::draw_text(Canvas& canvas, const std::string& text,
+                           const Vector& pos, int layer, Color color) const {
   if (shadowsize > 0)
-    draw_chars(canvas, false, rtl ? std::string(text.rbegin(), text.rend()) : text,
-               pos + Vector(static_cast<float>(shadowsize), static_cast<float>(shadowsize)), layer,
-               Color(1,1,1));
+    draw_chars(canvas, false,
+               rtl ? std::string(text.rbegin(), text.rend()) : text,
+               pos + Vector(static_cast<float>(shadowsize),
+                            static_cast<float>(shadowsize)),
+               layer, Color(1, 1, 1));
 
-  draw_chars(canvas, true, rtl ? std::string(text.rbegin(), text.rend()) : text, pos, layer, color);
+  draw_chars(canvas, true, rtl ? std::string(text.rbegin(), text.rend()) : text,
+             pos, layer, color);
 }
 
-void
-BitmapFont::draw_chars(Canvas& canvas, bool notshadow, const std::string& text, const Vector& pos, int layer, Color color) const
-{
+void BitmapFont::draw_chars(Canvas& canvas, bool notshadow,
+                            const std::string& text, const Vector& pos,
+                            int layer, Color color) const {
   Vector p = pos;
 
-  for (UTF8Iterator it(text); !it.done(); ++it)
-  {
-    if (*it == '\n')
-    {
+  for (UTF8Iterator it(text); !it.done(); ++it) {
+    if (*it == '\n') {
       p.x = pos.x;
       p.y += static_cast<float>(char_height) + 2.0f;
-    }
-    else if (*it == ' ')
-    {
+    } else if (*it == ' ') {
       p.x += glyphs[0x20].advance;
-    }
-    else
-    {
+    } else {
       Glyph glyph;
-      if ( glyphs.at(*it).surface_idx != -1 )
+      if (glyphs.at(*it).surface_idx != -1)
         glyph = glyphs[*it];
       else
         glyph = glyphs[0x20];
 
       // FIXME: not supported! request.color = color;
-      canvas.draw_surface_part(notshadow ?
-                               glyph_surfaces[glyph.surface_idx] :
-                               shadow_surfaces[glyph.surface_idx],
+      canvas.draw_surface_part(notshadow ? glyph_surfaces[glyph.surface_idx]
+                                         : shadow_surfaces[glyph.surface_idx],
                                glyph.rect,
                                Rectf(p + glyph.offset, glyph.rect.get_size()),
-                               layer,
-                               PaintStyle().set_color(color));
+                               layer, PaintStyle().set_color(color));
 
       p.x += glyph.advance;
     }

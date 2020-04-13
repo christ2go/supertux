@@ -24,54 +24,39 @@
 #include "supertux/console.hpp"
 
 KeyboardManager::KeyboardManager(InputManager* parent,
-                                 KeyboardConfig& keyboard_config) :
-  m_parent(parent),
-  m_keyboard_config(keyboard_config),
-  m_wait_for_key(),
-  m_lock_text_input(false)
-{
-}
+                                 KeyboardConfig& keyboard_config)
+    : m_parent(parent),
+      m_keyboard_config(keyboard_config),
+      m_wait_for_key(),
+      m_lock_text_input(false) {}
 
-void
-KeyboardManager::process_key_event(const SDL_KeyboardEvent& event)
-{
+void KeyboardManager::process_key_event(const SDL_KeyboardEvent& event) {
   auto key_mapping = m_keyboard_config.m_keymap.find(event.keysym.sym);
 
   // if console key was pressed: toggle console
   if (key_mapping != m_keyboard_config.m_keymap.end() &&
-      key_mapping->second == Control::CONSOLE)
-  {
-    if (event.type == SDL_KEYDOWN)
-    {
+      key_mapping->second == Control::CONSOLE) {
+    if (event.type == SDL_KEYDOWN) {
       // text input gets locked between the console-key being pressed
       // and released to avoid the console-key getting interpreted as
       // text input and echoed to the console
       m_lock_text_input = true;
 
       Console::current()->toggle();
-    }
-    else if (event.type == SDL_KEYUP)
-    {
+    } else if (event.type == SDL_KEYUP) {
       m_lock_text_input = false;
     }
-  }
-  else if (Console::current()->hasFocus())
-  {
+  } else if (Console::current()->hasFocus()) {
     // if console is open: send key there
     process_console_key_event(event);
-  }
-  else if (MenuManager::instance().is_active())
-  {
+  } else if (MenuManager::instance().is_active()) {
     // if menu mode: send key there
     process_menu_key_event(event);
-  }
-  else if (key_mapping == m_keyboard_config.m_keymap.end())
-  {
+  } else if (key_mapping == m_keyboard_config.m_keymap.end()) {
     // default action: update controls
-    //log_debug << "Key " << event.key.SDL_Keycode.sym << " is unbound" << std::endl;
-  }
-  else
-  {
+    // log_debug << "Key " << event.key.SDL_Keycode.sym << " is unbound" <<
+    // std::endl;
+  } else {
     auto control = key_mapping->second;
     bool value = (event.type == SDL_KEYDOWN);
 
@@ -83,20 +68,17 @@ KeyboardManager::process_key_event(const SDL_KeyboardEvent& event)
   }
 }
 
-void
-KeyboardManager::process_text_input_event(const SDL_TextInputEvent& event)
-{
+void KeyboardManager::process_text_input_event(
+    const SDL_TextInputEvent& event) {
   if (!m_lock_text_input && Console::current()->hasFocus()) {
-    for (int i = 0; event.text[i] != '\0'; ++i)
-    {
+    for (int i = 0; event.text[i] != '\0'; ++i) {
       Console::current()->input(event.text[i]);
     }
   }
 }
 
-void
-KeyboardManager::process_console_key_event(const SDL_KeyboardEvent& event)
-{
+void KeyboardManager::process_console_key_event(
+    const SDL_KeyboardEvent& event) {
   if (event.type != SDL_KEYDOWN) return;
   auto console = Console::current();
 
@@ -152,18 +134,12 @@ KeyboardManager::process_console_key_event(const SDL_KeyboardEvent& event)
   }
 }
 
-void
-KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
-{
+void KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event) {
   // wait for key mode?
-  if (m_wait_for_key)
-  {
-    if (event.type == SDL_KEYUP)
-      return;
+  if (m_wait_for_key) {
+    if (event.type == SDL_KEYUP) return;
 
-    if (event.keysym.sym != SDLK_ESCAPE &&
-        event.keysym.sym != SDLK_PAUSE)
-    {
+    if (event.keysym.sym != SDLK_ESCAPE && event.keysym.sym != SDLK_PAUSE) {
       m_keyboard_config.bind_key(event.keysym.sym, *m_wait_for_key);
     }
     m_parent->reset();
@@ -172,10 +148,8 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
     return;
   }
 
-  if (m_parent->joystick_manager->wait_for_joystick >= 0)
-  {
-    if (event.keysym.sym == SDLK_ESCAPE)
-    {
+  if (m_parent->joystick_manager->wait_for_joystick >= 0) {
+    if (event.keysym.sym == SDLK_ESCAPE) {
       m_parent->reset();
       MenuManager::instance().refresh();
       m_parent->joystick_manager->wait_for_joystick = -1;
@@ -217,8 +191,7 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
       control = Control::REMOVE;
       break;
     default:
-      if (m_keyboard_config.m_keymap.count(event.keysym.sym) == 0)
-      {
+      if (m_keyboard_config.m_keymap.count(event.keysym.sym) == 0) {
         return;
       }
       control = m_keyboard_config.m_keymap[event.keysym.sym];
@@ -228,10 +201,6 @@ KeyboardManager::process_menu_key_event(const SDL_KeyboardEvent& event)
   m_parent->get_controller().set_control(control, (event.type == SDL_KEYDOWN));
 }
 
-void
-KeyboardManager::bind_next_event_to(Control id)
-{
-  m_wait_for_key = id;
-}
+void KeyboardManager::bind_next_event_to(Control id) { m_wait_for_key = id; }
 
 /* EOF */

@@ -25,20 +25,15 @@
 #include "supertux/globals.hpp"
 #include "util/gettext.hpp"
 
-ProfileMenu::ProfileMenu()
-{
+ProfileMenu::ProfileMenu() {
   add_label(_("Select Profile"));
   add_hl();
-  for (int i = 1; i <= 5; ++i)
-  {
+  for (int i = 1; i <= 5; ++i) {
     std::ostringstream out;
-    if (i == g_config->profile)
-    {
-      out << str(boost::format(_("[Profile %s]")) %i);
-    }
-    else
-    {
-      out << str(boost::format(_("Profile %s")) %i);
+    if (i == g_config->profile) {
+      out << str(boost::format(_("[Profile %s]")) % i);
+    } else {
+      out << str(boost::format(_("Profile %s")) % i);
     }
     add_entry(i, out.str());
   }
@@ -47,9 +42,7 @@ ProfileMenu::ProfileMenu()
   add_back(_("Back"));
 }
 
-void
-ProfileMenu::menu_action(MenuItem& item)
-{
+void ProfileMenu::menu_action(MenuItem& item) {
   g_config->profile = item.get_id();
   MenuManager::instance().clear_menu_stack();
 }

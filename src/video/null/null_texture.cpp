@@ -16,38 +16,17 @@
 
 #include "video/null/null_texture.hpp"
 
-NullTexture::NullTexture(const Size& size) :
-  m_texture_size(size),
-  m_image_size(size)
-{
-}
+NullTexture::NullTexture(const Size& size)
+    : m_texture_size(size), m_image_size(size) {}
 
-NullTexture::~NullTexture()
-{
-}
+NullTexture::~NullTexture() {}
 
-int
-NullTexture::get_texture_width() const
-{
-  return m_texture_size.width;
-}
+int NullTexture::get_texture_width() const { return m_texture_size.width; }
 
-int
-NullTexture::get_texture_height() const
-{
-  return m_texture_size.height;
-}
+int NullTexture::get_texture_height() const { return m_texture_size.height; }
 
-int
-NullTexture::get_image_width() const
-{
-  return m_image_size.width;
-}
+int NullTexture::get_image_width() const { return m_image_size.width; }
 
-int
-NullTexture::get_image_height() const
-{
-  return m_image_size.height;
-}
+int NullTexture::get_image_height() const { return m_image_size.height; }
 
 /* EOF */

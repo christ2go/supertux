@@ -23,30 +23,26 @@
 #include "supertux/world.hpp"
 #include "util/gettext.hpp"
 
-WorldSetMenu::WorldSetMenu()
-{
-   add_label(_("Start Game"));
-   add_hl();
-   add_entry(WORLDSET_STORY, _("Story Mode"));
-   add_entry(WORLDSET_CONTRIB, _("Contrib Levels"));
-   add_hl();
-   add_back(_("Back"));
+WorldSetMenu::WorldSetMenu() {
+  add_label(_("Start Game"));
+  add_hl();
+  add_entry(WORLDSET_STORY, _("Story Mode"));
+  add_entry(WORLDSET_CONTRIB, _("Contrib Levels"));
+  add_hl();
+  add_back(_("Back"));
 }
 
-void WorldSetMenu::menu_action(MenuItem& item)
-{
-  switch (item.get_id())
-  {
-    case WORLDSET_STORY:
-    {
+void WorldSetMenu::menu_action(MenuItem& item) {
+  switch (item.get_id()) {
+    case WORLDSET_STORY: {
       std::unique_ptr<World> world = World::from_directory("levels/world1");
       GameManager::current()->start_worldmap(*world);
       break;
     }
 
     case WORLDSET_CONTRIB:
-	    MenuManager::instance().push_menu(MenuStorage::CONTRIB_MENU);
-	    break;
+      MenuManager::instance().push_menu(MenuStorage::CONTRIB_MENU);
+      break;
   }
 }
 

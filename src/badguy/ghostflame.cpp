@@ -20,35 +20,22 @@
 #include "sprite/sprite.hpp"
 #include "sprite/sprite_manager.hpp"
 
-Ghostflame::Ghostflame(const ReaderMapping& reader) :
-  Flame(reader)
-{
+Ghostflame::Ghostflame(const ReaderMapping& reader) : Flame(reader) {
   m_lightsprite->set_color(Color(0.21f, 0.00f, 0.21f));
-  m_sprite = SpriteManager::current()->create("images/creatures/flame/ghostflame.sprite");
+  m_sprite = SpriteManager::current()->create(
+      "images/creatures/flame/ghostflame.sprite");
 }
 
-bool
-Ghostflame::is_flammable() const
-{
-  return false;
-}
+bool Ghostflame::is_flammable() const { return false; }
 
-bool
-Ghostflame::is_freezable() const
-{
-  return false;
-}
+bool Ghostflame::is_freezable() const { return false; }
 
-ObjectSettings
-Ghostflame::get_settings()
-{
+ObjectSettings Ghostflame::get_settings() {
   ObjectSettings result = Flame::get_settings();
   return result;
 }
 
-void
-Ghostflame::after_editor_set()
-{
+void Ghostflame::after_editor_set() {
   m_sprite_name = "images/creatures/flame/ghostflame.sprite";
 }
 

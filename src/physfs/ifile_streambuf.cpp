@@ -21,10 +21,7 @@
 #include <sstream>
 #include <stdexcept>
 
-IFileStreambuf::IFileStreambuf(const std::string& filename) :
-  file(),
-  buf()
-{
+IFileStreambuf::IFileStreambuf(const std::string& filename) : file(), buf() {
   // check this as PHYSFS seems to be buggy and still returns a
   // valid pointer in this case
   if (filename.empty()) {
@@ -33,20 +30,15 @@ IFileStreambuf::IFileStreambuf(const std::string& filename) :
   file = PHYSFS_openRead(filename.c_str());
   if (file == nullptr) {
     std::stringstream msg;
-    msg << "Couldn't open file '" << filename << "': "
-        << PHYSFS_getLastErrorCode();
+    msg << "Couldn't open file '" << filename
+        << "': " << PHYSFS_getLastErrorCode();
     throw std::runtime_error(msg.str());
   }
 }
 
-IFileStreambuf::~IFileStreambuf()
-{
-  PHYSFS_close(file);
-}
+IFileStreambuf::~IFileStreambuf() { PHYSFS_close(file); }
 
-int
-IFileStreambuf::underflow()
-{
+int IFileStreambuf::underflow() {
   if (PHYSFS_eof(file)) {
     return traits_type::eof();
   }
@@ -60,10 +52,9 @@ IFileStreambuf::underflow()
   return buf[0];
 }
 
-IFileStreambuf::pos_type
-IFileStreambuf::seekpos(pos_type pos, std::ios_base::openmode)
-{
-  if (PHYSFS_seek(file, static_cast<PHYSFS_uint64> (pos)) == 0) {
+IFileStreambuf::pos_type IFileStreambuf::seekpos(pos_type pos,
+                                                 std::ios_base::openmode) {
+  if (PHYSFS_seek(file, static_cast<PHYSFS_uint64>(pos)) == 0) {
     return pos_type(off_type(-1));
   }
 
@@ -72,10 +63,9 @@ IFileStreambuf::seekpos(pos_type pos, std::ios_base::openmode)
   return pos;
 }
 
-IFileStreambuf::pos_type
-IFileStreambuf::seekoff(off_type off, std::ios_base::seekdir dir,
-                        std::ios_base::openmode mode)
-{
+IFileStreambuf::pos_type IFileStreambuf::seekoff(off_type off,
+                                                 std::ios_base::seekdir dir,
+                                                 std::ios_base::openmode mode) {
   off_type pos = off;
   PHYSFS_sint64 ptell = PHYSFS_tell(file);
 
@@ -84,18 +74,20 @@ IFileStreambuf::seekoff(off_type off, std::ios_base::seekdir dir,
       break;
     case std::ios_base::cur:
       if (off == 0)
-        return static_cast<pos_type> (ptell) - static_cast<pos_type> (egptr() - gptr());
-      pos += static_cast<off_type> (ptell) - static_cast<off_type> (egptr() - gptr());
+        return static_cast<pos_type>(ptell) -
+               static_cast<pos_type>(egptr() - gptr());
+      pos += static_cast<off_type>(ptell) -
+             static_cast<off_type>(egptr() - gptr());
       break;
     case std::ios_base::end:
-      pos += static_cast<off_type> (PHYSFS_fileLength(file));
+      pos += static_cast<off_type>(PHYSFS_fileLength(file));
       break;
     default:
       assert(false);
       return pos_type(off_type(-1));
   }
 
-  return seekpos(static_cast<pos_type> (pos), mode);
+  return seekpos(static_cast<pos_type>(pos), mode);
 }
 
 /* EOF */
